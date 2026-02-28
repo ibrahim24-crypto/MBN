@@ -89,11 +89,11 @@ export default function AnnouncementsPage() {
 
   return (
     <AppLayout>
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
         <div className="space-y-2">
           <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Notice Board</Badge>
-          <h1 className="text-4xl md:text-7xl font-black font-headline tracking-tighter flex items-center gap-4 text-slate-900 dark:text-white leading-tight">
-            <Megaphone className="text-primary hidden md:block" size={48} />
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black font-headline tracking-tighter flex items-center gap-4 text-slate-900 dark:text-white leading-tight">
+            <Megaphone className="text-primary hidden md:block" size={40} />
             {t.announcements}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-bold text-lg tracking-tight">{t.checkLatest}</p>
