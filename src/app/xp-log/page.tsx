@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -13,7 +14,7 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { History, TrendingUp, TrendingDown, Clock, Zap } from 'lucide-react';
+import { History, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
@@ -114,19 +115,6 @@ export default function XPLogPage() {
             )}
           </TableBody>
         </Table>
-      </div>
-
-      <div className="w-full mt-16 p-14 rounded-[4rem] bg-gradient-to-br from-primary via-primary/95 to-accent border-none flex flex-col md:flex-row items-center justify-between group overflow-hidden relative shadow-2xl shadow-primary/30">
-         <div className="absolute -right-20 -bottom-20 opacity-10 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-1000">
-            <Zap size={300} className="text-white" />
-         </div>
-         <div className="relative z-10 text-center md:text-left mb-8 md:mb-0">
-            <h3 className="text-4xl font-black text-white mb-3 leading-none tracking-tight">{t.totalImpact}</h3>
-            <p className="text-white/70 font-bold text-xl max-w-lg">{t.totalImpactDesc}</p>
-         </div>
-         <div className="text-7xl font-black text-white relative z-10 font-mono tracking-tighter bg-white/10 px-10 py-6 rounded-[2.5rem] backdrop-blur-md border border-white/20">
-            {profile?.xp} <span className="text-2xl opacity-60 ml-2">XP</span>
-         </div>
       </div>
     </AppLayout>
   );

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -13,8 +14,6 @@ import {
   Mail, 
   ShieldAlert,
   Award,
-  Activity,
-  ExternalLink,
   CheckCircle2,
   Zap,
   Languages,
@@ -71,17 +70,13 @@ export default function ProfilePage() {
 
       <div className="flex flex-col items-center gap-12 pb-32 w-full max-w-4xl">
         
-        {/* Profile Identity Card - MAXIMIZED DESIGN */}
+        {/* Profile Identity Card - CLEAN DESIGN */}
         <Card className="border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] bg-white dark:bg-slate-900 rounded-[4rem] overflow-hidden w-full max-w-md group transition-all duration-1000 hover:scale-[1.02] animate-in fade-in slide-in-from-bottom-12 adaptive-card mx-auto">
           <div className="h-48 bg-gradient-to-br from-primary via-primary/90 to-accent w-full relative overflow-hidden">
             <div className="absolute inset-0 bg-black/10 opacity-50"></div>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent)]"></div>
             <div className="absolute -right-16 -bottom-16 opacity-10 group-hover:scale-125 transition-transform duration-1000">
                <User size={300} className="text-white" />
-            </div>
-            {/* Integrated Logo scale fix */}
-            <div className="absolute top-8 left-8 w-12 h-12 opacity-20 group-hover:opacity-40 transition-opacity">
-              <Image src="/logo.png" fill alt="MBN Logo" className="object-contain" unoptimized />
             </div>
           </div>
           
@@ -111,7 +106,7 @@ export default function ProfilePage() {
               </TooltipProvider>
             </div>
             
-            <div className="space-y-4 mb-12">
+            <div className="space-y-4 mb-8">
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none text-balance">
                 {profile.displayName}
               </h2>
@@ -132,15 +127,11 @@ export default function ProfilePage() {
                   <span className="text-sm font-black text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
                 </div>
               </div>
-              <Button className="w-full rounded-[2rem] h-20 font-black gap-4 text-xl shadow-2xl shadow-primary/30 hover:scale-[1.03] transition-all bg-primary hover:bg-primary/90 text-white border-none">
-                {t.editInfo}
-                <ExternalLink size={24} />
-              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* XP Dashboard Card - MATCHING DASHBOARD STYLE */}
+        {/* XP Dashboard Card */}
         <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-[4rem] overflow-hidden relative group p-10 md:p-16 transition-all duration-700 w-full max-w-3xl adaptive-card mx-auto animate-in fade-in slide-in-from-bottom-12 delay-150">
           <div className="absolute -top-20 -right-20 p-24 opacity-[0.03] group-hover:scale-110 transition-transform duration-1000">
             <Trophy size={400} className="text-primary" />
