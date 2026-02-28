@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { 
   Trophy, 
   Mail, 
-  ShieldCheck, 
   ShieldAlert,
   Award,
   TrendingUp,
@@ -45,7 +44,7 @@ export default function ProfilePage() {
 
   if (!profile) return null;
 
-  // Progress logic: 200 XP is 100%, so 100 XP is 50%.
+  // 100 XP is 50%, target is 200 XP
   const progressToTarget = Math.min(Math.max((profile.xp / 200) * 100, 0), 100);
 
   return (
@@ -83,7 +82,7 @@ export default function ProfilePage() {
                     <span className="absolute bottom-3 right-3 w-6 h-6 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full shadow-lg cursor-help"></span>
                   </TooltipTrigger>
                   <TooltipContent className="rounded-xl font-bold">
-                    <p className="text-xs">Active Student</p>
+                    <p className="text-xs">Active Member</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -126,62 +125,44 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10 mb-12">
               <div className="space-y-2">
                 <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">XP <span className="text-primary">Dashboard</span></CardTitle>
-                <p className="text-slate-400 font-bold">Contribution Overview</p>
+                <p className="text-slate-400 font-bold">Point accumulation & milestone progress.</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <div className="relative text-center md:text-left">
-                  <div className="flex items-baseline justify-center md:justify-start gap-4 mb-4">
-                    <span className={cn(
-                      "text-8xl md:text-9xl font-black font-headline tracking-tighter leading-none",
-                      profile.xp < 0 ? "text-destructive" : "text-primary"
-                    )}>{profile.xp}</span>
-                    <span className="text-4xl font-black text-slate-300 uppercase tracking-widest">XP</span>
-                  </div>
-
-                  {profile.xp >= 0 && (
-                    <div className="max-w-md space-y-4">
-                      <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-slate-400">
-                        <span>Milestone Progress</span>
-                        <span>{Math.round(progressToTarget)}%</span>
-                      </div>
-                      <div className="relative">
-                        <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden border border-slate-200/50">
-                          <div 
-                            className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-1000"
-                            style={{ width: `${progressToTarget}%` }}
-                          />
-                        </div>
-                        {progressToTarget > 80 && (
-                          <div className="absolute inset-0 rounded-full animate-pulse bg-primary/20 blur-md -z-10" />
-                        )}
-                      </div>
-                    </div>
-                  )}
+            <div className="flex flex-col gap-10">
+              <div className="relative text-center md:text-left">
+                <div className="flex items-baseline justify-center md:justify-start gap-4 mb-4">
+                  <span className={cn(
+                    "text-8xl md:text-9xl font-black font-headline tracking-tighter leading-none",
+                    profile.xp < 0 ? "text-destructive" : "text-primary"
+                  )}>{profile.xp}</span>
+                  <span className="text-4xl font-black text-slate-300 uppercase tracking-widest">XP</span>
                 </div>
-              </div>
 
-              <div className="space-y-6">
-                 {/* Status Div Stylized */}
-                 <div className={cn(
-                    "p-8 rounded-[2rem] border transition-all duration-500 shadow-xl",
-                    profile.xp < 0 
-                      ? "bg-destructive/5 border-destructive/20 text-destructive animate-pulse" 
-                      : "bg-primary/5 border-primary/20 text-primary"
-                 )}>
-                    <div className="flex items-center gap-4 mb-2">
-                      {profile.xp < 0 ? <ShieldAlert size={24} /> : <TrendingUp size={24} />}
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">Community Status</span>
+                {profile.xp >= 0 ? (
+                  <div className="max-w-md space-y-4">
+                    <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-slate-400">
+                      <span>Milestone Progress (Target: 200 XP)</span>
+                      <span>{Math.round(progressToTarget)}%</span>
                     </div>
-                    <p className="text-2xl font-black leading-none">
-                      {profile.xp < 0 ? "Limited Participation" : "Active Contributor"}
-                    </p>
-                    <p className="text-[11px] font-bold opacity-60 mt-2 uppercase tracking-wider">
-                      {profile.xp < 0 ? "Disciplinary action logged" : "Exemplary conduct verified"}
-                    </p>
-                 </div>
+                    <div className="relative">
+                      <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden border border-slate-200/50">
+                        <div 
+                          className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-1000"
+                          style={{ width: `${progressToTarget}%` }}
+                        />
+                      </div>
+                      {progressToTarget > 80 && (
+                        <div className="absolute inset-0 rounded-full animate-pulse bg-primary/20 blur-md -z-10" />
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-destructive font-black uppercase tracking-widest text-xs bg-destructive/10 px-4 py-2 rounded-xl w-fit">
+                    <ShieldAlert size={14} />
+                    Disciplinary Penalty Logged
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -199,7 +180,6 @@ export default function ProfilePage() {
             <p className="text-sm text-slate-400 font-bold px-1">Rewards issued by school administration.</p>
           </CardHeader>
           <CardContent className="px-8 pb-8">
-             {/* Empty/Placeholder Gallery */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="p-10 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center bg-slate-50/30 dark:bg-slate-900/50 group hover:bg-white transition-all duration-500">
                   <div className="p-6 rounded-3xl bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-700 mb-4 group-hover:scale-110 transition-transform">

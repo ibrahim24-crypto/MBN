@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -24,6 +25,8 @@ export default function DashboardPage() {
        </div>
     </div>
   );
+
+  const isStudent = profile?.role === 'student';
 
   return (
     <AppLayout>
@@ -58,25 +61,25 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Main Content Area */}
-          <div className="lg:col-span-8 space-y-8">
+          <div className={cn("space-y-8", isStudent ? "lg:col-span-12" : "lg:col-span-8")}>
             <div className="flex flex-wrap gap-8">
               {/* XP Widget (Student) */}
-              {profile?.role === 'student' && (
+              {isStudent && (
                 <Card className="flex-1 min-w-[300px] border-none bg-gradient-to-br from-primary via-primary to-accent text-white shadow-2xl relative overflow-hidden group rounded-[2.5rem] p-2 transition-all hover:scale-[1.01]">
                   <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
                     <Trophy size={200} />
                   </div>
                   <CardHeader className="relative p-8 pb-0">
                     <CardTitle className="text-sm font-black tracking-[0.2em] uppercase opacity-80 mb-1">{t.progress}</CardTitle>
-                    <CardDescription className="text-white/80 font-bold">Next level at {(Math.floor(profile.xp / 100) + 1) * 100} XP</CardDescription>
+                    <CardDescription className="text-white/80 font-bold">Progress toward 200 XP target</CardDescription>
                   </CardHeader>
                   <CardContent className="relative p-8">
                     <div className="flex items-baseline gap-3 mb-6">
-                      <span className="text-7xl font-black tracking-tighter leading-none">{profile.xp}</span>
+                      <span className="text-7xl font-black tracking-tighter leading-none">{profile?.xp || 0}</span>
                       <span className="text-xl font-black opacity-60 uppercase tracking-widest">XP</span>
                     </div>
                     <div className="space-y-4">
-                      <Progress value={profile.xp % 100} className="h-4 bg-white/20 border-none rounded-full" />
+                      <Progress value={Math.min(((profile?.xp || 0) / 200) * 100, 100)} className="h-4 bg-white/20 border-none rounded-full" />
                       <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-sm w-fit">
                          <p className="text-[10px] font-black text-white uppercase tracking-[0.1em]">{t.keepParticipating}</p>
                          <TrendingUp size={16} className="text-white/60" />
@@ -148,53 +151,55 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Sidebar Area */}
-          <div className="lg:col-span-4">
-            <Card className="shadow-xl border-none bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden p-1">
-              <CardHeader className="p-8 pb-4">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="space-y-1">
-                    <CardTitle className="text-2xl font-black text-slate-900 dark:text-white">{t.nextMeeting}</CardTitle>
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">Priority Assembly</p>
+          {/* Sidebar Area - Hidden for Students */}
+          {!isStudent && (
+            <div className="lg:col-span-4">
+              <Card className="shadow-xl border-none bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden p-1">
+                <CardHeader className="p-8 pb-4">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="space-y-1">
+                      <CardTitle className="text-2xl font-black text-slate-900 dark:text-white">{t.nextMeeting}</CardTitle>
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">Priority Assembly</p>
+                    </div>
+                    <div className="p-3 bg-accent/10 rounded-xl text-accent">
+                      <Calendar size={24} />
+                    </div>
                   </div>
-                  <div className="p-3 bg-accent/10 rounded-xl text-accent">
-                    <Calendar size={24} />
+                  
+                  <div className="flex items-center gap-4 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-500">
+                    <div className="flex flex-col items-center justify-center min-w-[70px] h-[70px] bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 group-hover:bg-accent group-hover:text-white transition-all">
+                      <span className="font-black text-2xl leading-none">24</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-60">Oct</span>
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-black text-slate-900 dark:text-white text-lg leading-tight truncate">General Assembly</h4>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 font-bold">Room 402 • 14:30</p>
+                    </div>
                   </div>
-                </div>
+                </CardHeader>
                 
-                <div className="flex items-center gap-4 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-500">
-                  <div className="flex flex-col items-center justify-center min-w-[70px] h-[70px] bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 group-hover:bg-accent group-hover:text-white transition-all">
-                    <span className="font-black text-2xl leading-none">24</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-60">Oct</span>
+                <CardContent className="px-8 pb-8 flex flex-col">
+                  <Separator className="bg-slate-100 dark:bg-slate-800 my-8" />
+                  <div className="space-y-6">
+                    <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Agenda</h5>
+                    <div className="space-y-4">
+                      {['Budget Allocation Q4', 'Annual Sports Week', 'Cafeteria Update'].map((item, i) => (
+                        <div key={i} className="flex items-center gap-4 group cursor-pointer">
+                          <div className="w-2 h-2 rounded-full bg-primary shadow-lg shadow-primary/40 group-hover:scale-150 transition-all" />
+                          <span className="text-sm text-slate-700 dark:text-slate-200 font-bold group-hover:text-primary transition-all">{item}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="font-black text-slate-900 dark:text-white text-lg leading-tight truncate">General Assembly</h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 font-bold">Room 402 • 14:30</p>
+                  <div className="pt-8">
+                    <Button variant="outline" className="w-full h-14 font-black border-slate-200 dark:border-slate-800 rounded-2xl hover:border-primary transition-all shadow-sm">
+                      {t.addCalendar}
+                    </Button>
                   </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="px-8 pb-8 flex flex-col">
-                <Separator className="bg-slate-100 dark:bg-slate-800 my-8" />
-                <div className="space-y-6">
-                  <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Agenda</h5>
-                  <div className="space-y-4">
-                    {['Budget Allocation Q4', 'Annual Sports Week', 'Cafeteria Update'].map((item, i) => (
-                      <div key={i} className="flex items-center gap-4 group cursor-pointer">
-                        <div className="w-2 h-2 rounded-full bg-primary shadow-lg shadow-primary/40 group-hover:scale-150 transition-all" />
-                        <span className="text-sm text-slate-700 dark:text-slate-200 font-bold group-hover:text-primary transition-all">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="pt-8">
-                  <Button variant="outline" className="w-full h-14 font-black border-slate-200 dark:border-slate-800 rounded-2xl hover:border-primary transition-all shadow-sm">
-                    {t.addCalendar}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>
