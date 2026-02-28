@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -8,16 +7,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/context/LanguageContext';
 import { 
   Trophy, 
   Mail, 
   ShieldAlert,
   Award,
-  TrendingUp,
   Activity,
   ExternalLink,
   CheckCircle2,
-  Zap
+  Zap,
+  Languages
 } from 'lucide-react';
 import { 
   Tooltip,
@@ -25,10 +25,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const { profile, loading } = useAuth();
+  const { t, language, setLanguage } = useLanguage();
 
   if (loading) {
     return (
@@ -54,7 +62,7 @@ export default function ProfilePage() {
           Moussa Ibn Nousayr Hub
         </Badge>
         <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-none">
-          MBN <span className="text-primary">Identity</span>
+          {t.mbnIdentity}
         </h1>
       </header>
 
@@ -82,7 +90,7 @@ export default function ProfilePage() {
                     <span className="absolute bottom-3 right-3 w-6 h-6 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full shadow-lg cursor-help"></span>
                   </TooltipTrigger>
                   <TooltipContent className="rounded-xl font-bold">
-                    <p className="text-xs">Active Member</p>
+                    <p className="text-xs">{t.activeMember}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -103,12 +111,12 @@ export default function ProfilePage() {
                   <Mail size={18} />
                 </div>
                 <div className="flex flex-col text-left overflow-hidden">
-                  <span className="text-[8px] text-slate-400 font-black uppercase tracking-widest">School Email</span>
+                  <span className="text-[8px] text-slate-400 font-black uppercase tracking-widest">{t.schoolEmail}</span>
                   <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
                 </div>
               </div>
               <Button variant="ghost" className="w-full rounded-2xl h-14 font-black gap-2 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
-                Edit Information
+                {t.editInfo}
                 <ExternalLink size={14} />
               </Button>
             </div>
@@ -124,8 +132,8 @@ export default function ProfilePage() {
           <div className="relative z-10">
             <div className="flex flex-col gap-6 mb-12 text-center md:text-left">
               <div className="space-y-2">
-                <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">XP <span className="text-primary">Dashboard</span></CardTitle>
-                <p className="text-slate-400 font-bold">Point accumulation & milestone progress.</p>
+                <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{t.xpDashboard}</CardTitle>
+                <p className="text-slate-400 font-bold">{t.description}</p>
               </div>
             </div>
 
@@ -136,13 +144,13 @@ export default function ProfilePage() {
                     "text-8xl md:text-9xl font-black font-headline tracking-tighter leading-none",
                     profile.xp < 0 ? "text-destructive" : "text-primary"
                   )}>{profile.xp}</span>
-                  <span className="text-4xl font-black text-slate-300 uppercase tracking-widest">XP</span>
+                  <span className="text-4xl font-black text-slate-300 uppercase tracking-widest">{t.xp}</span>
                 </div>
 
                 {profile.xp >= 0 ? (
                   <div className="max-w-md space-y-4">
                     <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-slate-400">
-                      <span>Milestone Progress (Target: 200 XP)</span>
+                      <span>{t.milestoneProgress} ({t.targetXPReminder})</span>
                       <span>{Math.round(progressToTarget)}%</span>
                     </div>
                     <div className="relative">
@@ -160,7 +168,7 @@ export default function ProfilePage() {
                 ) : (
                   <div className="flex items-center gap-2 text-destructive font-black uppercase tracking-widest text-xs bg-destructive/10 px-4 py-2 rounded-xl w-fit">
                     <ShieldAlert size={14} />
-                    Disciplinary Penalty Logged
+                    {t.disciplinaryPenalty}
                   </div>
                 )}
               </div>
@@ -175,9 +183,9 @@ export default function ProfilePage() {
               <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
                 <Award size={20} />
               </div>
-              Achievement Gallery
+              {t.achievements}
             </CardTitle>
-            <p className="text-sm text-slate-400 font-bold px-1">Rewards issued by school administration.</p>
+            <p className="text-sm text-slate-400 font-bold px-1">{t.xpIncentive}</p>
           </CardHeader>
           <CardContent className="px-8 pb-8">
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -185,7 +193,7 @@ export default function ProfilePage() {
                   <div className="p-6 rounded-3xl bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-700 mb-4 group-hover:scale-110 transition-transform">
                     <CheckCircle2 size={32} />
                   </div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">No achievements yet</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">{t.noAchievements}</p>
                 </div>
 
                 <div className="p-10 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center opacity-30 grayscale pointer-events-none">
@@ -198,6 +206,30 @@ export default function ProfilePage() {
                    <div className="h-2 w-16 bg-slate-200 rounded-full" />
                 </div>
              </div>
+          </CardContent>
+        </Card>
+
+        {/* Language Selection Card */}
+        <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-full max-w-2xl adaptive-card mx-auto p-2 animate-in fade-in slide-in-from-bottom-8 delay-300">
+          <CardHeader className="p-8">
+            <CardTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+              <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+                <Languages size={20} />
+              </div>
+              {t.languageSetting}
+            </CardTitle>
+            <p className="text-sm text-slate-400 font-bold px-1">{t.changeLanguage}</p>
+          </CardHeader>
+          <CardContent className="px-8 pb-8">
+            <Select value={language} onValueChange={(val: any) => setLanguage(val)}>
+              <SelectTrigger className="w-full h-14 rounded-2xl border-slate-200 dark:border-slate-800 font-bold px-6">
+                <SelectValue placeholder="Select Language" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl shadow-2xl border-none p-2">
+                <SelectItem value="ar" className="rounded-xl px-4 py-3 font-bold">العربية</SelectItem>
+                <SelectItem value="fr" className="rounded-xl px-4 py-3 font-bold">Français</SelectItem>
+              </SelectContent>
+            </Select>
           </CardContent>
         </Card>
 

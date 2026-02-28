@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -48,11 +47,11 @@ export default function DashboardPage() {
           </div>
           <div className="flex flex-wrap gap-4 shrink-0">
             <Button variant="outline" className="rounded-2xl h-14 px-8 border-slate-200 dark:border-slate-800 font-black text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 transition-all text-base shadow-sm" asChild>
-              <Link href="/profile">My Profile</Link>
+              <Link href="/profile">{t.profile}</Link>
             </Button>
             <Button className="rounded-2xl h-14 px-8 font-black gap-3 shadow-xl shadow-primary/30 hover:scale-[1.02] transition-all text-base" asChild>
               <Link href="/announcements">
-                Bulletin Board
+                {t.announcements}
                 <ArrowRight size={20} />
               </Link>
             </Button>
@@ -71,12 +70,12 @@ export default function DashboardPage() {
                   </div>
                   <CardHeader className="relative p-8 pb-0">
                     <CardTitle className="text-sm font-black tracking-[0.2em] uppercase opacity-80 mb-1">{t.progress}</CardTitle>
-                    <CardDescription className="text-white/80 font-bold">Progress toward 200 XP target</CardDescription>
+                    <CardDescription className="text-white/80 font-bold">{t.targetXP}</CardDescription>
                   </CardHeader>
                   <CardContent className="relative p-8">
                     <div className="flex items-baseline gap-3 mb-6">
                       <span className="text-7xl font-black tracking-tighter leading-none">{profile?.xp || 0}</span>
-                      <span className="text-xl font-black opacity-60 uppercase tracking-widest">XP</span>
+                      <span className="text-xl font-black opacity-60 uppercase tracking-widest">{t.xp}</span>
                     </div>
                     <div className="space-y-4">
                       <Progress value={Math.min(((profile?.xp || 0) / 200) * 100, 100)} className="h-4 bg-white/20 border-none rounded-full" />
@@ -96,8 +95,8 @@ export default function DashboardPage() {
                     <Users size={200} />
                   </div>
                   <CardHeader className="relative p-8 pb-0">
-                    <CardTitle className="text-sm font-black tracking-[0.2em] uppercase opacity-50 mb-1">Governance</CardTitle>
-                    <CardDescription className="text-slate-400 font-bold">Access Control Hub</CardDescription>
+                    <CardTitle className="text-sm font-black tracking-[0.2em] uppercase opacity-50 mb-1">{t.adminPanel}</CardTitle>
+                    <CardDescription className="text-slate-400 font-bold">{t.manageUsers}</CardDescription>
                   </CardHeader>
                   <CardContent className="relative p-8">
                     <div className="text-4xl font-black mb-8 leading-tight tracking-tight">{t.adminPanel}</div>
