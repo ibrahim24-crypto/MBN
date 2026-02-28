@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -132,7 +133,6 @@ export default function AdminPage() {
     });
   };
 
-  // Filter out search queries AND the super admin themselves
   const filteredUsers = users.filter(u => 
     u.email !== SUPER_ADMIN_EMAIL &&
     (u.displayName?.toLowerCase().includes(search.toLowerCase()) || 
@@ -163,9 +163,9 @@ export default function AdminPage() {
     <AppLayout>
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
         <div className="space-y-2">
-          <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Command Center</Badge>
-          <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter flex items-center gap-4 text-slate-900 dark:text-white leading-tight">
-            <UserCog className="text-primary hidden md:block" size={48} />
+          <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Command Center</Badge>
+          <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tighter flex items-center gap-4 text-slate-900 dark:text-white leading-tight">
+            <UserCog className="text-primary hidden md:block" size={40} />
             {t.adminPanel}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-bold text-lg tracking-tight">{t.manageUsers}</p>
@@ -182,22 +182,22 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <div className="w-full bg-white dark:bg-slate-900 rounded-[2.5rem] border-none shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-2xl border-none shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20 overflow-x-auto">
         <TooltipProvider>
-          <Table className="table-fixed w-full">
+          <Table className="table-fixed min-w-[900px] lg:min-w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="w-[30%] py-6 px-6 md:px-8 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.name}</TableHead>
-                <TableHead className="w-[30%] py-6 px-6 md:px-8 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.email}</TableHead>
-                <TableHead className="w-[12%] py-6 px-6 md:px-8 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.xp}</TableHead>
-                <TableHead className="w-[18%] py-6 px-6 md:px-8 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.role}</TableHead>
-                <TableHead className="w-[10%] py-6 px-6 md:px-8 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px] text-right">{t.actions}</TableHead>
+                <TableHead className="w-[30%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.name}</TableHead>
+                <TableHead className="w-[30%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.email}</TableHead>
+                <TableHead className="w-[12%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.xp}</TableHead>
+                <TableHead className="w-[18%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.role}</TableHead>
+                <TableHead className="w-[10%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {fetching ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-40">
+                  <TableCell colSpan={5} className="text-center py-20">
                     <div className="flex flex-col items-center gap-4">
                       <Loader2 size={32} className="animate-spin text-primary opacity-40" />
                       <span className="text-slate-300 font-black uppercase tracking-[0.3em] animate-pulse text-sm">Syncing...</span>
@@ -206,7 +206,7 @@ export default function AdminPage() {
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-40">
+                  <TableCell colSpan={5} className="text-center py-20">
                     <div className="flex flex-col items-center gap-6 opacity-20 grayscale">
                         <User size={60} />
                         <p className="text-xl font-black uppercase tracking-[0.2em]">No Identities</p>
@@ -216,7 +216,7 @@ export default function AdminPage() {
               ) : (
                 filteredUsers.map((u) => (
                   <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                    <TableCell className="py-4 px-6 md:px-8">
+                    <TableCell className="py-4 px-6">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
@@ -232,10 +232,10 @@ export default function AdminPage() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-6 md:px-8 text-slate-400 dark:text-slate-500 font-bold text-sm md:text-base">
+                    <TableCell className="py-4 px-6 text-slate-400 dark:text-slate-500 font-bold text-sm md:text-base truncate">
                       <div className="truncate w-full" title={u.email}>{u.email}</div>
                     </TableCell>
-                    <TableCell className="py-4 px-6 md:px-8">
+                    <TableCell className="py-4 px-6">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
@@ -258,7 +258,7 @@ export default function AdminPage() {
                         )
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-6 md:px-8">
+                    <TableCell className="py-4 px-6">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
@@ -280,7 +280,7 @@ export default function AdminPage() {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-6 md:px-8 text-right">
+                    <TableCell className="py-4 px-6 text-right">
                       {editingId === u.id ? (
                         <div className="flex justify-end gap-2">
                           <Tooltip>
