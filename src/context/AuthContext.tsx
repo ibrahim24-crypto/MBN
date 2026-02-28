@@ -69,7 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (!userDoc.exists()) {
             const initialRole: UserRole = firebaseUser.email === SUPER_ADMIN_EMAIL ? 'administration' : 'student';
-            const initialXP = initialRole === 'administration' ? 0 : 100;
+            // Only students start with XP. Teachers and Admin have no XP.
+            const initialXP = initialRole === 'student' ? 100 : 0;
             const now = new Date();
             
             currentProfile = {
