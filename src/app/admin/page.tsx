@@ -44,6 +44,8 @@ interface UserData {
   xp: number;
 }
 
+const SUPER_ADMIN_EMAIL = 'ibrahimezzine09@gmail.com';
+
 export default function AdminPage() {
   const { isSuperAdmin, profile, loading: authLoading } = useAuth();
   const db = useFirestore();
@@ -130,9 +132,11 @@ export default function AdminPage() {
     });
   };
 
+  // Filter out search queries AND the super admin themselves
   const filteredUsers = users.filter(u => 
-    u.displayName?.toLowerCase().includes(search.toLowerCase()) || 
-    u.email?.toLowerCase().includes(search.toLowerCase())
+    u.email !== SUPER_ADMIN_EMAIL &&
+    (u.displayName?.toLowerCase().includes(search.toLowerCase()) || 
+     u.email?.toLowerCase().includes(search.toLowerCase()))
   );
 
   if (authLoading) return (
@@ -178,9 +182,9 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <div className="w-full bg-white dark:bg-slate-900 rounded-[2.5rem] border-none shadow-xl overflow-x-auto animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20 no-scrollbar">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-[2.5rem] border-none shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20">
         <TooltipProvider>
-          <Table className="table-fixed min-w-[900px] lg:min-w-full">
+          <Table className="table-fixed w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
                 <TableHead className="w-[30%] py-6 px-6 md:px-8 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.name}</TableHead>
@@ -228,8 +232,8 @@ export default function AdminPage() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-6 md:px-8 text-slate-400 dark:text-slate-500 font-bold text-sm md:text-base truncate">
-                      {u.email}
+                    <TableCell className="py-4 px-6 md:px-8 text-slate-400 dark:text-slate-500 font-bold text-sm md:text-base">
+                      <div className="truncate w-full" title={u.email}>{u.email}</div>
                     </TableCell>
                     <TableCell className="py-4 px-6 md:px-8">
                       {editingId === u.id ? (
