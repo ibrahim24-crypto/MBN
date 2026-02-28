@@ -44,7 +44,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   const navItems = [
     { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
     { name: t.announcements, href: '/announcements', icon: Megaphone, roles: ['student', 'teacher', 'council', 'administration'] },
-    { name: t.xpHistory, href: '/xp-log', icon: History, roles: ['student', 'council'] }, // XP History only for students/council
+    { name: t.xpHistory, href: '/xp-log', icon: History, roles: ['student', 'council'] },
     { name: t.councilBoard, href: '/council', icon: ShieldCheck, roles: ['council', 'administration'] },
     { name: t.adminPanel, href: '/admin', icon: Users, roles: ['administration'] },
     { name: t.profile, href: '/profile', icon: UserCircle, roles: ['student', 'teacher', 'council', 'administration'] },
@@ -72,7 +72,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-slate-950 selection:bg-primary/20">
       <TooltipProvider delayDuration={0}>
         <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[112px] transition-all duration-500 ease-in-out">
-          <div className="p-8 flex flex-col items-center gap-8">
+          <div className="p-8 flex flex-col items-center gap-8 shrink-0">
             <div className="flex flex-col items-center gap-4">
               <div className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-2xl border-none group hover:rotate-6 transition-transform">
                 <Image 
@@ -86,7 +86,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             </div>
           </div>
           
-          <nav className="flex-1 px-4 space-y-6 mt-12">
+          <nav className="flex-1 px-4 space-y-6 mt-12 overflow-y-auto no-scrollbar">
             {filteredNav.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -111,7 +111,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             })}
           </nav>
 
-          <div className="p-8 mt-auto flex flex-col items-center gap-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30">
+          <div className="p-8 mt-auto flex flex-col items-center gap-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 shrink-0">
             <div className="flex flex-col items-center gap-6 w-full">
               <ThemeToggle />
               
@@ -156,7 +156,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 md:p-12 lg:p-20 scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-6 md:p-12 lg:p-20 scroll-smooth no-scrollbar">
           <div className="max-w-7xl mx-auto flex flex-col items-center">
             {children}
           </div>
