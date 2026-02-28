@@ -1,0 +1,147 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user account within the MBN school council application, storing their profile information, role, and application-specific data like experience points. This entity links to Firebase Authentication for core login but holds app-specific user data.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity, corresponding to the Firebase Authentication User ID (UID). This is the primary key."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address, obtained from Firebase Authentication. Used for identification.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name or full name, typically obtained from their Google account or set within the application."
+        },
+        "role": {
+          "type": "string",
+          "description": "The assigned role for the user within the application. Possible values: 'Student', 'Teacher', 'Council', 'Administration'."
+        },
+        "xp": {
+          "type": "number",
+          "description": "Experience points gained by the user. Students start with 100 XP upon sign-in."
+        },
+        "isSuperAdmin": {
+          "type": "boolean",
+          "description": "A boolean flag indicating if the user has super administrator privileges, allowing full management access across the application."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account was created in the application's database.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account information was last updated in the application's database.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "displayName",
+        "role",
+        "xp",
+        "isSuperAdmin",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Announcement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Announcement",
+      "type": "object",
+      "description": "Represents an official announcement or update published by a user with the 'Council' role, displayed on a central board.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Announcement entity. This is the primary key."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title or subject of the announcement."
+        },
+        "content": {
+          "type": "string",
+          "description": "The full text content of the announcement."
+        },
+        "authorId": {
+          "type": "string",
+          "description": "Reference to the User who published this announcement. Only users with the 'Council' role can publish. (Relationship: User 1:N Announcement)"
+        },
+        "publishedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the announcement was officially published.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the announcement was last updated.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the announcement (e.g., 'Draft', 'Published', 'Archived')."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "content",
+        "authorId",
+        "publishedAt",
+        "updatedAt",
+        "status"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores individual user profiles, including their unique ID (matching Firebase Auth UID), email, display name, assigned role, experience points (XP), and super administrator status. This path is primarily owned by the user themselves, but admin/super admin roles have elevated privileges. Includes `role` and `isSuperAdmin` fields for DBAC (Database Access Control) to define authorization levels.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user, corresponding to their Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/announcements/{announcementId}",
+        "definition": {
+          "entityName": "Announcement",
+          "schema": {
+            "$ref": "#/backend/entities/Announcement"
+          },
+          "description": "Contains all announcements published by users with the 'Council' role. Each document includes `authorId` (denormalized for authorization independence) and `status` ('Draft', 'Published', 'Archived'). 'Published' announcements are readable by all authenticated users. 'Draft' announcements are only readable/writable by the `authorId` or 'Administration'/'SuperAdmin' users. The `status` field enables QAP-compliant list queries and clear security rule enforcement.",
+          "params": [
+            {
+              "name": "announcementId",
+              "description": "The unique identifier for the announcement."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to be secure, scalable, and highly debuggable, strictly adhering to the core design principles and mandates. \n\n**Authorization Independence via Denormalization (Mandate A):**\n*   For the `Announcement` entity, the `authorId` field is explicitly denormalized into each announcement document. This is critical for authorization independence. When evaluating access to an announcement, security rules can directly check `request.auth.uid == resource.data.authorId` without needing to perform a `get()` operation to fetch the author's user document. This eliminates hierarchical authorization dependencies, enabling atomic operations and simplifying rule evaluation significantly.\n\n**QAPs (Rules are not Filters) and Structural Segregation (Mandate B):**\n*   **User Profiles (`/users/{userId}`):** This collection stores user-specific data including their `role` and `isSuperAdmin` status. It naturally adheres to a homogeneous security posture: a user can read/update their own profile (with restrictions on role/admin status fields), while 'Administration' or 'SuperAdmin' users have broader management rights. `list` operations are typically restricted to administrative roles or specific, filtered views (e.g., 'list all students for a teacher' would require an administrative rule based on the querying user's role).\n*   **Announcements (`/announcements/{announcementId}`):** While all announcements reside in a single collection, the `status` field (`Draft`, `Published`, `Archived`) combined with `authorId` is used to achieve *logical segregation* of security postures within the same collection, simplifying client-side queries and rule definitions. This design ensures QAP compliance:\n    *   To list *published* announcements: Client queries `/announcements` with `where('status', '==', 'Published')`. Rules can then simply enforce `allow list: if resource.data.status == 'Published';`. This is QAP-compliant as the query filter directly aligns with the rule condition.\n    *   To list *draft* announcements by the current user: Client queries `/announcements` with `where('authorId', '==', request.auth.uid).where('status', '==', 'Draft')`. Rules can enforce `allow list: if request.auth.uid == resource.data.authorId && resource.data.status == 'Draft';`. This is also QAP-compliant.\n    This approach avoids splitting announcements into separate physical collections (e.g., `/public_announcements`, `/users/{uid}/drafts`) which could complicate cross-status querying and management for administrative roles, while still ensuring secure and efficient list operations.\n\n**Access Modeling (Mandate C):**\n*   **Private Data:** `/users/{userId}` utilizes path-based ownership for individual user profiles, where `userId` directly corresponds to `request.auth.uid`.\n*   **Global Roles (DBAC):** User roles (`role` field) and the `isSuperAdmin` flag are stored directly within the `/users/{userId}` documents. This allows security rules to perform efficient, database-centric authorization checks (e.g., `request.resource.data.role == 'Administration'` or `get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSuperAdmin == true`) without relying on custom claims or complex `get()` calls to other parts of the database (except for checking the requesting user's own role, which is typically cached or available via `request.auth.uid`)."
+  }
+}

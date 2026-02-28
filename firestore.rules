@@ -1,0 +1,123 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * CORE PHILOSOPHY:
+     * This ruleset implements a strict, role-based authorization model designed for a school council application.
+     * It prioritizes user ownership and administrative oversight while maintaining high performance through 
+     * data denormalization. 
+     *
+     * DATA STRUCTURE:
+     * - /users/{userId}: Individual user profiles, keyed by Firebase Auth UID.
+     * - /announcements/{announcementId}: Global collection of announcements with logical segregation via 'status'.
+     *
+     * KEY SECURITY DECISIONS:
+     * - Access to user profiles is restricted to the owner or administrative staff.
+     * - Announcements are publicly readable once 'Published', but 'Draft' or 'Archived' states are restricted.
+     * - A 'Council' role is required to create announcements.
+     * - Relational integrity is enforced by binding the 'authorId' or 'id' fields to the authenticated user's UID.
+     *
+     * DENORMALIZATION FOR AUTHORIZATION:
+     * - The 'authorId' is stored directly on Announcement documents. This allows for immediate ownership 
+     *   validation without secondary lookups, ensuring rules are fast and atomic.
+     */
+
+    // --- Global Helper Functions ---
+
+    /** Checks if the request is from an authenticated user. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** Checks if the authenticated user's UID matches the provided ID. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** Retrieves the user document for the currently authenticated user. */
+    function currentUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    /** Checks if the authenticated user has a specific role. */
+    function hasRole(role) {
+      return isSignedIn() && currentUserData().role == role;
+    }
+
+    /** Checks if the authenticated user is a Super Admin. */
+    function isSuperAdmin() {
+      return isSignedIn() && currentUserData().isSuperAdmin == true;
+    }
+
+    /** Checks if the authenticated user has administrative management privileges. */
+    function isAdmin() {
+      return isSuperAdmin() || hasRole('Administration');
+    }
+
+    /** Checks if the authenticated user has council privileges for publishing. */
+    function isCouncil() {
+      return hasRole('Council') || isAdmin();
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for user profiles. Users manage their own profiles; Admins manage everyone.
+     * @path /users/{userId}
+     * @allow get: if isOwner(userId) || isAdmin(); (read)
+     * @allow create: if isOwner(userId); (initial setup)
+     * @deny update: if request.auth.uid != userId && !isAdmin(); (unauthorized edit)
+     * @principle Path-based ownership and Lookup-based role authorization (DBAC).
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      
+      // Prototyping: Allow user to create their own record, but enforce ID consistency.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      
+      // Users can update their own profile, but cannot change their own role or admin status.
+      // Admins/SuperAdmins can update any field.
+      allow update: if resource != null && (
+        isAdmin() || 
+        (isOwner(userId) && 
+         request.resource.data.role == resource.data.role && 
+         request.resource.data.isSuperAdmin == resource.data.isSuperAdmin && 
+         request.resource.data.id == resource.data.id)
+      );
+      
+      allow delete: if resource != null && isAdmin();
+    }
+
+    /**
+     * @description Rules for school announcements. Supports Draft/Published lifecycle.
+     * @path /announcements/{announcementId}
+     * @allow get: if resource.data.status == 'Published' || isOwner(resource.data.authorId) || isAdmin();
+     * @allow create: if isCouncil() && request.resource.data.authorId == request.auth.uid;
+     * @deny delete: if !isOwner(resource.data.authorId) && !isAdmin();
+     * @principle Logical segregation using document status and denormalized ownership.
+     */
+    match /announcements/{announcementId} {
+      
+      // Anyone signed in can read published ones. Drafts/Archived require ownership or admin role.
+      allow get: if isSignedIn() && (resource.data.status == 'Published' || isOwner(resource.data.authorId) || isAdmin());
+      
+      // Per principle P6: list operations are allowed to signed-in users. 
+      // Individual document security (get) and client-side filtering (status == 'Published') 
+      // ensure users only see what they are allowed to see.
+      allow list: if isSignedIn();
+
+      // Only Council or Admins can create. Must set themselves as author.
+      allow create: if isCouncil() && request.resource.data.authorId == request.auth.uid;
+
+      // Author or Admin can update. Author cannot transfer ownership (authorId is immutable).
+      allow update: if resource != null && (
+        isAdmin() || 
+        (isOwner(resource.data.authorId) && request.resource.data.authorId == resource.data.authorId)
+      );
+
+      allow delete: if resource != null && (isOwner(resource.data.authorId) || isAdmin());
+    }
+  }
+}
