@@ -12,7 +12,8 @@ import {
   Trophy,
   Languages,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Command
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -49,37 +50,37 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   return (
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] selection:bg-primary/20">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-80 flex-col border-r border-slate-100 bg-white shadow-2xl shadow-slate-200/50 relative z-50">
-        <div className="p-10 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="bg-primary p-3 rounded-[1.25rem] text-white shadow-2xl shadow-primary/40">
-              <GraduationCap size={32} />
+      <aside className="hidden md:flex w-96 flex-col border-r border-slate-200/50 bg-white shadow-2xl shadow-slate-200/40 relative z-50">
+        <div className="p-12 flex flex-col items-start gap-8">
+          <div className="flex items-center gap-5 group cursor-pointer">
+            <div className="bg-primary p-4 rounded-[1.75rem] text-white shadow-3xl shadow-primary/40 group-hover:rotate-12 transition-all duration-500">
+              <Command size={36} />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black font-headline text-slate-900 tracking-tighter leading-none">MBN</span>
-              <span className="text-[9px] uppercase tracking-[0.3em] text-slate-400 font-black mt-1">Council Hub</span>
+              <span className="text-3xl font-black font-headline text-slate-900 tracking-tighter leading-none">MBN</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-black mt-2">Executive Hub</span>
             </div>
           </div>
         </div>
         
-        <nav className="flex-1 px-6 space-y-2 mt-6">
+        <nav className="flex-1 px-8 space-y-3 mt-8">
           {filteredNav.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link key={item.href} href={item.href}>
                 <span className={cn(
-                  "flex items-center justify-between px-5 py-4 rounded-[1.25rem] text-sm font-black transition-all group relative overflow-hidden",
+                  "flex items-center justify-between px-7 py-5 rounded-[1.5rem] text-base font-black transition-all group relative overflow-hidden",
                   isActive 
-                    ? "bg-slate-900 text-white shadow-2xl shadow-slate-900/20 scale-[1.02]" 
+                    ? "bg-slate-900 text-white shadow-3xl shadow-slate-900/30 scale-[1.03] translate-x-1" 
                     : "text-slate-400 hover:text-slate-900 hover:bg-slate-50"
                 )}>
-                  <div className="flex items-center gap-4 relative z-10">
-                    <item.icon size={20} className={cn(isActive ? "text-primary" : "text-slate-300 group-hover:text-primary transition-colors")} />
+                  <div className="flex items-center gap-5 relative z-10">
+                    <item.icon size={24} className={cn(isActive ? "text-primary" : "text-slate-300 group-hover:text-primary transition-colors")} />
                     {item.name}
                   </div>
                   {isActive && (
-                    <div className="relative z-10">
-                      <ChevronRight size={16} className="text-primary" />
+                    <div className="relative z-10 animate-in fade-in slide-in-from-left-2 duration-500">
+                      <ChevronRight size={18} className="text-primary" />
                     </div>
                   )}
                 </span>
@@ -88,54 +89,55 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           })}
         </nav>
 
-        <div className="p-8 mt-auto space-y-6">
+        <div className="p-10 mt-auto space-y-8 bg-slate-50/50 border-t border-slate-100">
           {profile?.role === 'student' && (
-            <div className="p-6 bg-primary/5 rounded-[1.5rem] border border-primary/10 group cursor-pointer hover:bg-primary/10 transition-all duration-500">
-              <div className="flex items-center justify-between mb-4">
-                <div className="bg-primary p-2 rounded-xl text-white">
-                  <Trophy size={16} />
+            <div className="p-8 bg-white rounded-[2rem] border border-slate-200/60 group cursor-pointer hover:shadow-2xl hover:border-primary/20 transition-all duration-700 relative overflow-hidden">
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/5 rounded-full group-hover:scale-150 transition-transform"></div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/20">
+                  <Trophy size={20} />
                 </div>
-                <Sparkles size={14} className="text-primary animate-pulse" />
+                <Sparkles size={18} className="text-accent animate-pulse" />
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Global Rank</span>
-                <p className="text-xl font-black text-slate-900">{profile.xp} <span className="text-xs text-slate-400 uppercase">XP</span></p>
+                <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Global Influence</span>
+                <p className="text-3xl font-black text-slate-900 tabular-nums">{profile.xp} <span className="text-xs text-slate-400 uppercase font-black ml-1">XP</span></p>
               </div>
             </div>
           )}
 
-          <div className="flex items-center gap-4 p-2">
-            <Avatar className="h-12 w-12 border-2 border-white shadow-xl group cursor-pointer hover:scale-110 transition-transform duration-500">
-              <AvatarImage src={profile?.photoURL} />
-              <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-black text-lg">
+          <div className="flex items-center gap-5 p-3 group">
+            <Avatar className="h-14 w-14 border-[3px] border-white shadow-2xl shadow-black/10 cursor-pointer hover:scale-110 transition-transform duration-500">
+              <AvatarImage src={profile?.photoURL} className="object-cover" />
+              <AvatarFallback className="bg-gradient-to-br from-primary via-primary to-accent text-white font-black text-xl">
                 {profile?.displayName?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0">
-              <p className="text-sm font-black text-slate-900 truncate tracking-tight">{profile?.displayName}</p>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{profile?.role}</p>
+              <p className="text-base font-black text-slate-900 truncate tracking-tight">{profile?.displayName}</p>
+              <div className="flex items-center gap-2.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/40 animate-pulse"></div>
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.25em]">{profile?.role}</p>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between font-black border-slate-200 rounded-2xl h-12 shadow-sm hover:bg-slate-50 transition-all">
-                  <div className="flex items-center gap-3">
-                    <Languages size={18} className="text-slate-400" />
-                    <span>{language === 'ar' ? 'العربية' : 'Français'}</span>
+                <Button variant="outline" className="w-full justify-between font-black border-slate-200 rounded-3xl h-14 shadow-sm hover:bg-white hover:border-primary transition-all px-6">
+                  <div className="flex items-center gap-4">
+                    <Languages size={20} className="text-slate-400" />
+                    <span className="text-sm">{language === 'ar' ? 'العربية' : 'Français'}</span>
                   </div>
-                  <ChevronRight size={14} className="rotate-90 text-slate-400" />
+                  <ChevronRight size={16} className="rotate-90 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-[260px] rounded-2xl p-2 shadow-2xl border-none">
-                <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("rounded-xl py-3 px-4 font-black cursor-pointer", language === 'ar' && "bg-primary/5 text-primary")}>
+              <DropdownMenuContent align="center" className="w-[300px] rounded-[2rem] p-4 shadow-3xl border-none animate-in zoom-in-95 duration-300">
+                <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'ar' ? "bg-primary text-white" : "hover:bg-primary/5 hover:text-primary")}>
                   العربية (Arabic)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("rounded-xl py-3 px-4 font-black cursor-pointer", language === 'fr' && "bg-primary/5 text-primary")}>
+                <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'fr' ? "bg-primary text-white" : "hover:bg-primary/5 hover:text-primary")}>
                   Français (French)
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -143,10 +145,10 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
 
             <Button 
               variant="ghost" 
-              className="w-full justify-start text-destructive hover:text-white hover:bg-destructive rounded-2xl font-black h-12 transition-all group"
+              className="w-full justify-start text-destructive hover:text-white hover:bg-destructive rounded-3xl font-black h-14 transition-all group px-6"
               onClick={() => logout()}
             >
-              <LogOut size={18} className="mr-3 rtl:ml-3 rtl:mr-0 group-hover:translate-x-1 transition-transform" />
+              <LogOut size={20} className="mr-4 rtl:ml-4 rtl:mr-0 group-hover:translate-x-1 transition-transform" />
               {t.signOut}
             </Button>
           </div>
@@ -156,26 +158,26 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Modern Background Accents */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -z-10 translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 blur-[100px] rounded-full -z-10 -translate-x-1/4 translate-y-1/4"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full -z-10 translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-accent/5 blur-[130px] rounded-full -z-10 -translate-x-1/4 translate-y-1/4"></div>
 
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-6 border-b bg-white shadow-md z-50">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary p-2 rounded-xl text-white">
-              <GraduationCap size={24} />
+        <header className="md:hidden flex items-center justify-between p-8 border-b bg-white shadow-xl z-50">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary p-2.5 rounded-xl text-white shadow-lg shadow-primary/20">
+              <Command size={28} />
             </div>
-            <span className="text-xl font-black font-headline text-slate-900 tracking-tighter">MBN</span>
+            <span className="text-2xl font-black font-headline text-slate-900 tracking-tighter">MBN</span>
           </div>
-          <div className="flex items-center gap-3">
-             <Avatar className="h-10 w-10 border-2 border-slate-100" onClick={() => logout()}>
+          <div className="flex items-center gap-4">
+             <Avatar className="h-12 w-12 border-2 border-slate-100" onClick={() => logout()}>
               <AvatarImage src={profile?.photoURL} />
-              <AvatarFallback className="font-bold">U</AvatarFallback>
+              <AvatarFallback className="font-black">U</AvatarFallback>
             </Avatar>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8 md:p-16 scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-10 md:p-24 scroll-smooth">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

@@ -40,64 +40,64 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col selection:bg-primary/20">
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
-        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full"></div>
-        <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] bg-primary/5 blur-[150px] rounded-full"></div>
+        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] bg-primary/10 blur-[150px] rounded-full animate-pulse"></div>
+        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-accent/10 blur-[120px] rounded-full animate-float"></div>
+        <div className="absolute -bottom-[10%] left-[20%] w-[70%] h-[70%] bg-primary/5 blur-[200px] rounded-full"></div>
       </div>
 
-      <nav className="p-6 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary p-2 rounded-xl text-white shadow-lg shadow-primary/20">
-            <GraduationCap size={24} />
+      <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/30 group hover:rotate-6 transition-transform">
+            <GraduationCap size={28} />
           </div>
-          <span className="text-xl font-black font-headline tracking-tighter">MBN COUNCIL</span>
+          <span className="text-2xl font-black font-headline tracking-tighter text-slate-900">MBN COUNCIL</span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="gap-2 rounded-full px-4 hover:bg-white/50 backdrop-blur-sm">
-              <Languages size={16} />
+            <Button variant="ghost" size="sm" className="gap-2 rounded-full px-5 py-6 h-auto hover:bg-white/80 backdrop-blur-md shadow-sm border border-slate-100 transition-all font-bold">
+              <Languages size={18} />
               {t.language === 'ar' ? 'العربية' : 'Français'}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="rounded-2xl shadow-2xl border-none p-2">
-            <DropdownMenuItem className="rounded-xl px-4 py-2 font-bold cursor-pointer" onClick={() => setLanguage('ar')}>العربية</DropdownMenuItem>
-            <DropdownMenuItem className="rounded-xl px-4 py-2 font-bold cursor-pointer" onClick={() => setLanguage('fr')}>Français</DropdownMenuItem>
+          <DropdownMenuContent align="end" className="rounded-[1.5rem] shadow-2xl border-none p-3 min-w-[160px]">
+            <DropdownMenuItem className="rounded-xl px-5 py-3 font-bold cursor-pointer hover:bg-primary/5 hover:text-primary transition-colors" onClick={() => setLanguage('ar')}>العربية</DropdownMenuItem>
+            <DropdownMenuItem className="rounded-xl px-5 py-3 font-bold cursor-pointer hover:bg-primary/5 hover:text-primary transition-colors" onClick={() => setLanguage('fr')}>Français</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </nav>
 
       {/* Hero Section */}
-      <section className="flex-1 flex flex-col items-center justify-center px-4 py-20 text-center">
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <Badge variant="secondary" className="mb-6 rounded-full px-4 py-1.5 bg-primary/10 text-primary border-primary/20 font-black tracking-wider uppercase text-[10px]">
-            <Sparkles size={12} className="mr-2 inline-block" />
-            Empowering Student Voice
+      <section className="flex-1 flex flex-col items-center justify-center px-4 py-32 text-center relative overflow-hidden">
+        <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <Badge variant="secondary" className="mb-8 rounded-full px-6 py-2 bg-primary/10 text-primary border-primary/20 font-black tracking-[0.2em] uppercase text-[11px] shadow-sm">
+            <Sparkles size={14} className="mr-2 inline-block text-accent" />
+            Leading with Purpose
           </Badge>
-          <h1 className="text-6xl md:text-8xl font-black font-headline text-slate-900 mb-8 tracking-tight max-w-4xl leading-[0.95]">
+          <h1 className="text-6xl md:text-9xl font-black font-headline text-slate-900 mb-10 tracking-tight leading-[0.85] text-balance">
             {t.title} <span className="text-primary">.</span>
           </h1>
-          <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mb-12 leading-relaxed font-medium">
+          <p className="text-xl md:text-3xl text-slate-500 max-w-3xl mb-16 leading-relaxed font-medium mx-auto px-4">
             {t.description}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-6 w-full max-w-xl mx-auto items-center justify-center">
             <Button 
               size="lg" 
-              className="h-16 px-8 text-lg font-black gap-3 rounded-2xl shadow-2xl shadow-primary/20 hover:scale-[1.02] transition-all"
+              className="h-20 px-12 text-xl font-black gap-4 rounded-[2rem] shadow-2xl shadow-primary/40 hover:scale-[1.05] hover:shadow-primary/50 transition-all w-full sm:w-auto"
               onClick={signInWithGoogle}
             >
-              <ShieldCheck size={24} />
+              <ShieldCheck size={28} />
               {t.loginWithGoogle}
             </Button>
             <Button 
               variant="outline" 
               size="lg" 
-              className="h-16 px-8 text-lg font-black rounded-2xl border-2 hover:bg-slate-50 transition-all"
+              className="h-20 px-12 text-xl font-black rounded-[2rem] border-2 border-slate-200 hover:bg-white hover:border-primary transition-all backdrop-blur-sm w-full sm:w-auto"
               asChild
             >
-              <Link href="#features" className="gap-2">
+              <Link href="#features" className="gap-3">
                 {t.learnMore}
-                <ArrowRight size={20} />
+                <ArrowRight size={24} />
               </Link>
             </Button>
           </div>
@@ -105,44 +105,39 @@ export default function LandingPage() {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-32 px-4 relative">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-2xl shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500 group">
-            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-8 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-              <Megaphone size={32} />
+      <section id="features" className="py-40 px-6 relative bg-slate-50/50 backdrop-blur-3xl border-y border-slate-100">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+          {[
+            { icon: Megaphone, title: t.smartBoard, desc: t.checkLatest, color: 'primary' },
+            { icon: Users, title: t.roleManagement, desc: t.activeRoles, color: 'accent' },
+            { icon: ShieldCheck, title: t.xpRewards, desc: t.studentGamification, extra: t.xpIncentive, color: 'emerald' }
+          ].map((feature, i) => (
+            <div key={i} className="p-12 rounded-[3rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 hover:translate-y-[-12px] transition-all duration-500 group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/5 transition-colors"></div>
+              <div className={`w-20 h-20 bg-${feature.color}/10 rounded-3xl flex items-center justify-center text-${feature.color} mb-10 group-hover:scale-110 group-hover:bg-${feature.color} group-hover:text-white transition-all duration-700 shadow-lg shadow-black/5`}>
+                <feature.icon size={40} />
+              </div>
+              <h3 className="text-3xl font-black mb-6 font-headline text-slate-900 leading-tight">{feature.title}</h3>
+              <p className="text-slate-500 font-medium text-lg leading-relaxed mb-6">{feature.desc}</p>
+              {feature.extra && (
+                <p className="text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-50 p-4 rounded-2xl border border-slate-100">{feature.extra}</p>
+              )}
             </div>
-            <h3 className="text-2xl font-black mb-4 font-headline text-slate-900">{t.smartBoard}</h3>
-            <p className="text-slate-500 font-medium leading-relaxed">{t.checkLatest}</p>
-          </div>
-          
-          <div className="p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-2xl shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500 group">
-            <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center text-accent mb-8 group-hover:scale-110 group-hover:bg-accent group-hover:text-white transition-all duration-500">
-              <Users size={32} />
-            </div>
-            <h3 className="text-2xl font-black mb-4 font-headline text-slate-900">{t.roleManagement}</h3>
-            <p className="text-slate-500 font-medium leading-relaxed">{t.activeRoles}</p>
-          </div>
-          
-          <div className="p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-2xl shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500 group">
-            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-8 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
-              <ShieldCheck size={32} />
-            </div>
-            <h3 className="text-2xl font-black mb-4 font-headline text-slate-900">{t.xpRewards}</h3>
-            <p className="text-slate-500 font-medium leading-relaxed mb-4">{t.studentGamification}</p>
-            <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">{t.xpIncentive}</p>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-16 border-t border-slate-100 text-center">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="text-primary" />
-            <span className="font-black text-slate-900">MBN SCHOOL</span>
+      <footer className="py-24 px-8 text-center bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary p-2 rounded-xl text-white">
+              <GraduationCap size={24} />
+            </div>
+            <span className="font-black text-2xl text-slate-900 tracking-tighter">MBN SCHOOL</span>
           </div>
-          <p className="text-slate-400 font-medium">&copy; {new Date().getFullYear()} MBN School. Designed for excellence.</p>
-          <div className="flex gap-6 text-sm font-bold text-slate-500">
+          <p className="text-slate-400 font-bold text-lg">&copy; {new Date().getFullYear()} MBN School. Elevating every voice.</p>
+          <div className="flex gap-10 text-sm font-black text-slate-500 uppercase tracking-widest">
             <a href="#" className="hover:text-primary transition-colors">Privacy</a>
             <a href="#" className="hover:text-primary transition-colors">Terms</a>
             <a href="#" className="hover:text-primary transition-colors">Support</a>
