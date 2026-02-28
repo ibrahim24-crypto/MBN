@@ -14,7 +14,6 @@ import {
   History,
   Menu,
   PanelLeftClose,
-  PanelLeftOpen,
   MoreVertical
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -57,47 +56,47 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-slate-950 selection:bg-primary/20">
       {/* Sidebar */}
       <aside className={cn(
-        "hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl shadow-slate-200/40 dark:shadow-none relative z-50 transition-all duration-500 ease-in-out",
-        isCollapsed ? "w-24" : "w-96"
+        "hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 transition-all duration-500 ease-in-out",
+        isCollapsed ? "w-20" : "w-80"
       )}>
-        <div className={cn("p-8 flex flex-col items-center gap-8", !isCollapsed && "items-start px-12 pt-12")}>
-          <div className="flex items-center gap-5 group w-full">
+        <div className={cn("p-6 flex flex-col items-center gap-6", !isCollapsed && "items-start px-8 pt-10")}>
+          <div className="flex items-center gap-4 group w-full">
             <Button 
               variant="ghost" 
               size="icon"
-              className="bg-primary hover:bg-primary/90 p-4 h-16 w-16 rounded-[1.75rem] text-white shadow-3xl shadow-primary/40 group-hover:rotate-12 transition-all duration-500 shrink-0"
+              className="bg-primary hover:bg-primary/90 p-3 h-12 w-12 rounded-2xl text-white shadow-xl shadow-primary/30 group-hover:rotate-6 transition-all duration-500 shrink-0"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >
-              {isCollapsed ? <Menu size={32} /> : <PanelLeftClose size={32} />}
+              {isCollapsed ? <Menu size={24} /> : <PanelLeftClose size={24} />}
             </Button>
             {!isCollapsed && (
-              <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500">
-                <span className="text-2xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate max-w-[180px]">Moussa Ibn Nousayr</span>
-                <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 font-black mt-2">Executive Hub</span>
+              <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500 overflow-hidden">
+                <span className="text-xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate">MBN Council</span>
+                <span className="text-[9px] uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 font-black mt-1.5">Executive Hub</span>
               </div>
             )}
           </div>
         </div>
         
-        <nav className={cn("flex-1 px-4 space-y-3 mt-8", !isCollapsed && "px-8")}>
+        <nav className={cn("flex-1 px-3 space-y-2 mt-6", !isCollapsed && "px-6")}>
           {filteredNav.map((item) => {
             const isActive = pathname === item.href;
             return (
               <NextLink key={item.href} href={item.href}>
                 <span className={cn(
-                  "flex items-center px-4 py-5 rounded-[1.5rem] text-base font-black transition-all group relative overflow-hidden",
+                  "flex items-center px-4 py-4 rounded-2xl text-sm font-black transition-all group relative overflow-hidden",
                   isActive 
-                    ? "bg-slate-900 dark:bg-primary text-white shadow-3xl shadow-slate-900/30 dark:shadow-primary/20" 
+                    ? "bg-slate-900 dark:bg-primary text-white shadow-lg shadow-slate-900/20 dark:shadow-primary/20" 
                     : "text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50",
-                  isCollapsed ? "justify-center" : "justify-between translate-x-1"
+                  isCollapsed ? "justify-center" : "justify-between"
                 )}>
-                  <div className="flex items-center gap-5 relative z-10">
-                    <item.icon size={24} className={cn(isActive ? "text-primary dark:text-white" : "text-slate-300 dark:text-slate-700 group-hover:text-primary transition-colors")} />
-                    {!isCollapsed && <span className="animate-in fade-in slide-in-from-left-2 duration-300">{item.name}</span>}
+                  <div className="flex items-center gap-4 relative z-10">
+                    <item.icon size={20} className={cn(isActive ? "text-primary dark:text-white" : "text-slate-300 dark:text-slate-700 group-hover:text-primary transition-colors")} />
+                    {!isCollapsed && <span className="animate-in fade-in slide-in-from-left-2 duration-300 whitespace-nowrap">{item.name}</span>}
                   </div>
                   {!isCollapsed && isActive && (
                     <div className="relative z-10 animate-in fade-in slide-in-from-left-2 duration-500">
-                      <ChevronRight size={18} className="text-primary dark:text-white" />
+                      <ChevronRight size={14} className="text-primary dark:text-white" />
                     </div>
                   )}
                 </span>
@@ -107,26 +106,24 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         </nav>
 
         <div className={cn(
-          "p-6 mt-auto space-y-8 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 transition-all",
-          !isCollapsed && "p-10"
+          "p-4 mt-auto space-y-6 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 transition-all",
+          !isCollapsed && "p-8"
         )}>
           {!isCollapsed ? (
-            <div className="flex items-center justify-between gap-4 animate-in fade-in duration-500">
-               <div className="flex items-center gap-5 group">
-                  <Avatar className="h-14 w-14 border-[3px] border-white dark:border-slate-800 shadow-2xl shadow-black/10 cursor-pointer hover:scale-110 transition-transform duration-500">
+            <div className="flex items-center justify-between gap-3 animate-in fade-in duration-500">
+               <div className="flex items-center gap-3 group min-w-0">
+                  <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-lg cursor-pointer hover:scale-110 transition-transform duration-500 shrink-0">
                     <AvatarImage src={profile?.photoURL} className="object-cover" />
-                    <AvatarFallback className="bg-gradient-to-br from-primary via-primary to-accent text-white font-black text-xl">
+                    <AvatarFallback className="bg-gradient-to-br from-primary via-primary to-accent text-white font-black text-lg">
                       {profile?.displayName?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col min-w-0">
-                    <p className="text-base font-black text-slate-900 dark:text-white truncate tracking-tight">{profile?.displayName}</p>
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/40 animate-pulse"></div>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em]">{profile?.role}</p>
-                      <Separator orientation="vertical" className="h-3 mx-1 bg-slate-200 dark:bg-slate-700" />
+                  <div className="flex flex-col min-w-0 overflow-hidden">
+                    <p className="text-sm font-black text-slate-900 dark:text-white truncate tracking-tight">{profile?.displayName}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em] truncate">{profile?.role}</p>
                       <span className={cn(
-                        "text-[10px] font-black flex items-center gap-0.5",
+                        "text-[9px] font-black",
                         (profile?.xp ?? 0) < 0 ? "text-destructive" : "text-primary"
                       )}>
                         {profile?.xp} XP
@@ -137,32 +134,32 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 <ThemeToggle />
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-6 animate-in fade-in duration-500">
-              <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-xl">
+            <div className="flex flex-col items-center gap-4 animate-in fade-in duration-500">
+              <Avatar className="h-10 w-10 border-2 border-white dark:border-slate-800 shadow-md">
                 <AvatarImage src={profile?.photoURL} />
-                <AvatarFallback>{profile?.displayName?.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="text-xs">{profile?.displayName?.charAt(0)}</AvatarFallback>
               </Avatar>
               <ThemeToggle />
             </div>
           )}
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             {!isCollapsed && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between font-black border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl h-14 shadow-sm hover:bg-white dark:hover:bg-slate-800 hover:border-primary transition-all px-6">
-                    <div className="flex items-center gap-4">
-                      <Languages size={20} className="text-slate-400" />
-                      <span className="text-sm dark:text-white">{language === 'ar' ? 'العربية' : 'Français'}</span>
+                  <Button variant="outline" className="w-full justify-between font-black border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl h-12 shadow-sm hover:border-primary transition-all px-4">
+                    <div className="flex items-center gap-3">
+                      <Languages size={16} className="text-slate-400" />
+                      <span className="text-xs dark:text-white">{language === 'ar' ? 'العربية' : 'Français'}</span>
                     </div>
-                    <ChevronRight size={16} className="rotate-90 text-slate-400" />
+                    <ChevronRight size={14} className="rotate-90 text-slate-400" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="w-[300px] rounded-[2rem] p-4 shadow-3xl border-none bg-white dark:bg-slate-900 animate-in zoom-in-95 duration-300">
-                  <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'ar' ? "bg-primary text-white" : "hover:bg-primary/5 dark:hover:bg-slate-800 hover:text-primary dark:text-slate-300")}>
+                <DropdownMenuContent align="center" className="w-[240px] rounded-2xl p-2 shadow-xl border-none bg-white dark:bg-slate-900 animate-in zoom-in-95 duration-300">
+                  <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("rounded-xl py-3 px-4 font-black cursor-pointer transition-colors", language === 'ar' ? "bg-primary text-white" : "hover:bg-primary/5 dark:hover:bg-slate-800 hover:text-primary dark:text-slate-300")}>
                     العربية (Arabic)
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'fr' ? "bg-primary text-white" : "hover:bg-primary/5 dark:hover:bg-slate-800 hover:text-primary dark:text-slate-300")}>
+                  <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("rounded-xl py-3 px-4 font-black cursor-pointer transition-colors", language === 'fr' ? "bg-primary text-white" : "hover:bg-primary/5 dark:hover:bg-slate-800 hover:text-primary dark:text-slate-300")}>
                     Français (French)
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -172,12 +169,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             <Button 
               variant="ghost" 
               className={cn(
-                "w-full text-destructive hover:text-white hover:bg-destructive rounded-3xl font-black h-14 transition-all group px-6",
+                "w-full text-destructive hover:text-white hover:bg-destructive rounded-2xl font-black h-12 transition-all group px-4",
                 isCollapsed ? "justify-center p-0" : "justify-start"
               )}
               onClick={() => logout()}
             >
-              <LogOut size={20} className={cn(!isCollapsed && "mr-4 rtl:ml-4 rtl:mr-0 group-hover:translate-x-1 transition-transform")} />
+              <LogOut size={18} className={cn(!isCollapsed && "mr-3 rtl:ml-3 rtl:mr-0 group-hover:translate-x-1 transition-transform")} />
               {!isCollapsed && t.signOut}
             </Button>
           </div>
@@ -187,33 +184,33 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Modern Background Accents */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full -z-10 translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-accent/5 blur-[130px] rounded-full -z-10 -translate-x-1/4 translate-y-1/4"></div>
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -z-10 translate-x-1/3 -translate-y-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 blur-[100px] rounded-full -z-10 -translate-x-1/4 translate-y-1/4"></div>
 
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-8 border-b dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl z-50">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="text-primary">
-              <Menu size={28} />
+        <header className="md:hidden flex items-center justify-between p-6 border-b dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md z-50">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="text-primary h-10 w-10">
+              <Menu size={24} />
             </Button>
             <div className="flex flex-col">
-              <span className="text-xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN</span>
-              <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-lg font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN Council</span>
+              <div className="flex items-center gap-1.5 mt-1">
                 <Zap size={10} className="text-primary fill-primary" />
                 <span className="text-[10px] font-black text-primary">{profile?.xp} XP</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
              <ThemeToggle />
-             <Avatar className="h-12 w-12 border-2 border-slate-100 dark:border-slate-800" onClick={() => logout()}>
+             <Avatar className="h-10 w-10 border-2 border-slate-100 dark:border-slate-800" onClick={() => logout()}>
               <AvatarImage src={profile?.photoURL} />
-              <AvatarFallback className="font-black">U</AvatarFallback>
+              <AvatarFallback className="font-black text-xs">U</AvatarFallback>
             </Avatar>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-10 md:p-24 scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-6 md:p-12 lg:p-20 scroll-smooth">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
