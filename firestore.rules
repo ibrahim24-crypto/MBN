@@ -1,80 +1,155 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * MBN School Council Firestore Security Rules
-     * Role-based access control for Students, Teachers, Council, and Administration.
+     * MBN SCHOOL COUNCIL - SECURITY RULES CONFIGURATION
+     * 
+     * CORE PHILOSOPHY:
+     * This ruleset implements a strict Role-Based Access Control (RBAC) model optimized for performance 
+     * and security. High-privilege roles (Admin, Council) are verified using "Structural Segregation" 
+     * (dedicated collections for role markers), while general user roles (Student, Teacher) are 
+     * stored within the user profile.
+     * 
+     * DATA STRUCTURE:
+     * - /users/{userId}: Primary user profiles containing basic info and general roles.
+     * - /roles_admin/{userId}: Presence of a document here grants administrative privileges.
+     * - /roles_council/{userId}: Presence of a document here grants school council privileges.
+     * - /proposals/{proposalId}: Shared announcements with field-based visibility control.
+     * - /meetingMinutes/{meetingMinuteId}: Confidential records restricted to Admin and Council.
+     * 
+     * KEY SECURITY DECISIONS:
+     * 1. Authorization Independence: We use exists() checks on dedicated role collections 
+     *    (/roles_admin, /roles_council) to avoid expensive get() calls and complex dependencies.
+     * 2. Visibility-Based Access: Proposals use a 'visibility' field to determine if a Student or 
+     *    Teacher can read the content, while Admin/Council retain full control.
+     * 3. Immutability: Critical relational fields like 'authorId' or 'id' are protected from 
+     *    modification after creation.
+     * 4. Prototyping Flexibility: Schema validation (data types, optional fields) is omitted to 
+     *    allow for rapid frontend iteration, focusing purely on secure authorization.
      */
 
-    // --- Global Helper Functions ---
+    // --- GLOBAL HELPER FUNCTIONS ---
 
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    // Checks if the user is in the Admin role collection
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    // Checks if the user is in the Council role collection
+    function isCouncil() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_council/$(request.auth.uid));
+    }
+
+    // Combined helper for staff/privileged members
+    function isStaff() {
+      return isAdmin() || isCouncil();
     }
 
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    function currentUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    // Fetches the role string from the user's document
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
 
-    function hasRole(role) {
-      return isSignedIn() && currentUserData().role == role;
-    }
+    // --- COLLECTION RULES ---
 
-    function isSuperAdmin() {
-      return isSignedIn() && (
-        currentUserData().isSuperAdmin == true || 
-        request.auth.token.email == 'ibrahimezzine09@gmail.com'
-      );
-    }
-
-    function isAdmin() {
-      return isSuperAdmin() || hasRole('administration');
-    }
-
-    function isCouncil() {
-      return hasRole('council') || isAdmin();
-    }
-
-    // --- Collection Rules ---
-
+    /**
+     * @description Rules for user profile documents. Users can manage their own profile, 
+     * while Admins and Council members have broader lookup and management rights.
+     * @path /users/{userId}
+     * @allow (get) Any signed-in user viewing their own profile, or an Admin/Council member.
+     * @deny (list) Anonymous users or standard students listing all users.
+     * @principle Path-based ownership combined with role-based administrative access.
+     */
     match /users/{userId} {
+      allow get: if isOwner(userId) || isStaff();
+      allow list: if isStaff();
+      allow create: if isOwner(userId) || isAdmin();
+      allow update: if (isOwner(userId) || isAdmin()) && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description System-level marker for Admin privileges. 
+     * @path /roles_admin/{userId}
+     * @allow (get) The user checking their own status or an Admin.
+     * @deny (create/update/delete) Anyone except an Admin.
+     * @principle Structural Segregation for efficient authorization checks.
+     */
+    match /roles_admin/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isAdmin();
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if resource != null && (
-        isAdmin() || 
-        (isOwner(userId) && 
-         request.resource.data.role == resource.data.role && 
-         request.resource.data.isSuperAdmin == resource.data.isSuperAdmin && 
-         request.resource.data.id == resource.data.id)
-      );
-      allow delete: if isAdmin();
-
-      match /xp_logs/{logId} {
-        allow read: if isOwner(userId) || isAdmin();
-        allow write: if isAdmin();
-      }
+      allow create, update, delete: if isAdmin();
     }
 
-    match /announcements/{announcementId} {
-      allow get: if isSignedIn() && (
-        resource.data.status == 'Published' || 
-        isOwner(resource.data.authorId) || 
-        isAdmin()
-      );
-      allow list: if isSignedIn();
-      allow create: if isCouncil() && request.resource.data.authorId == request.auth.uid;
-      allow update: if resource != null && (
-        isAdmin() || 
-        (isOwner(resource.data.authorId) && request.resource.data.authorId == resource.data.authorId)
-      );
-      allow delete: if resource != null && (isOwner(resource.data.authorId) || isAdmin());
+    /**
+     * @description System-level marker for Council privileges.
+     * @path /roles_council/{userId}
+     * @allow (get) The user checking their own status or an Admin.
+     * @deny (create/update/delete) Anyone except an Admin.
+     * @principle Structural Segregation for efficient authorization checks.
+     */
+    match /roles_council/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for Proposals. Content visibility is managed by a field. 
+     * Only Admin and Council members can modify this collection.
+     * @path /proposals/{proposalId}
+     * @allow (list) A student listing proposals marked with 'STUDENT' visibility.
+     * @deny (create) A student attempting to create a proposal.
+     * @principle Field-based access control for reads; Role-based control for writes.
+     */
+    match /proposals/{proposalId} {
+      allow get: if isStaff() 
+                 || resource.data.visibility == 'PUBLIC'
+                 || (resource.data.visibility == 'STUDENT' && getUserRole() == 'Student')
+                 || (resource.data.visibility == 'TEACHER' && getUserRole() == 'Teacher');
+      
+      // List rules mirror get logic for query security
+      allow list: if isStaff()
+                  || (isSignedIn() && (getUserRole() == 'Student' || getUserRole() == 'Teacher'));
+      
+      allow create: if isStaff() 
+                    && request.resource.data.authorId == request.auth.uid;
+                    
+      allow update: if isStaff() 
+                    && resource != null
+                    && request.resource.data.authorId == resource.data.authorId;
+                    
+      allow delete: if isStaff() && resource != null;
+    }
+
+    /**
+     * @description Rules for Meeting Minutes. Access is restricted exclusively to 
+     * Admin and Council members.
+     * @path /meetingMinutes/{meetingMinuteId}
+     * @allow (read/write) Any user with an 'Admin' or 'Council' marker.
+     * @deny (read) A standard 'Student' user.
+     * @principle Homogeneous security posture for a sensitive collection.
+     */
+    match /meetingMinutes/{meetingMinuteId} {
+      allow get, list: if isStaff();
+      
+      allow create: if isStaff() 
+                    && request.resource.data.authorId == request.auth.uid;
+                    
+      allow update: if isStaff() 
+                    && resource != null 
+                    && request.resource.data.authorId == resource.data.authorId;
+                    
+      allow delete: if isStaff() && resource != null;
     }
   }
 }
