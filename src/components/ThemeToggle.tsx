@@ -13,6 +13,8 @@ export function ThemeToggle() {
     setTheme(initialTheme);
     if (initialTheme === 'dark') {
       document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
@@ -32,7 +34,7 @@ export function ThemeToggle() {
       variant="outline"
       size="icon"
       onClick={toggleTheme}
-      className="rounded-full w-12 h-12 border-slate-200 dark:border-slate-800 transition-all hover:scale-110"
+      className="rounded-xl w-12 h-12 border-slate-200 dark:border-slate-800 transition-all hover:scale-105"
     >
       {theme === 'light' ? (
         <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

@@ -6,7 +6,6 @@ import {
   Megaphone, 
   Users, 
   ShieldCheck, 
-  UserCircle,
   History
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -43,7 +42,6 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     { name: t.xpHistory, href: '/xp-log', icon: History, roles: ['student', 'council'] },
     { name: t.councilBoard, href: '/council', icon: ShieldCheck, roles: ['council', 'administration'] },
     { name: t.adminPanel, href: '/admin', icon: Users, roles: ['administration'] },
-    { name: t.profile, href: '/profile', icon: UserCircle, roles: ['student', 'teacher', 'council', 'administration'] },
   ];
 
   const filteredNav = navItems.filter(item => {
@@ -55,8 +53,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     return (
       <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-6">
-          <div className="w-24 h-24 relative animate-pulse">
-            <Image src={logoSrc} fill alt="Loading Logo" className="object-contain" unoptimized />
+          <div className="w-24 h-24 relative rounded-2xl overflow-hidden shadow-2xl animate-pulse bg-white p-2">
+            <Image src={logoSrc} fill alt="Loading Logo" className="object-contain p-2" unoptimized />
           </div>
           <p className="text-slate-400 font-black uppercase tracking-[0.3em] animate-pulse">Syncing Session...</p>
         </div>
@@ -72,12 +70,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             {/* Logo Button - Top of Menu */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <NextLink href="/dashboard" className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-2xl border-none group hover:rotate-6 transition-all shrink-0 active:scale-95">
+                <NextLink href="/dashboard" className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-2xl border-none group hover:rotate-6 transition-all shrink-0 active:scale-95 bg-white p-2">
                   <Image 
                     src={logoSrc} 
                     fill 
                     alt="MBN Logo" 
-                    className="object-cover" 
+                    className="object-contain p-2" 
                     unoptimized
                   />
                 </NextLink>
@@ -113,12 +111,19 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             </nav>
 
             <div className="px-4 pb-4 mt-auto">
-              <NextLink href="/profile">
-                <Avatar className="h-16 w-16 border-4 border-white dark:border-slate-800 shadow-2xl cursor-pointer hover:scale-110 transition-all overflow-hidden rounded-2xl">
-                  <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
-                  <AvatarFallback className="bg-primary text-white font-black">{profile?.displayName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </NextLink>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <NextLink href="/profile">
+                    <Avatar className="h-16 w-16 border-4 border-white dark:border-slate-800 shadow-2xl cursor-pointer hover:scale-110 transition-all overflow-hidden rounded-2xl">
+                      <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
+                      <AvatarFallback className="bg-primary text-white font-black">{profile?.displayName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  </NextLink>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="font-black text-xs px-5 py-3 rounded-xl border-none shadow-2xl bg-slate-900 text-white translate-x-4">
+                  {t.profile}
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </aside>
@@ -129,8 +134,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full -z-10"></div>
         
         <header className="md:hidden flex items-center justify-between p-6 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
-          <div className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg">
-            <Image src={logoSrc} fill alt="MBN Logo" className="object-cover" unoptimized />
+          <div className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg bg-white p-1">
+            <Image src={logoSrc} fill alt="MBN Logo" className="object-contain p-1" unoptimized />
           </div>
           <div className="flex items-center gap-4">
              <Avatar className="h-12 w-12 border-2 border-slate-100 shadow-sm rounded-xl" onClick={() => router.push('/profile')}>

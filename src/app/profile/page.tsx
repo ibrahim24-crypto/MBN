@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -12,22 +11,13 @@ import { useLanguage } from '@/context/LanguageContext';
 import { 
   Trophy, 
   Mail, 
-  ShieldAlert,
-  Award,
   CheckCircle2,
   Zap,
-  Languages,
   User,
   ShieldCheck,
   LogOut,
   Settings
 } from 'lucide-react';
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { 
   Select,
   SelectContent,
@@ -124,7 +114,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Settings Card - Merged Theme and Language and Logout */}
+        {/* Settings Card */}
         <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden w-full max-w-3xl adaptive-card mx-auto p-4 animate-in fade-in slide-in-from-bottom-12 delay-300">
           <CardHeader className="p-8 pb-6">
             <div className="flex items-center gap-4">
@@ -132,7 +122,7 @@ export default function ProfilePage() {
                 <Settings size={32} />
               </div>
               <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                Hub Settings
+                {t.languageSetting}
               </CardTitle>
             </div>
           </CardHeader>
@@ -173,7 +163,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* XP Dashboard Card - Only for roles that use XP */}
+        {/* XP Dashboard Card */}
         {hasXP && (
           <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl overflow-hidden relative group p-10 md:p-14 transition-all duration-700 w-full max-w-3xl adaptive-card mx-auto animate-in fade-in slide-in-from-bottom-12 delay-150">
             <div className="absolute -top-20 -right-20 p-24 opacity-[0.03] group-hover:scale-110 transition-transform duration-1000">
