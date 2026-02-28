@@ -18,7 +18,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react';
-import Link from 'next/link';
+import Link from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Separator } from '@/components/ui/separator';
+import NextLink from 'next/link';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -62,10 +63,15 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         isCollapsed ? "w-24" : "w-96"
       )}>
         <div className={cn("p-8 flex flex-col items-center gap-8", !isCollapsed && "items-start px-12 pt-12")}>
-          <div className="flex items-center gap-5 group cursor-pointer w-full">
-            <div className="bg-primary p-4 rounded-[1.75rem] text-white shadow-3xl shadow-primary/40 group-hover:rotate-12 transition-all duration-500 shrink-0">
-              <Command size={36} />
-            </div>
+          <div className="flex items-center gap-5 group w-full">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="bg-primary hover:bg-primary/90 p-4 h-16 w-16 rounded-[1.75rem] text-white shadow-3xl shadow-primary/40 group-hover:rotate-12 transition-all duration-500 shrink-0"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            >
+              <Menu size={32} />
+            </Button>
             {!isCollapsed && (
               <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500">
                 <span className="text-2xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate max-w-[180px]">Moussa Ibn Nousayr</span>
@@ -73,22 +79,13 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               </div>
             )}
           </div>
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute -right-4 top-10 h-8 w-8 rounded-full border bg-white dark:bg-slate-800 shadow-md z-50"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-          >
-            {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-          </Button>
         </div>
         
         <nav className={cn("flex-1 px-4 space-y-3 mt-8", !isCollapsed && "px-8")}>
           {filteredNav.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link key={item.href} href={item.href}>
+              <NextLink key={item.href} href={item.href}>
                 <span className={cn(
                   "flex items-center px-4 py-5 rounded-[1.5rem] text-base font-black transition-all group relative overflow-hidden",
                   isActive 
@@ -106,7 +103,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                     </div>
                   )}
                 </span>
-              </Link>
+              </NextLink>
             );
           })}
         </nav>
@@ -199,7 +196,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         <header className="md:hidden flex items-center justify-between p-8 border-b dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl z-50">
           <div className="flex items-center gap-4">
             <div className="bg-primary p-2.5 rounded-xl text-white shadow-lg shadow-primary/20">
-              <Command size={28} />
+              <Menu size={28} />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN</span>
