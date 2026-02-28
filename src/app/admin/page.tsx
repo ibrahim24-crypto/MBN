@@ -25,7 +25,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, User } from 'lucide-react';
+import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, User, UserCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -34,7 +34,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
 import { updateDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface UserData {
   id: string;
@@ -42,6 +43,7 @@ interface UserData {
   email: string;
   role: UserRole;
   xp: number;
+  photoURL?: string;
 }
 
 const SUPER_ADMIN_EMAIL = 'ibrahimezzine09@gmail.com';
@@ -186,11 +188,11 @@ export default function AdminPage() {
           <Table className="table-fixed w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="w-[25%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
-                <TableHead className="w-[35%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
-                <TableHead className="w-[10%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
-                <TableHead className="w-[18%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
-                <TableHead className="w-[12%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
+                <TableHead className="w-[30%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
+                <TableHead className="w-[30%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
+                <TableHead className="w-[10%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
+                <TableHead className="w-[18%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
+                <TableHead className="w-[12%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -215,55 +217,58 @@ export default function AdminPage() {
               ) : (
                 filteredUsers.map((u) => (
                   <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                    <TableCell className="py-2 px-4">
+                    <TableCell className="py-1.5 px-4">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
-                          className="h-9 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-3 shadow-inner"
+                          className="h-8 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-3 shadow-inner"
                         />
                       ) : (
                         <div className="flex items-center gap-3 overflow-hidden">
-                          <div className="h-8 w-8 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
-                            {u.displayName?.charAt(0)}
-                          </div>
-                          <span className="text-sm font-bold text-slate-900 dark:text-white truncate">{u.displayName}</span>
+                          <Avatar className="h-7 w-7 rounded-lg border-none shadow-sm shrink-0">
+                            <AvatarImage src={u.photoURL} className="object-cover" />
+                            <AvatarFallback className="bg-primary/10 text-primary font-black text-[10px]">
+                              {u.displayName?.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs font-bold text-slate-900 dark:text-white truncate">{u.displayName}</span>
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-2 px-4 text-slate-400 dark:text-slate-500 font-medium text-xs truncate">
+                    <TableCell className="py-1.5 px-4 text-slate-400 dark:text-slate-500 font-medium text-[11px] truncate">
                       <div className="truncate w-full" title={u.email}>{u.email}</div>
                     </TableCell>
-                    <TableCell className="py-2 px-4">
+                    <TableCell className="py-1.5 px-4">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
                           value={editForm.xp} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, xp: parseInt(e.target.value) }))}
-                          className="h-9 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-2 shadow-inner"
+                          className="h-8 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner"
                         />
                       ) : (
                         u.role === 'student' || u.role === 'council' ? (
                           <Badge className={cn(
-                            "h-7 px-2 rounded-lg font-black text-[10px] shadow-sm border",
+                            "h-6 px-2 rounded-md font-black text-[9px] shadow-none border-none",
                             u.xp < 0 
-                              ? "bg-destructive/5 text-destructive border-destructive/10" 
-                              : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20"
+                              ? "bg-destructive/10 text-destructive" 
+                              : "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10"
                           )}>
                             {u.xp > 0 ? '+' : ''}{u.xp}
                           </Badge>
                         ) : (
-                          <span className="text-slate-200 dark:text-slate-800 font-black text-xs">—</span>
+                          <span className="text-slate-200 dark:text-slate-800 font-black text-xs px-2">—</span>
                         )
                       )}
                     </TableCell>
-                    <TableCell className="py-2 px-4">
+                    <TableCell className="py-1.5 px-4">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
                         >
-                          <SelectTrigger className="w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-[10px] px-2 shadow-inner">
+                          <SelectTrigger className="w-full h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-[9px] px-2 shadow-inner">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl border-none p-2">
@@ -274,24 +279,24 @@ export default function AdminPage() {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-none px-2 py-1 rounded-lg font-black text-[8px] tracking-widest">
+                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-none px-2 py-0.5 rounded-md font-black text-[7px] tracking-widest">
                           {u.role}
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-2 px-4 text-right">
+                    <TableCell className="py-1.5 px-4 text-right">
                       {editingId === u.id ? (
                         <div className="flex justify-end gap-1.5">
-                          <Button size="icon" className="h-8 w-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
-                            <Save size={14} />
+                          <Button size="icon" className="h-7 w-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
+                            <Save size={12} />
                           </Button>
-                          <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
-                            <X size={14} />
+                          <Button size="icon" variant="outline" className="h-7 w-7 rounded-lg border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
+                            <X size={12} />
                           </Button>
                         </div>
                       ) : (
-                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
-                          <Edit2 size={14} />
+                        <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-slate-300 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
+                          <Edit2 size={12} />
                         </Button>
                       )}
                     </TableCell>
