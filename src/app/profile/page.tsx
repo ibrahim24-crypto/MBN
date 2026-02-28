@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { 
   Trophy, 
   Mail, 
@@ -52,7 +53,7 @@ export default function ProfilePage() {
   if (!profile) return null;
 
   const currentLevel = Math.floor(Math.abs(profile.xp) / 100) + 1;
-  const progressToNext = profile.xp % 100;
+  const progressToNext = Math.abs(profile.xp % 100);
 
   return (
     <AppLayout>
@@ -116,7 +117,7 @@ export default function ProfilePage() {
         <div className="lg:col-span-8 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           
           {/* Enhanced Performance Stats Card */}
-          <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/90 rounded-[3.5rem] overflow-hidden relative group p-8 md:p-12 transition-all duration-500 hover:shadow-primary/10 w-fit max-w-full adaptive-card">
+          <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/90 rounded-[3.5rem] overflow-hidden relative group p-8 md:p-12 transition-all duration-500 hover:shadow-primary/10 w-fit max-w-full">
             <div className="absolute -top-10 -right-10 p-12 opacity-[0.05] dark:opacity-[0.1] group-hover:scale-125 group-hover:-rotate-6 transition-all duration-1000">
               <Activity size={320} className="text-primary blur-sm" />
             </div>
@@ -201,7 +202,7 @@ export default function ProfilePage() {
 
           {/* Activity & Settings Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12">
-            <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full adaptive-card group/sec hover:shadow-2xl transition-all">
+            <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full group/sec hover:shadow-2xl transition-all">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-4">
                   <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover/sec:scale-110 transition-transform">
@@ -224,7 +225,7 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full adaptive-card group/mile hover:shadow-2xl transition-all">
+            <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full group/mile hover:shadow-2xl transition-all">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-4">
                   <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover/mile:scale-110 transition-transform">
