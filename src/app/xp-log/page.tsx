@@ -42,66 +42,70 @@ export default function XPLogPage() {
 
   return (
     <AppLayout>
-      <header className="mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="flex items-center gap-4 mb-3">
-           <div className="p-3 bg-primary/10 rounded-2xl text-primary">
-              <History size={28} />
+      <header className="mb-16 animate-in fade-in slide-in-from-top-4 duration-1000 w-full">
+        <div className="flex items-center gap-4 mb-4">
+           <div className="p-4 bg-primary/10 rounded-3xl text-primary shadow-sm">
+              <History size={32} />
            </div>
-           <Badge className="bg-primary/10 text-primary font-bold px-4 py-1 rounded-full uppercase tracking-widest text-[10px]">Activity Feed</Badge>
+           <Badge className="bg-primary/10 text-primary font-black px-6 py-2 rounded-full uppercase tracking-[0.3em] text-[10px] shadow-sm border-none">
+             Activity Feed
+           </Badge>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-5xl md:text-7xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">
           {t.xpHistory}
         </h1>
-        <p className="text-lg text-slate-500 dark:text-slate-400 font-medium mt-2">Track every point you've earned or lost in the school community.</p>
+        <p className="text-xl text-slate-500 dark:text-slate-400 font-bold mt-4 max-w-2xl">
+          Track every point you've earned or lost in the school community.
+        </p>
       </header>
 
-      <div className="bg-white dark:bg-slate-900 rounded-[3rem] border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-[4rem] border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
         <Table>
           <TableHeader className="bg-slate-50 dark:bg-slate-800/50">
             <TableRow className="border-none">
-              <TableHead className="py-6 px-10 font-black text-slate-400 uppercase tracking-widest text-[10px]">{t.timestamp}</TableHead>
-              <TableHead className="py-6 px-10 font-black text-slate-400 uppercase tracking-widest text-[10px]">{t.reason}</TableHead>
-              <TableHead className="py-6 px-10 font-black text-slate-400 uppercase tracking-widest text-[10px] text-right">{t.amount}</TableHead>
+              <TableHead className="py-8 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px]">{t.timestamp}</TableHead>
+              <TableHead className="py-8 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px]">{t.reason}</TableHead>
+              <TableHead className="py-8 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px] text-right">{t.amount}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-24 text-slate-400 font-bold">
-                  <div className="animate-pulse flex flex-col items-center gap-4">
-                     <Clock className="animate-spin" size={32} />
-                     Fetching history...
+                <TableCell colSpan={3} className="text-center py-40 text-slate-400 font-black">
+                  <div className="animate-pulse flex flex-col items-center gap-6">
+                     <Clock className="animate-spin text-primary" size={48} />
+                     <span className="uppercase tracking-[0.3em]">{t.fetchingHistory || "Syncing Records..."}</span>
                   </div>
                 </TableCell>
               </TableRow>
             ) : !logs || logs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-32 text-slate-400 font-bold">
-                   <div className="flex flex-col items-center gap-6 opacity-40">
-                      <History size={64} />
-                      <p className="text-xl">{t.noLogs}</p>
+                <TableCell colSpan={3} className="text-center py-48 text-slate-400 font-black">
+                   <div className="flex flex-col items-center gap-10 opacity-30 grayscale">
+                      <History size={100} />
+                      <p className="text-2xl uppercase tracking-[0.2em]">{t.noLogs}</p>
                    </div>
                 </TableCell>
               </TableRow>
             ) : (
               logs.map((log) => (
-                <TableRow key={log.id} className="border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                  <TableCell className="py-8 px-10 text-slate-500 dark:text-slate-400 font-bold">
+                <TableRow key={log.id} className="border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-all duration-300">
+                  <TableCell className="py-10 px-12 text-slate-500 dark:text-slate-400 font-black text-sm uppercase tracking-wider">
                     {format(new Date(log.timestamp), 'PPP p')}
                   </TableCell>
-                  <TableCell className="py-8 px-10">
-                    <span className="text-lg font-black text-slate-800 dark:text-slate-200 leading-tight">
+                  <TableCell className="py-10 px-12">
+                    <span className="text-xl font-black text-slate-900 dark:text-white leading-tight">
                       {log.reason}
                     </span>
                   </TableCell>
-                  <TableCell className="py-8 px-10 text-right">
+                  <TableCell className="py-10 px-12 text-right">
                     <div className={cn(
-                      "inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-lg shadow-sm border",
+                      "inline-flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xl shadow-lg border-2",
                       log.amount > 0 
                         ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20" 
                         : "bg-destructive/5 text-destructive border-destructive/10 dark:bg-destructive/10 dark:border-destructive/20"
                     )}>
-                      {log.amount > 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                      {log.amount > 0 ? <TrendingUp size={24} /> : <TrendingDown size={24} />}
                       {log.amount > 0 ? '+' : ''}{log.amount} XP
                     </div>
                   </TableCell>
@@ -112,16 +116,16 @@ export default function XPLogPage() {
         </Table>
       </div>
 
-      <div className="mt-12 p-10 rounded-[2.5rem] bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/10 dark:border-primary/20 flex items-center justify-between group overflow-hidden relative">
-         <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-1000">
-            <Zap size={200} />
+      <div className="w-full mt-16 p-14 rounded-[4rem] bg-gradient-to-br from-primary via-primary/95 to-accent border-none flex flex-col md:flex-row items-center justify-between group overflow-hidden relative shadow-2xl shadow-primary/30">
+         <div className="absolute -right-20 -bottom-20 opacity-10 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-1000">
+            <Zap size={300} className="text-white" />
          </div>
-         <div className="relative z-10">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-1">{t.totalImpact}</h3>
-            <p className="text-slate-500 dark:text-slate-400 font-bold">{t.totalImpactDesc}</p>
+         <div className="relative z-10 text-center md:text-left mb-8 md:mb-0">
+            <h3 className="text-4xl font-black text-white mb-3 leading-none tracking-tight">{t.totalImpact}</h3>
+            <p className="text-white/70 font-bold text-xl max-w-lg">{t.totalImpactDesc}</p>
          </div>
-         <div className="text-4xl font-black text-primary relative z-10">
-            {profile?.xp} XP
+         <div className="text-7xl font-black text-white relative z-10 font-mono tracking-tighter bg-white/10 px-10 py-6 rounded-[2.5rem] backdrop-blur-md border border-white/20">
+            {profile?.xp} <span className="text-2xl opacity-60 ml-2">XP</span>
          </div>
       </div>
     </AppLayout>
