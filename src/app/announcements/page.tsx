@@ -110,7 +110,7 @@ export default function AnnouncementsPage() {
                 {t.newAnnouncement}
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[650px] rounded-[4rem] p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+            <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
               <DialogHeader>
                 <DialogTitle className="text-4xl font-black tracking-tighter">{t.newAnnouncement}</DialogTitle>
               </DialogHeader>

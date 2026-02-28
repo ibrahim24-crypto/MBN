@@ -209,7 +209,7 @@ export default function CouncilPage() {
                   {t.newProposal}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[750px] rounded-[4rem] p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+              <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-4xl font-black tracking-tighter">{editingId ? t.edit : t.newProposal}</DialogTitle>
                 </DialogHeader>
@@ -241,7 +241,7 @@ export default function CouncilPage() {
                     <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t.details}</label>
                     <Textarea 
                       placeholder={t.details} 
-                      className="min-h-[300px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed focus:ring-8 focus:ring-primary/5 transition-all"
+                      className="min-h-[250px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed focus:ring-8 focus:ring-primary/5 transition-all"
                       value={proposalForm.content}
                       onChange={(e) => setProposalForm(p => ({ ...p, content: e.target.value }))}
                     />
@@ -280,7 +280,7 @@ export default function CouncilPage() {
                       <div className="flex gap-2">
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-primary/10 transition-all" onClick={() => openEditProposal(p)}>
+                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-primary/10 transition-all" onClick={() => openEditProposal(p)}>
                               <Edit2 size={20} />
                             </Button>
                           </TooltipTrigger>
@@ -289,7 +289,7 @@ export default function CouncilPage() {
                         
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('proposals', p.id)}>
+                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-500 dark:text-slate-400 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('proposals', p.id)}>
                               <Trash2 size={20} />
                             </Button>
                           </TooltipTrigger>
@@ -322,7 +322,7 @@ export default function CouncilPage() {
                   {t.newMinute}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[750px] rounded-[4rem] p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+              <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-4xl font-black tracking-tighter">{editingId ? t.edit : t.newMinute}</DialogTitle>
                 </DialogHeader>
@@ -349,7 +349,7 @@ export default function CouncilPage() {
                     <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t.details}</label>
                     <Textarea 
                       placeholder={t.details} 
-                      className="min-h-[300px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed focus:ring-8 focus:ring-accent/5 transition-all"
+                      className="min-h-[250px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed focus:ring-8 focus:ring-accent/5 transition-all"
                       value={minuteForm.content}
                       onChange={(e) => setMinuteForm(m => ({ ...m, content: e.target.value }))}
                     />
@@ -392,7 +392,7 @@ export default function CouncilPage() {
                     <div className="flex gap-2">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-accent hover:bg-accent/10 transition-all" onClick={() => openEditMinute(m)}>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-500 dark:text-slate-400 hover:text-accent hover:bg-accent/10 transition-all" onClick={() => openEditMinute(m)}>
                             <Edit2 size={20} />
                           </Button>
                         </TooltipTrigger>
@@ -401,7 +401,7 @@ export default function CouncilPage() {
 
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('meetingMinutes', m.id)}>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-500 dark:text-slate-400 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('meetingMinutes', m.id)}>
                             <Trash2 size={20} />
                           </Button>
                         </TooltipTrigger>
