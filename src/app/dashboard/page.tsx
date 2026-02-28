@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
   const { profile, loading, isSuperAdmin } = useAuth();
@@ -30,7 +31,7 @@ export default function DashboardPage() {
         <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-10 py-6">
           <div className="space-y-5">
             <div className="flex items-center gap-4">
-              <Badge variant="outline" className="rounded-full bg-primary/10 text-primary border-primary/20 font-black px-5 py-1.5 text-[11px] uppercase tracking-[0.2em] shadow-sm">
+              <Badge variant="outline" className="rounded-full bg-primary/10 text-primary border-primary/20 font-black px-5 py-1.5 text-[11px] uppercase tracking-[0.2em] shadow-sm w-fit">
                 <Sparkles size={14} className="mr-2 text-accent" />
                 Moussa Ibn Nousayr Life Center
               </Badge>
@@ -58,10 +59,10 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Main Content Area */}
           <div className="lg:col-span-8 space-y-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {/* XP Widget (Student) */}
+            <div className="flex flex-wrap gap-10">
+              {/* XP Widget (Student) - Content Adaptive Width */}
               {profile?.role === 'student' && (
-                <Card className="border-none bg-gradient-to-br from-primary via-primary to-accent text-white shadow-[0_40px_100px_rgba(59,130,246,0.25)] relative overflow-hidden group rounded-[3rem] p-4 transition-all hover:scale-[1.01]">
+                <Card className="flex-1 min-w-[320px] max-w-full border-none bg-gradient-to-br from-primary via-primary to-accent text-white shadow-[0_40px_100px_rgba(59,130,246,0.25)] relative overflow-hidden group rounded-[3rem] p-4 transition-all hover:scale-[1.01]">
                   <div className="absolute top-0 right-0 p-16 opacity-10 group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
                     <Trophy size={250} />
                   </div>
@@ -76,7 +77,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="space-y-6">
                       <Progress value={profile.xp % 100} className="h-6 bg-white/20 border-none rounded-full" />
-                      <div className="flex justify-between items-center bg-white/10 p-5 rounded-3xl border border-white/10 backdrop-blur-md">
+                      <div className="flex justify-between items-center bg-white/10 p-5 rounded-3xl border border-white/10 backdrop-blur-md w-fit gap-6">
                          <p className="text-sm font-black text-white uppercase tracking-[0.1em]">{t.keepParticipating}</p>
                          <TrendingUp size={20} className="text-white/60" />
                       </div>
@@ -85,9 +86,9 @@ export default function DashboardPage() {
                 </Card>
               )}
 
-              {/* Admin Panel Access */}
+              {/* Admin Panel Access - Content Adaptive Width */}
               {(profile?.role === 'administration' || isSuperAdmin) && (
-                <Card className="border-none bg-slate-900 dark:bg-slate-900 text-white shadow-3xl relative overflow-hidden group rounded-[3rem] p-4 transition-all hover:scale-[1.01]">
+                <Card className="flex-1 min-w-[320px] max-w-full border-none bg-slate-900 dark:bg-slate-900 text-white shadow-3xl relative overflow-hidden group rounded-[3rem] p-4 transition-all hover:scale-[1.01]">
                   <div className="absolute -bottom-20 -right-20 p-20 opacity-10 group-hover:scale-125 transition-transform duration-1000">
                     <Users size={300} />
                   </div>
@@ -108,13 +109,13 @@ export default function DashboardPage() {
               )}
 
               {/* News Snippet */}
-              <Card className="shadow-2xl shadow-slate-200/60 dark:shadow-black/60 border-none bg-white dark:bg-slate-900 group hover:translate-y-[-8px] transition-all duration-500 rounded-[3rem] overflow-hidden p-2">
+              <Card className="flex-1 min-w-[320px] shadow-2xl shadow-slate-200/60 dark:shadow-black/60 border-none bg-white dark:bg-slate-900 group hover:translate-y-[-8px] transition-all duration-500 rounded-[3rem] overflow-hidden p-2">
                 <CardHeader className="p-10 pb-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-4 bg-primary/10 rounded-2xl text-primary shadow-lg shadow-primary/5">
                       <Megaphone size={32} />
                     </div>
-                    <Badge className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] border-none px-4 py-1.5 rounded-full">Active Feed</Badge>
+                    <Badge className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] border-none px-4 py-1.5 rounded-full w-fit">Active Feed</Badge>
                   </div>
                   <CardTitle className="text-3xl font-black text-slate-900 dark:text-white leading-none">{t.recentBulletin}</CardTitle>
                 </CardHeader>
@@ -147,9 +148,9 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Sidebar Area */}
+          {/* Sidebar Area - Content Adaptive Height */}
           <div className="lg:col-span-4">
-            <Card className="shadow-2xl shadow-slate-200/60 dark:shadow-black/60 border-none bg-white dark:bg-slate-900 rounded-[3rem] h-full overflow-hidden flex flex-col p-2">
+            <Card className="shadow-2xl shadow-slate-200/60 dark:shadow-black/60 border-none bg-white dark:bg-slate-900 rounded-[3rem] h-fit overflow-hidden flex flex-col p-2">
               <CardHeader className="p-10 pb-4">
                 <div className="flex items-center justify-between mb-8">
                   <div className="space-y-2">
@@ -173,7 +174,7 @@ export default function DashboardPage() {
                 </div>
               </CardHeader>
               
-              <CardContent className="px-10 pb-10 flex-1 flex flex-col">
+              <CardContent className="px-10 pb-10 flex flex-col">
                 <Separator className="bg-slate-100 dark:bg-slate-800 my-10" />
                 <div className="space-y-8">
                   <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Agenda Overview</h5>
@@ -186,7 +187,7 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 </div>
-                <div className="mt-auto pt-12">
+                <div className="pt-12">
                   <Button variant="outline" className="w-full h-16 font-black border-slate-200 dark:border-slate-800 rounded-3xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-primary transition-all text-lg shadow-sm">
                     {t.addCalendar}
                   </Button>

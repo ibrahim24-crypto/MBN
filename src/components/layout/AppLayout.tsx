@@ -9,16 +9,14 @@ import {
   LogOut,
   UserCircle,
   ChevronRight,
-  Command,
   Languages,
   Zap,
   History,
   Menu,
-  X,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  MoreVertical
 } from 'lucide-react';
-import Link from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
@@ -70,7 +68,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               className="bg-primary hover:bg-primary/90 p-4 h-16 w-16 rounded-[1.75rem] text-white shadow-3xl shadow-primary/40 group-hover:rotate-12 transition-all duration-500 shrink-0"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >
-              <Menu size={32} />
+              {isCollapsed ? <Menu size={32} /> : <PanelLeftClose size={32} />}
             </Button>
             {!isCollapsed && (
               <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500">
@@ -195,9 +193,9 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-8 border-b dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl z-50">
           <div className="flex items-center gap-4">
-            <div className="bg-primary p-2.5 rounded-xl text-white shadow-lg shadow-primary/20">
+            <Button variant="ghost" size="icon" className="text-primary">
               <Menu size={28} />
-            </div>
+            </Button>
             <div className="flex flex-col">
               <span className="text-xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN</span>
               <div className="flex items-center gap-1.5 mt-0.5">
