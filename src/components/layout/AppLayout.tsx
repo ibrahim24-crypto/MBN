@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -119,7 +118,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             <div className="flex items-center justify-between gap-3 animate-in fade-in duration-500">
                <div className="flex items-center gap-3 group min-w-0">
                   <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-lg cursor-pointer hover:scale-110 transition-transform duration-500 shrink-0">
-                    <AvatarImage src={profile?.photoURL} className="object-cover" />
+                    <AvatarImage src={profile?.photoURL || "/logo.png"} className="object-cover" />
                     <AvatarFallback className="bg-gradient-to-br from-primary via-primary to-accent text-white font-black text-lg">
                       {profile?.displayName?.charAt(0) || 'U'}
                     </AvatarFallback>
@@ -141,7 +140,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           ) : (
             <div className="flex flex-col items-center gap-4 animate-in fade-in duration-500">
               <Avatar className="h-10 w-10 border-2 border-white dark:border-slate-800 shadow-md">
-                <AvatarImage src={profile?.photoURL} />
+                <AvatarImage src={profile?.photoURL || "/logo.png"} className="object-cover" />
                 <AvatarFallback className="text-xs">{profile?.displayName?.charAt(0)}</AvatarFallback>
               </Avatar>
               <ThemeToggle />
@@ -209,7 +208,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           <div className="flex items-center gap-3">
              <ThemeToggle />
              <Avatar className="h-10 w-10 border-2 border-slate-100 dark:border-slate-800" onClick={() => logout()}>
-              <AvatarImage src={profile?.photoURL} />
+              <AvatarImage src={profile?.photoURL || "/logo.png"} className="object-cover" />
               <AvatarFallback className="font-black text-xs">U</AvatarFallback>
             </Avatar>
           </div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -69,7 +68,7 @@ export default function ProfilePage() {
 
       <div className="flex flex-col items-center gap-12 pb-20">
         
-        {/* Profile Identity Card - Now part of the vertical flow */}
+        {/* Profile Identity Card */}
         <Card className="border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/60 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full mx-auto group/card transition-all duration-500 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-8 duration-700">
           <div className="h-40 bg-gradient-to-br from-primary via-primary/90 to-accent w-full relative">
             <div className="absolute inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-[2px]"></div>
@@ -77,7 +76,7 @@ export default function ProfilePage() {
           <CardContent className="relative flex flex-col items-center -mt-20 text-center pb-12 px-10">
             <div className="relative mb-8">
               <Avatar className="h-40 w-40 border-[8px] border-white dark:border-slate-900 shadow-2xl group-hover/card:scale-105 transition-transform duration-700">
-                <AvatarImage src={profile.photoURL} className="object-cover" />
+                <AvatarImage src={profile.photoURL || "/logo.png"} className="object-cover" />
                 <AvatarFallback className="text-5xl bg-gradient-to-br from-primary to-accent text-white font-black">
                   {profile.displayName.charAt(0)}
                 </AvatarFallback>
