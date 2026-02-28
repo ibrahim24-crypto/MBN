@@ -18,6 +18,7 @@ import {
 import { useFirebase } from '@/firebase';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { useRouter } from 'next/navigation';
 
 export type UserRole = 'student' | 'teacher' | 'council' | 'administration';
 
@@ -52,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (!auth || !firestore) return;
@@ -67,7 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (!userDoc.exists()) {
             const initialRole: UserRole = firebaseUser.email === SUPER_ADMIN_EMAIL ? 'administration' : 'student';
-            // All new users start with 100 XP unless they are super admins/admins
             const initialXP = initialRole === 'administration' ? 0 : 100;
             const now = new Date();
             
@@ -129,6 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!auth) return;
     try {
       await signOut(auth);
+      router.push('/');
     } catch (error) {
       console.error("Error signing out", error);
     }

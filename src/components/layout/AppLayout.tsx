@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Megaphone, 
@@ -11,7 +11,7 @@ import {
   UserCircle,
   History
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -29,10 +29,17 @@ import Image from 'next/image';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
-  const { profile, logout, isSuperAdmin } = useAuth();
+  const router = useRouter();
+  const { profile, logout, isSuperAdmin, loading } = useAuth();
   const { t } = useLanguage();
   
   const logoSrc = "/logo.png";
+
+  useEffect(() => {
+    if (!loading && !profile) {
+      router.push('/');
+    }
+  }, [loading, profile, router]);
 
   const navItems = [
     { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
@@ -48,10 +55,22 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     return profile && item.roles.includes(profile.role);
   });
 
+  if (loading || !profile) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-24 h-24 relative animate-pulse">
+            <Image src={logoSrc} fill alt="Loading Logo" className="object-contain" unoptimized />
+          </div>
+          <p className="text-slate-400 font-black uppercase tracking-[0.3em] animate-pulse">Syncing Session...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-slate-950 selection:bg-primary/20">
       <TooltipProvider delayDuration={0}>
-        {/* Icons-Only Sidebar */}
         <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[112px] transition-all duration-500 ease-in-out">
           <div className="p-8 flex flex-col items-center gap-8">
             <div className="flex flex-col items-center gap-4">
@@ -120,12 +139,10 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         </aside>
       </TooltipProvider>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full -z-10 animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full -z-10"></div>
         
-        {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-6 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
           <div className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg">
             <Image src={logoSrc} fill alt="MBN Logo" className="object-cover" unoptimized />
