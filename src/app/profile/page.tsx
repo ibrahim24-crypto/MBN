@@ -116,7 +116,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Performance Stats Card */}
+        {/* XP Dashboard Card */}
         <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/90 rounded-[3.5rem] overflow-hidden relative group p-8 md:p-12 transition-all duration-500 w-full max-w-2xl adaptive-card mx-auto animate-in fade-in slide-in-from-bottom-8 delay-100">
           <div className="absolute -top-10 -right-10 p-12 opacity-[0.05] group-hover:scale-125 transition-transform duration-1000">
             <Activity size={320} className="text-primary blur-sm" />
@@ -125,7 +125,7 @@ export default function ProfilePage() {
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10 mb-12">
               <div className="space-y-2">
-                <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">Hub <span className="text-primary">Metrics</span></CardTitle>
+                <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">XP <span className="text-primary">Dashboard</span></CardTitle>
                 <p className="text-slate-400 font-bold">Contribution Overview</p>
               </div>
             </div>
