@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -98,8 +97,8 @@ export default function CouncilPage() {
         <div className="h-[60vh] flex items-center justify-center p-4">
           <div className="text-center">
             <ShieldCheck size={100} className="mx-auto text-destructive mb-8 opacity-20" />
-            <h1 className="text-5xl font-black font-headline tracking-tighter">Limited Authority</h1>
-            <p className="text-slate-500 mt-4 text-xl font-bold">This restricted workspace is for active MBN Council delegates only.</p>
+            <h1 className="text-5xl font-black font-headline tracking-tighter text-slate-900 dark:text-white">Limited Authority</h1>
+            <p className="text-slate-500 mt-4 text-xl font-bold">This restricted workspace is for active Council delegates only.</p>
             <Button variant="outline" className="mt-12 rounded-2xl px-12 h-16 font-black text-lg border-2" onClick={() => window.location.href = '/dashboard'}>Return to Hub</Button>
           </div>
         </div>
@@ -179,18 +178,18 @@ export default function CouncilPage() {
 
   return (
     <AppLayout>
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 animate-in fade-in slide-in-from-top-4 duration-1000 w-full">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 animate-in fade-in slide-in-from-top-4 duration-1000 w-full px-4">
         <div className="space-y-2">
-          <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1 border-none shadow-sm uppercase tracking-[0.2em] text-[8px]">Staff Only</Badge>
+          <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1 border-none shadow-sm uppercase tracking-[0.2em] text-[8px]">Governance Hub</Badge>
           <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tighter flex items-center gap-4 text-slate-900 dark:text-white leading-none">
             <ShieldCheck className="text-primary hidden md:block" size={48} />
             {t.councilWorkspace}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-bold text-lg tracking-tight">Active Delegation Governance</p>
+          <p className="text-slate-500 dark:text-slate-400 font-bold text-lg tracking-tight">Active Delegation Workspace</p>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full pb-32">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full pb-32 px-4">
         
         {/* PROPOSALS MANAGEMENT */}
         <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden flex flex-col min-h-[600px]">
@@ -201,14 +200,13 @@ export default function CouncilPage() {
                 <CardTitle className="text-2xl font-black tracking-tighter">
                   {t.manageProposals}
                 </CardTitle>
-                <CardDescription className="text-sm font-bold line-clamp-1">Draft school initiatives.</CardDescription>
+                <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400">Initiatives</CardDescription>
               </div>
             </div>
             <Dialog open={proposalDialog} onOpenChange={(open) => { setProposalDialog(open); if (!open) resetProposalForm(); }}>
               <DialogTrigger asChild>
-                <Button className="rounded-xl font-black shadow-lg shadow-primary/20 h-12 px-6 hover:scale-[1.02] transition-all text-sm shrink-0 gap-2 text-white">
-                  <Plus size={18} />
-                  {t.newProposal}
+                <Button className="rounded-full font-black shadow-lg shadow-primary/20 h-10 w-10 p-0 hover:scale-[1.1] transition-all text-sm shrink-0 text-white">
+                  <Plus size={20} />
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[650px] rounded-2xl p-8 bg-white dark:bg-slate-950 border-none shadow-2xl">
@@ -305,14 +303,13 @@ export default function CouncilPage() {
                 <CardTitle className="text-2xl font-black tracking-tighter">
                   {t.manageMinutes}
                 </CardTitle>
-                <CardDescription className="text-sm font-bold line-clamp-1">Archive school results.</CardDescription>
+                <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400">Archives</CardDescription>
               </div>
             </div>
             <Dialog open={minuteDialog} onOpenChange={(open) => { setMinuteDialog(open); if (!open) resetMinuteForm(); }}>
               <DialogTrigger asChild>
-                <Button className="rounded-xl font-black shadow-lg shadow-accent/20 bg-accent hover:bg-accent/90 h-12 px-6 hover:scale-[1.02] transition-all text-sm shrink-0 gap-2 text-white">
-                  <Plus size={18} />
-                  {t.newMinute}
+                <Button className="rounded-full font-black shadow-lg shadow-accent/20 bg-accent hover:bg-accent/90 h-10 w-10 p-0 hover:scale-[1.1] transition-all text-sm shrink-0 text-white">
+                  <Plus size={20} />
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[650px] rounded-2xl p-8 bg-white dark:bg-slate-950 border-none shadow-2xl">

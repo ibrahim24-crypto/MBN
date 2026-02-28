@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -143,7 +142,7 @@ export default function AdminPage() {
     <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
        <div className="flex flex-col items-center gap-6">
           <Loader2 size={48} className="animate-spin text-primary" />
-          <p className="text-slate-400 font-black uppercase tracking-[0.2em] animate-pulse">Syncing Admin Hub...</p>
+          <p className="text-slate-400 font-black uppercase tracking-[0.2em] animate-pulse">Syncing Hub Registry...</p>
        </div>
     </div>
   );
@@ -153,7 +152,7 @@ export default function AdminPage() {
       <div className="text-center">
         <ShieldCheck size={60} className="mx-auto text-destructive mb-4 opacity-20" />
         <h1 className="text-3xl font-black font-headline tracking-tighter">Access Denied</h1>
-        <p className="text-muted-foreground mt-2 font-bold">Only the Hub Administration can access this page.</p>
+        <p className="text-muted-foreground mt-2 font-bold">Only the Hub Administration can access this area.</p>
         <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return to Hub</Button>
       </div>
     </div>
@@ -161,7 +160,7 @@ export default function AdminPage() {
 
   return (
     <AppLayout>
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 w-full">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
         <div className="space-y-1">
           <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Command Center</Badge>
           <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tighter flex items-center gap-3 text-slate-900 dark:text-white leading-tight">
@@ -188,10 +187,10 @@ export default function AdminPage() {
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
                 <TableHead className="w-[25%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
-                <TableHead className="w-[30%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
-                <TableHead className="w-[12%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
+                <TableHead className="w-[35%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
+                <TableHead className="w-[10%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
                 <TableHead className="w-[18%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
-                <TableHead className="w-[15%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
+                <TableHead className="w-[12%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -209,7 +208,7 @@ export default function AdminPage() {
                   <TableCell colSpan={5} className="text-center py-20">
                     <div className="flex flex-col items-center gap-6 opacity-20 grayscale">
                         <User size={60} />
-                        <p className="text-xl font-black uppercase tracking-[0.2em]">No Identities</p>
+                        <p className="text-xl font-black uppercase tracking-[0.2em]">No Identities Found</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -264,14 +263,14 @@ export default function AdminPage() {
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
                         >
-                          <SelectTrigger className="w-full h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner">
+                          <SelectTrigger className="w-full h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-[10px] px-2 shadow-inner">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl border-none p-2">
-                            <SelectItem value="student" className="rounded-lg px-4 py-2 font-black text-sm">Student</SelectItem>
-                            <SelectItem value="teacher" className="rounded-lg px-4 py-2 font-black text-sm">Teacher</SelectItem>
-                            <SelectItem value="council" className="rounded-lg px-4 py-2 font-black text-sm">Council</SelectItem>
-                            <SelectItem value="administration" className="rounded-lg px-4 py-2 font-black text-sm">Administration</SelectItem>
+                            <SelectItem value="student" className="rounded-lg px-4 py-2 font-black text-xs">Student</SelectItem>
+                            <SelectItem value="teacher" className="rounded-lg px-4 py-2 font-black text-xs">Teacher</SelectItem>
+                            <SelectItem value="council" className="rounded-lg px-4 py-2 font-black text-xs">Council</SelectItem>
+                            <SelectItem value="administration" className="rounded-lg px-4 py-2 font-black text-xs">Administration</SelectItem>
                           </SelectContent>
                         </Select>
                       ) : (
