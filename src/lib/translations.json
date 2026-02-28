@@ -1,3 +1,4 @@
+
 {
   "ar": {
     "dashboard": "لوحة القيادة",
@@ -43,7 +44,7 @@
     "searchUsers": "البحث عن المستخدمين...",
     "name": "الاسم",
     "email": "البريد الإلكتروني",
-    "xp": "نقاط XP",
+    "xp": "XP",
     "role": "الدور",
     "actions": "الإجراءات",
     "save": "حفظ",
@@ -59,7 +60,7 @@
     "learnMore": "تعرف على المزيد",
     "smartBoard": "لوحة الاعلانات",
     "roleManagement": "إدارة الأدوار",
-    "xpRewards": "نقاط XP",
+    "xpRewards": "XP",
     "studentGamification": "إدارة الطلاب",
     "xpIncentive": "",
     "totalImpact": "الأثر الكلي",
@@ -121,7 +122,7 @@
     "searchUsers": "Rechercher des utilisateurs...",
     "name": "Nom",
     "email": "Email",
-    "xp": "Points XP",
+    "xp": "XP",
     "role": "Rôle",
     "actions": "Actions",
     "save": "Enregistrer",
@@ -137,7 +138,7 @@
     "learnMore": "En savoir plus",
     "smartBoard": "Tableau d'affichage",
     "roleManagement": "Gestion des Rôles",
-    "xpRewards": "Points XP",
+    "xpRewards": "XP",
     "studentGamification": "Gestion des élèves",
     "xpIncentive": "",
     "totalImpact": "Impact Total",

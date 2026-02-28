@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -162,7 +163,7 @@ export default function AdminPage() {
 
   return (
     <AppLayout>
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4 max-w-[90%]">
         <div className="space-y-1">
           <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Command Center</Badge>
           <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tighter flex items-center gap-3 text-slate-900 dark:text-white leading-tight">
@@ -183,16 +184,16 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <div className="w-full bg-white dark:bg-slate-900 rounded-2xl border-none shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20">
+      <div className="w-full max-w-[90%] bg-white dark:bg-slate-900 rounded-2xl border-none shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20">
         <TooltipProvider>
           <Table className="table-fixed w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="w-[30%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
-                <TableHead className="w-[30%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
-                <TableHead className="w-[10%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
-                <TableHead className="w-[18%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
-                <TableHead className="w-[12%] py-2.5 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
+                <TableHead className="w-[30%] py-2 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
+                <TableHead className="w-[30%] py-2 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
+                <TableHead className="w-[10%] py-2 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
+                <TableHead className="w-[18%] py-2 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
+                <TableHead className="w-[12%] py-2 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -217,7 +218,7 @@ export default function AdminPage() {
               ) : (
                 filteredUsers.map((u) => (
                   <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                    <TableCell className="py-1.5 px-4">
+                    <TableCell className="py-1 px-4">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
@@ -236,10 +237,10 @@ export default function AdminPage() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-1.5 px-4 text-slate-400 dark:text-slate-500 font-medium text-[11px] truncate">
+                    <TableCell className="py-1 px-4 text-slate-400 dark:text-slate-500 font-medium text-[11px] truncate">
                       <div className="truncate w-full" title={u.email}>{u.email}</div>
                     </TableCell>
-                    <TableCell className="py-1.5 px-4">
+                    <TableCell className="py-1 px-4">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
@@ -262,7 +263,7 @@ export default function AdminPage() {
                         )
                       )}
                     </TableCell>
-                    <TableCell className="py-1.5 px-4">
+                    <TableCell className="py-1 px-4">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
@@ -284,7 +285,7 @@ export default function AdminPage() {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-1.5 px-4 text-right">
+                    <TableCell className="py-1 px-4 text-right">
                       {editingId === u.id ? (
                         <div className="flex justify-end gap-1.5">
                           <Button size="icon" className="h-7 w-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
