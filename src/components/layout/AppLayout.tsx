@@ -14,9 +14,8 @@ import {
   Zap,
   History,
   Menu,
-  MoreVertical,
-  PanelLeftClose,
-  X
+  X,
+  AlignLeft
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -33,15 +32,12 @@ import {
 import { ThemeToggle } from '@/components/ThemeToggle';
 import NextLink from 'next/link';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { profile, logout, isSuperAdmin } = useAuth();
   const { t, setLanguage, language } = useLanguage();
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const logo = PlaceHolderImages.find(img => img.id === 'mbn-logo');
 
   const navItems = [
     { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
@@ -72,15 +68,13 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               className="hover:bg-slate-100 dark:hover:bg-slate-800 p-2 h-10 w-10 rounded-xl text-slate-500 dark:text-slate-400 transition-all duration-300 shrink-0"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >
-              <Menu size={24} />
+              {isCollapsed ? <Menu size={24} /> : <AlignLeft size={24} />}
             </Button>
             {!isCollapsed && (
               <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-4 duration-500 overflow-hidden">
-                {logo && (
-                  <div className="w-8 h-8 relative rounded-lg overflow-hidden shadow-sm">
-                    <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
-                  </div>
-                )}
+                <div className="w-8 h-8 relative rounded-lg overflow-hidden shadow-sm bg-white">
+                  <Image src="/logo.png" fill alt="MBN Logo" className="object-contain p-0.5" />
+                </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate">MBN COUNCIL</span>
                   <span className="text-[9px] uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 font-black mt-1">Moussa Ibn Nousayr</span>
@@ -201,11 +195,9 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-6 border-b dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md z-50">
           <div className="flex items-center gap-3">
-             {logo && (
-              <div className="w-8 h-8 relative rounded-lg overflow-hidden">
-                <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
-              </div>
-            )}
+            <div className="w-8 h-8 relative rounded-lg overflow-hidden bg-white">
+              <Image src="/logo.png" fill alt="MBN Logo" className="object-contain p-0.5" />
+            </div>
             <div className="flex flex-col">
               <span className="text-lg font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN Council</span>
               <div className="flex items-center gap-1.5 mt-1">

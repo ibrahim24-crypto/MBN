@@ -16,14 +16,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
   const { user, loading, signInWithGoogle } = useAuth();
   const { t, setLanguage } = useLanguage();
   const router = useRouter();
-
-  const logo = PlaceHolderImages.find(img => img.id === 'mbn-logo');
 
   useEffect(() => {
     if (!loading && user) {
@@ -52,15 +49,14 @@ export default function LandingPage() {
 
       <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-3">
-          {logo ? (
-            <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl shadow-primary/20 group hover:rotate-6 transition-transform">
-              <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
-            </div>
-          ) : (
-            <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/30 group hover:rotate-6 transition-transform">
-              <GraduationCap size={28} />
-            </div>
-          )}
+          <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl shadow-primary/20 group hover:rotate-6 transition-transform bg-white">
+            <Image 
+              src="/logo.png" 
+              fill 
+              alt="MBN Logo" 
+              className="object-contain p-1" 
+            />
+          </div>
           <span className="text-2xl font-black font-headline tracking-tighter text-slate-900">MBN COUNCIL</span>
         </div>
         <DropdownMenu>
@@ -142,15 +138,9 @@ export default function LandingPage() {
       <footer className="py-24 px-8 text-center bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex items-center gap-3">
-             {logo ? (
-              <div className="w-8 h-8 relative rounded-lg overflow-hidden">
-                <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
-              </div>
-            ) : (
-              <div className="bg-primary p-2 rounded-xl text-white">
-                <GraduationCap size={24} />
-              </div>
-            )}
+            <div className="w-8 h-8 relative rounded-lg overflow-hidden bg-white">
+              <Image src="/logo.png" fill alt="MBN Logo" className="object-contain" />
+            </div>
             <span className="font-black text-2xl text-slate-900 tracking-tighter">MBN SCHOOL</span>
           </div>
           <p className="text-slate-400 font-bold text-lg">&copy; {new Date().getFullYear()} Moussa Ibn Nousayr. Elevating every voice.</p>

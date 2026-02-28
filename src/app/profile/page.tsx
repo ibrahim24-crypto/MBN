@@ -10,11 +10,11 @@ import {
   Trophy, 
   Mail, 
   ShieldCheck, 
-  Star, 
   Zap,
   ShieldAlert,
   Award,
-  TrendingUp
+  TrendingUp,
+  Activity
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -38,7 +38,7 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Profile Identity Card */}
-        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden sticky top-8 w-fit max-w-full mx-auto">
+        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden sticky top-8 w-fit max-w-full mx-auto adaptive-card">
           <div className="h-40 bg-gradient-to-br from-primary via-primary/80 to-accent w-full relative">
             <div className="absolute inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-[1px]"></div>
           </div>
@@ -76,10 +76,10 @@ export default function ProfilePage() {
         {/* Main Profile Sections */}
         <div className="lg:col-span-8 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           
-          {/* Performance Statistics Card */}
-          <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10 transition-all duration-500 hover:shadow-primary/10 w-fit max-w-full">
-            <div className="absolute top-0 right-0 p-12 opacity-[0.05] dark:opacity-[0.1] group-hover:scale-125 group-hover:-rotate-6 transition-all duration-1000">
-              <Zap size={300} className="text-primary" />
+          {/* Restyled Performance Statistics Card */}
+          <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10 transition-all duration-500 hover:shadow-primary/10 w-fit max-w-full adaptive-card">
+            <div className="absolute top-0 right-0 p-12 opacity-[0.03] dark:opacity-[0.05] group-hover:scale-110 transition-transform duration-1000">
+              <Activity size={300} className="text-primary" />
             </div>
             
             <div className="relative z-10">
@@ -87,16 +87,16 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Badge className="bg-primary text-white border-none font-black px-4 py-1.5 rounded-full flex items-center gap-2 w-fit shadow-lg shadow-primary/20">
                     <Trophy size={14} className="fill-white" />
-                    Statistics
+                    School Performance
                   </Badge>
-                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Performance</CardTitle>
+                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Impact Score</CardTitle>
                 </div>
                 <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-4 pr-10 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm transition-transform hover:scale-105">
                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-black text-3xl shadow-xl">
                       {currentLevel}
                    </div>
                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Level</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rank</span>
                       <span className="text-lg font-bold text-slate-900 dark:text-white">Tier {currentLevel}</span>
                    </div>
                 </div>
@@ -120,7 +120,7 @@ export default function ProfilePage() {
                     ) : (
                       <div className="flex items-center gap-2 text-primary font-bold text-sm bg-primary/5 border border-primary/10 w-fit px-4 py-2 rounded-xl">
                         <TrendingUp size={16} />
-                        Positive Status
+                        Standing: Excellent
                       </div>
                     )}
                   </div>
@@ -135,8 +135,8 @@ export default function ProfilePage() {
                        <Zap size={24} className="fill-primary/20" />
                     </div>
                     <div>
-                       <h4 className="font-black text-slate-900 dark:text-white text-lg">MBN Influence</h4>
-                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Based on school council involvement.</p>
+                       <h4 className="font-black text-slate-900 dark:text-white text-lg">Council Influence</h4>
+                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Your points determine your role within the council.</p>
                     </div>
                  </div>
               </div>
@@ -145,20 +145,20 @@ export default function ProfilePage() {
 
           {/* Activity & Settings Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12">
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full">
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full adaptive-card">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <ShieldCheck size={24} className="text-primary" />
                   Security
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Verification status</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Account status</CardDescription>
               </CardHeader>
               <CardContent className="p-10 pt-8 space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800 gap-8">
                     <div className="flex items-center gap-4">
                       <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google</span>
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google Auth</span>
                     </div>
                     <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[10px]">VERIFIED</Badge>
                   </div>
@@ -166,7 +166,7 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full">
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full adaptive-card">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <Award size={24} className="text-primary" />
