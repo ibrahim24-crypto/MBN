@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -51,22 +52,22 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-slate-950 selection:bg-primary/20">
       <TooltipProvider delayDuration={0}>
         {/* Icons-Only Sidebar */}
-        <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[96px] transition-all duration-500 ease-in-out">
-          <div className="p-6 flex flex-col items-center gap-8">
+        <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[112px] transition-all duration-500 ease-in-out">
+          <div className="p-8 flex flex-col items-center gap-8">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800">
+              <div className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-2xl border-none group hover:rotate-6 transition-transform">
                 <Image 
                   src={logoSrc} 
                   fill 
                   alt="MBN Logo" 
-                  className="object-cover scale-110" 
+                  className="object-cover" 
                   unoptimized
                 />
               </div>
             </div>
           </div>
           
-          <nav className="flex-1 px-4 space-y-4 mt-8">
+          <nav className="flex-1 px-4 space-y-6 mt-12">
             {filteredNav.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -74,16 +75,16 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                   <TooltipTrigger asChild>
                     <NextLink href={item.href}>
                       <div className={cn(
-                        "flex items-center justify-center rounded-2xl transition-all group relative overflow-hidden h-16 w-16 mx-auto",
+                        "flex items-center justify-center rounded-[1.5rem] transition-all group relative overflow-hidden h-16 w-16 mx-auto",
                         isActive 
-                          ? "bg-primary text-white shadow-lg shadow-primary/30" 
+                          ? "bg-primary text-white shadow-xl shadow-primary/30 scale-110" 
                           : "text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
                       )}>
-                        <item.icon size={26} className={cn(isActive ? "text-white" : "text-slate-400 dark:text-slate-600 group-hover:text-primary transition-colors")} />
+                        <item.icon size={28} className={cn(isActive ? "text-white" : "text-slate-400 dark:text-slate-600 group-hover:text-primary transition-colors")} />
                       </div>
                     </NextLink>
                   </TooltipTrigger>
-                  <TooltipContent side="right" className="font-black text-xs px-4 py-2 rounded-xl border-none shadow-2xl bg-slate-900 text-white">
+                  <TooltipContent side="right" className="font-black text-xs px-5 py-3 rounded-[1rem] border-none shadow-2xl bg-slate-900 text-white translate-x-4">
                     {item.name}
                   </TooltipContent>
                 </Tooltip>
@@ -91,25 +92,25 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             })}
           </nav>
 
-          <div className="p-6 mt-auto flex flex-col items-center gap-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-            <div className="flex flex-col items-center gap-5 w-full">
+          <div className="p-8 mt-auto flex flex-col items-center gap-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30">
+            <div className="flex flex-col items-center gap-6 w-full">
               <ThemeToggle />
               
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="w-16 h-16 justify-center p-0 text-destructive hover:text-white hover:bg-destructive rounded-2xl font-black transition-all"
+                    className="w-16 h-16 justify-center p-0 text-destructive hover:text-white hover:bg-destructive rounded-2xl font-black transition-all shadow-sm"
                     onClick={() => logout()}
                   >
-                    <LogOut size={24} />
+                    <LogOut size={26} />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="right" className="font-black text-xs px-4 py-2 rounded-xl bg-destructive text-white border-none shadow-lg">{t.signOut}</TooltipContent>
+                <TooltipContent side="right" className="font-black text-xs px-4 py-2 rounded-xl bg-destructive text-white border-none shadow-lg translate-x-4">{t.signOut}</TooltipContent>
               </Tooltip>
 
               <div className="flex items-center justify-center">
-                <Avatar className="h-16 w-16 border-4 border-white dark:border-slate-800 shadow-xl cursor-pointer hover:scale-110 transition-all overflow-hidden">
+                <Avatar className="h-16 w-16 border-4 border-white dark:border-slate-800 shadow-2xl cursor-pointer hover:scale-110 transition-all overflow-hidden">
                   <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
                   <AvatarFallback className="bg-primary text-white font-black">{profile?.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -121,23 +122,24 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -z-10"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full -z-10 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full -z-10"></div>
         
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
-          <div className="w-14 h-14 relative rounded-xl overflow-hidden shadow-md">
-            <Image src={logoSrc} fill alt="MBN Logo" className="object-cover scale-110" unoptimized />
+        <header className="md:hidden flex items-center justify-between p-6 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
+          <div className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg">
+            <Image src={logoSrc} fill alt="MBN Logo" className="object-cover" unoptimized />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
              <ThemeToggle />
-             <Avatar className="h-10 w-10 border-2 border-slate-100 overflow-hidden" onClick={() => logout()}>
+             <Avatar className="h-12 w-12 border-2 border-slate-100 shadow-sm" onClick={() => logout()}>
               <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 md:p-12 lg:p-16 scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-6 md:p-12 lg:p-20 scroll-smooth">
           <div className="max-w-7xl mx-auto flex flex-col items-center">
             {children}
           </div>
