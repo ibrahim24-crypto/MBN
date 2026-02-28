@@ -54,12 +54,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[88px] transition-all duration-500 ease-in-out">
           <div className="p-6 flex flex-col items-center gap-8">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-14 h-14 relative rounded-2xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800 bg-white">
+              <div className="w-14 h-14 relative rounded-2xl overflow-hidden shadow-xl">
                 <Image 
                   src={logoSrc} 
                   fill 
                   alt="MBN Logo" 
-                  className="object-contain p-1.5" 
+                  className="object-cover" 
                   unoptimized
                 />
               </div>
@@ -109,7 +109,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               </Tooltip>
 
               <div className="flex items-center justify-center">
-                <Avatar className="h-14 w-14 border-2 border-white dark:border-slate-800 shadow-xl cursor-pointer hover:scale-110 transition-all">
+                <Avatar className="h-14 w-14 border-2 border-white dark:border-slate-800 shadow-xl cursor-pointer hover:scale-110 transition-all overflow-hidden">
                   <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
                   <AvatarFallback className="bg-primary text-white font-black">{profile?.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -125,13 +125,13 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
-          <div className="w-12 h-12 relative rounded-xl overflow-hidden bg-white shadow-md border border-slate-100">
-            <Image src={logoSrc} fill alt="MBN Logo" className="object-contain p-1.5" unoptimized />
+          <div className="w-12 h-12 relative rounded-xl overflow-hidden shadow-md">
+            <Image src={logoSrc} fill alt="MBN Logo" className="object-cover" unoptimized />
           </div>
           <div className="flex items-center gap-3">
              <ThemeToggle />
-             <Avatar className="h-10 w-10 border-2 border-slate-100" onClick={() => logout()}>
-              <AvatarImage src={profile?.photoURL || logoSrc} />
+             <Avatar className="h-10 w-10 border-2 border-slate-100 overflow-hidden" onClick={() => logout()}>
+              <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>
