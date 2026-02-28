@@ -10,14 +10,11 @@ import {
   Mail, 
   ShieldCheck, 
   Star, 
-  UserCheck,
   Zap,
   ShieldAlert,
-  ArrowUpRight,
-  TrendingUp,
-  Award
+  Award,
+  TrendingUp
 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
@@ -27,8 +24,6 @@ export default function ProfilePage() {
   if (loading || !profile) return null;
 
   const currentLevel = Math.floor(Math.abs(profile.xp) / 100) + 1;
-  const xpToNextLevel = (currentLevel * 100) - Math.abs(profile.xp);
-  const progressPercent = Math.abs(profile.xp) % 100;
 
   return (
     <AppLayout>
@@ -80,81 +75,64 @@ export default function ProfilePage() {
         {/* Main Profile Sections */}
         <div className="lg:col-span-8 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           
-          {/* Enhanced XP Dashboard */}
-          <Card className="border-none shadow-[0_40px_100px_rgba(59,130,246,0.15)] bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10">
-            <div className="absolute top-0 right-0 p-12 opacity-[0.05] dark:opacity-[0.1] group-hover:scale-125 group-hover:-rotate-12 transition-all duration-1000">
-              <Trophy size={350} className="text-primary" />
+          {/* Restyled Performance Statistics Card */}
+          <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10 transition-all duration-500 hover:shadow-primary/10">
+            <div className="absolute top-0 right-0 p-12 opacity-[0.05] dark:opacity-[0.1] group-hover:scale-125 group-hover:-rotate-6 transition-all duration-1000">
+              <Zap size={300} className="text-primary" />
             </div>
             
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
                 <div className="space-y-2">
                   <Badge className="bg-primary text-white border-none font-black px-4 py-1.5 rounded-full flex items-center gap-2 w-fit shadow-lg shadow-primary/20">
-                    <Zap size={14} className="fill-white" />
-                    XP Dashboard
+                    <Trophy size={14} className="fill-white" />
+                    Performance Statistics
                   </Badge>
-                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Performance Statistics</CardTitle>
+                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Academic Engagement</CardTitle>
                 </div>
-                <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-3 pr-8 rounded-full border border-slate-100 dark:border-slate-800 shadow-sm">
-                   <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-black text-2xl shadow-xl">
+                <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-4 pr-10 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm transition-transform hover:scale-105">
+                   <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-black text-3xl shadow-xl">
                       {currentLevel}
                    </div>
                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Level</span>
-                      <span className="text-sm font-bold text-slate-900 dark:text-white">Active Contributor</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Current Tier</span>
+                      <span className="text-lg font-bold text-slate-900 dark:text-white">MBN Level {currentLevel}</span>
                    </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
                   <div className="relative">
-                    <div className="flex items-baseline gap-4 mb-4">
+                    <div className="flex items-baseline gap-4 mb-2">
                       <span className={cn(
-                        "text-9xl font-black tracking-tighter leading-none transition-colors",
-                        profile.xp < 0 ? "text-destructive" : "text-primary"
+                        "text-9xl font-black tracking-tighter leading-none transition-all duration-500",
+                        profile.xp < 0 ? "text-destructive drop-shadow-[0_0_20px_rgba(239,68,68,0.2)]" : "text-primary drop-shadow-[0_0_20px_rgba(59,130,246,0.2)]"
                       )}>{profile.xp}</span>
                       <span className="text-4xl font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">XP</span>
                     </div>
-                    {profile.xp < 0 && (
-                      <div className="flex items-center gap-2 text-destructive font-bold text-sm bg-destructive/5 border border-destructive/10 w-fit px-4 py-2 rounded-xl mb-4">
+                    {profile.xp < 0 ? (
+                      <div className="flex items-center gap-2 text-destructive font-bold text-sm bg-destructive/5 border border-destructive/10 w-fit px-4 py-2 rounded-xl">
                         <ShieldAlert size={16} />
-                        Disciplinary Penalty Active
+                        Disciplinary Penalty Logged
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-primary font-bold text-sm bg-primary/5 border border-primary/10 w-fit px-4 py-2 rounded-xl">
+                        <TrendingUp size={16} />
+                        Positive Contribution Active
                       </div>
                     )}
                   </div>
-                  
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-end">
-                      <div className="space-y-1">
-                        <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Season Progress</span>
-                        <p className="text-lg font-bold text-slate-700 dark:text-slate-200">{xpToNextLevel} XP to Level {currentLevel + 1}</p>
-                      </div>
-                      <TrendingUp size={20} className="text-emerald-500" />
-                    </div>
-                    <Progress value={progressPercent} className="h-6 bg-slate-100 dark:bg-slate-800 border-none rounded-full overflow-hidden">
-                       <div className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000" style={{ width: `${progressPercent}%` }} />
-                    </Progress>
-                  </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center gap-4 group/item hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl transition-all duration-500">
-                    <div className="p-5 bg-white dark:bg-slate-900 rounded-3xl text-yellow-500 shadow-xl group-hover/item:scale-110 transition-transform">
+                <div className="space-y-6">
+                  <div className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-6 group/item hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl transition-all duration-500">
+                    <div className="p-5 bg-white dark:bg-slate-900 rounded-3xl text-yellow-500 shadow-xl group-hover/item:scale-110 group-hover/item:rotate-12 transition-all">
                       <Star className="fill-yellow-500" size={32} />
                     </div>
                     <div className="space-y-1">
-                      <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Pioneer</span>
-                      <p className="text-sm font-black text-slate-900 dark:text-white">Active Founder</p>
-                    </div>
-                  </div>
-                  <div className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center gap-4 group/item hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl transition-all duration-500">
-                    <div className="p-5 bg-white dark:bg-slate-900 rounded-3xl text-primary shadow-xl group-hover/item:scale-110 transition-transform">
-                      <Award size={32} />
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Competitor</span>
-                      <p className="text-sm font-black text-slate-900 dark:text-white">Eligibility: {profile.xp >= 100 ? 'YES' : 'NO'}</p>
+                      <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Achievement</span>
+                      <p className="text-xl font-black text-slate-900 dark:text-white">Active Founder</p>
                     </div>
                   </div>
                 </div>
@@ -164,18 +142,14 @@ export default function ProfilePage() {
               
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl text-emerald-600 dark:text-emerald-400">
-                       <UserCheck size={24} />
+                    <div className="p-3 bg-primary/5 rounded-xl text-primary">
+                       <Zap size={24} className="fill-primary/20" />
                     </div>
                     <div>
-                       <h4 className="font-black text-slate-900 dark:text-white">Competition Status</h4>
-                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">You need 100+ XP to enter regional events.</p>
+                       <h4 className="font-black text-slate-900 dark:text-white text-lg">MBN Influence Score</h4>
+                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Calculated based on school participation and council involvement.</p>
                     </div>
                  </div>
-                 <Badge variant="outline" className="h-10 px-6 rounded-full font-black border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300">
-                    Details
-                    <ArrowUpRight size={14} className="ml-2" />
-                 </Badge>
               </div>
             </div>
           </Card>
@@ -186,9 +160,9 @@ export default function ProfilePage() {
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <ShieldCheck size={24} className="text-primary" />
-                  Security
+                  Account Security
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Account protection & access</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Protection & verification status</CardDescription>
               </CardHeader>
               <CardContent className="p-10 pt-8 space-y-6">
                 <div className="space-y-4">
@@ -197,7 +171,7 @@ export default function ProfilePage() {
                       <div className="w-2 h-2 rounded-full bg-emerald-500" />
                       <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google Verified</span>
                     </div>
-                    <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[10px]">ACTIVE</Badge>
+                    <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[10px]">VERIFIED</Badge>
                   </div>
                   <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
                     <div className="flex items-center gap-4">
@@ -213,16 +187,16 @@ export default function ProfilePage() {
             <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden adaptive-card">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                  <Star size={24} className="text-primary" />
+                  <Award size={24} className="text-primary" />
                   Milestones
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Milestones achieved this year</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Recognitions achieved this year</CardDescription>
               </CardHeader>
               <CardContent className="p-10 pt-8">
                  <div className="space-y-8">
                    {[
                      { name: 'Pioneer', desc: 'School launch member', date: 'OCT 24', color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10' },
-                     { name: 'Contributor', desc: '100+ Positive XP', date: 'NOV 24', color: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10' }
+                     { name: 'Contributor', desc: 'Active platform user', date: 'NOV 24', color: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10' }
                    ].map((badge, i) => (
                      <div key={i} className="flex items-center gap-5 group">
                        <div className={cn("p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 shadow-sm", badge.color)}>
