@@ -151,8 +151,8 @@ export default function AdminPage() {
     <div className="h-screen flex items-center justify-center p-4">
       <div className="text-center">
         <ShieldCheck size={60} className="mx-auto text-destructive mb-4 opacity-20" />
-        <h1 className="text-3xl font-black font-headline tracking-tighter">Access Denied</h1>
-        <p className="text-muted-foreground mt-2 font-bold">Only the Hub Administration can access this area.</p>
+        <h1 className="text-3xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">Access Denied</h1>
+        <p className="text-slate-500 mt-2 font-bold">Only the Hub Administration can access this area.</p>
         <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return to Hub</Button>
       </div>
     </div>
@@ -160,7 +160,7 @@ export default function AdminPage() {
 
   return (
     <AppLayout>
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
         <div className="space-y-1">
           <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Command Center</Badge>
           <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tighter flex items-center gap-3 text-slate-900 dark:text-white leading-tight">
@@ -186,11 +186,11 @@ export default function AdminPage() {
           <Table className="table-fixed w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="w-[25%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
-                <TableHead className="w-[35%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
-                <TableHead className="w-[10%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
-                <TableHead className="w-[18%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
-                <TableHead className="w-[12%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
+                <TableHead className="w-[25%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
+                <TableHead className="w-[35%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
+                <TableHead className="w-[10%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
+                <TableHead className="w-[18%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
+                <TableHead className="w-[12%] py-3 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -215,12 +215,12 @@ export default function AdminPage() {
               ) : (
                 filteredUsers.map((u) => (
                   <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                    <TableCell className="py-3 px-4">
+                    <TableCell className="py-2 px-4">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
-                          className="h-10 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-3 shadow-inner"
+                          className="h-9 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-3 shadow-inner"
                         />
                       ) : (
                         <div className="flex items-center gap-3 overflow-hidden">
@@ -231,16 +231,16 @@ export default function AdminPage() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-slate-400 dark:text-slate-500 font-medium text-xs truncate">
+                    <TableCell className="py-2 px-4 text-slate-400 dark:text-slate-500 font-medium text-xs truncate">
                       <div className="truncate w-full" title={u.email}>{u.email}</div>
                     </TableCell>
-                    <TableCell className="py-3 px-4">
+                    <TableCell className="py-2 px-4">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
                           value={editForm.xp} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, xp: parseInt(e.target.value) }))}
-                          className="h-10 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-2 shadow-inner"
+                          className="h-9 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-2 shadow-inner"
                         />
                       ) : (
                         u.role === 'student' || u.role === 'council' ? (
@@ -257,13 +257,13 @@ export default function AdminPage() {
                         )
                       )}
                     </TableCell>
-                    <TableCell className="py-3 px-4">
+                    <TableCell className="py-2 px-4">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
                         >
-                          <SelectTrigger className="w-full h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-[10px] px-2 shadow-inner">
+                          <SelectTrigger className="w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-[10px] px-2 shadow-inner">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl border-none p-2">
@@ -279,7 +279,7 @@ export default function AdminPage() {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-right">
+                    <TableCell className="py-2 px-4 text-right">
                       {editingId === u.id ? (
                         <div className="flex justify-end gap-1.5">
                           <Button size="icon" className="h-8 w-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
