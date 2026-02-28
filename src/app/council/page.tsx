@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { ShieldCheck, MessageSquare, ListCheck, FileText, Plus, Edit2, Trash2, Eye, Calendar, Loader2, Sparkles } from 'lucide-react';
+import { ShieldCheck, MessageSquare, ListCheck, FileText, Plus, Edit2, Trash2, Eye, Calendar, Loader2, Sparkles, Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -173,7 +173,7 @@ export default function CouncilPage() {
 
   return (
     <AppLayout>
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16 animate-in fade-in slide-in-from-top-4 duration-1000 w-full px-4">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20 animate-in fade-in slide-in-from-top-4 duration-1000 w-full px-4">
         <div className="space-y-4">
           <Badge className="bg-primary/10 text-primary font-black mb-2 rounded-full px-6 py-1.5 border-none shadow-sm uppercase tracking-[0.3em] text-[10px]">Staff Only</Badge>
           <h1 className="text-5xl md:text-8xl font-black font-headline tracking-tighter flex items-center gap-6 text-slate-900 dark:text-white leading-[0.85]">
@@ -187,8 +187,8 @@ export default function CouncilPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full pb-40">
         
         {/* PROPOSALS MANAGEMENT */}
-        <Card className="border-none shadow-[0_48px_80px_-24px_rgba(0,0,0,0.1)] bg-white dark:bg-slate-900 rounded-[4rem] overflow-hidden flex flex-col min-h-[600px]">
-          <CardHeader className="p-12 md:p-16 border-b border-slate-50 dark:border-slate-800 flex flex-row items-center justify-between gap-4">
+        <Card className="border-none shadow-[0_48px_80px_-24px_rgba(0,0,0,0.1)] bg-white dark:bg-slate-900 rounded-[4rem] overflow-hidden flex flex-col min-h-[700px]">
+          <CardHeader className="p-12 md:p-16 border-b border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-8">
             <div className="space-y-2">
               <CardTitle className="text-4xl font-black tracking-tighter flex items-center gap-4">
                 <MessageSquare className="text-primary" size={32} />
@@ -198,11 +198,12 @@ export default function CouncilPage() {
             </div>
             <Dialog open={proposalDialog} onOpenChange={(open) => { setProposalDialog(open); if (!open) resetProposalForm(); }}>
               <DialogTrigger asChild>
-                <Button size="icon" className="h-16 w-16 rounded-2xl shadow-xl shadow-primary/30 hover:scale-110 transition-transform">
-                  <Plus size={32} />
+                <Button className="gap-4 rounded-[2rem] font-black shadow-xl shadow-primary/30 h-16 px-8 hover:scale-[1.02] transition-all text-lg shrink-0">
+                  <Plus size={24} />
+                  {t.newProposal}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[700px] rounded-[4rem] p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+              <DialogContent className="sm:max-w-[750px] rounded-[4rem] p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-4xl font-black tracking-tighter">{editingId ? t.edit : t.newProposal}</DialogTitle>
                 </DialogHeader>
@@ -211,7 +212,7 @@ export default function CouncilPage() {
                     <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t.headline}</label>
                     <Input 
                       placeholder={t.headline} 
-                      className="h-16 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none font-black text-xl px-6"
+                      className="h-16 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none font-black text-xl px-6 focus:ring-8 focus:ring-primary/5 transition-all"
                       value={proposalForm.title}
                       onChange={(e) => setProposalForm(p => ({ ...p, title: e.target.value }))}
                     />
@@ -234,7 +235,7 @@ export default function CouncilPage() {
                     <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t.details}</label>
                     <Textarea 
                       placeholder={t.details} 
-                      className="min-h-[250px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed"
+                      className="min-h-[300px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed focus:ring-8 focus:ring-primary/5 transition-all"
                       value={proposalForm.content}
                       onChange={(e) => setProposalForm(p => ({ ...p, content: e.target.value }))}
                     />
@@ -242,12 +243,15 @@ export default function CouncilPage() {
                 </div>
                 <DialogFooter className="gap-4">
                   <Button variant="ghost" className="h-14 rounded-2xl font-black px-10 text-lg" onClick={() => setProposalDialog(false)}>{t.cancel}</Button>
-                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-primary/20 text-lg" onClick={handleSaveProposal}>{t.publish}</Button>
+                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-primary/20 text-lg gap-3" onClick={handleSaveProposal}>
+                    <Send size={20} />
+                    {t.publish}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </CardHeader>
-          <CardContent className="p-8 md:p-12 space-y-8 flex-1 overflow-y-auto max-h-[800px]">
+          <CardContent className="p-8 md:p-12 space-y-8 flex-1 overflow-y-auto max-h-[850px]">
             {loadingProposals ? (
                <div className="flex flex-col items-center justify-center py-24 gap-6 opacity-30">
                   <Loader2 className="animate-spin" size={48} />
@@ -283,8 +287,8 @@ export default function CouncilPage() {
         </Card>
 
         {/* MEETING MINUTES MANAGEMENT */}
-        <Card className="border-none shadow-[0_48px_80px_-24px_rgba(0,0,0,0.1)] bg-white dark:bg-slate-900 rounded-[4rem] overflow-hidden flex flex-col min-h-[600px]">
-          <CardHeader className="p-12 md:p-16 border-b border-slate-50 dark:border-slate-800 flex flex-row items-center justify-between gap-4">
+        <Card className="border-none shadow-[0_48px_80px_-24px_rgba(0,0,0,0.1)] bg-white dark:bg-slate-900 rounded-[4rem] overflow-hidden flex flex-col min-h-[700px]">
+          <CardHeader className="p-12 md:p-16 border-b border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-8">
             <div className="space-y-2">
               <CardTitle className="text-4xl font-black tracking-tighter flex items-center gap-4">
                 <FileText className="text-accent" size={32} />
@@ -294,11 +298,12 @@ export default function CouncilPage() {
             </div>
             <Dialog open={minuteDialog} onOpenChange={(open) => { setMinuteDialog(open); if (!open) resetMinuteForm(); }}>
               <DialogTrigger asChild>
-                <Button size="icon" className="h-16 w-16 rounded-2xl shadow-xl shadow-accent/30 bg-accent hover:bg-accent/90 hover:scale-110 transition-transform">
-                  <Plus size={32} />
+                <Button className="gap-4 rounded-[2rem] font-black shadow-xl shadow-accent/30 bg-accent hover:bg-accent/90 h-16 px-8 hover:scale-[1.02] transition-all text-lg shrink-0">
+                  <Plus size={24} />
+                  {t.newMinute}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[700px] rounded-[4rem] p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+              <DialogContent className="sm:max-w-[750px] rounded-[4rem] p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-4xl font-black tracking-tighter">{editingId ? t.edit : t.newMinute}</DialogTitle>
                 </DialogHeader>
@@ -307,7 +312,7 @@ export default function CouncilPage() {
                     <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t.headline}</label>
                     <Input 
                       placeholder={t.headline} 
-                      className="h-16 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none font-black text-xl px-6"
+                      className="h-16 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none font-black text-xl px-6 focus:ring-8 focus:ring-accent/5 transition-all"
                       value={minuteForm.title}
                       onChange={(e) => setMinuteForm(m => ({ ...m, title: e.target.value }))}
                     />
@@ -325,7 +330,7 @@ export default function CouncilPage() {
                     <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t.details}</label>
                     <Textarea 
                       placeholder={t.details} 
-                      className="min-h-[250px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed"
+                      className="min-h-[300px] rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border-none p-8 font-medium text-xl leading-relaxed focus:ring-8 focus:ring-accent/5 transition-all"
                       value={minuteForm.content}
                       onChange={(e) => setMinuteForm(m => ({ ...m, content: e.target.value }))}
                     />
@@ -333,12 +338,15 @@ export default function CouncilPage() {
                 </div>
                 <DialogFooter className="gap-4">
                   <Button variant="ghost" className="h-14 rounded-2xl font-black px-10 text-lg" onClick={() => setMinuteDialog(false)}>{t.cancel}</Button>
-                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-accent/20 bg-accent hover:bg-accent/90 text-lg" onClick={handleSaveMinute}>{t.publish}</Button>
+                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-accent/20 bg-accent hover:bg-accent/90 text-lg gap-3" onClick={handleSaveMinute}>
+                    <Send size={20} />
+                    {t.publish}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </CardHeader>
-          <CardContent className="p-8 md:p-12 space-y-8 flex-1 overflow-y-auto max-h-[800px]">
+          <CardContent className="p-8 md:p-12 space-y-8 flex-1 overflow-y-auto max-h-[850px]">
             {loadingMinutes ? (
                <div className="flex flex-col items-center justify-center py-24 gap-6 opacity-30">
                   <Loader2 className="animate-spin text-accent" size={48} />
