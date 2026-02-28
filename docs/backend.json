@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -99,6 +100,21 @@
         "updatedAt",
         "status"
       ]
+    },
+    "XPLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "XPLog",
+      "type": "object",
+      "description": "Records every change in a user's XP, including the amount, the reason, and the administrator who performed the action.",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "amount": { "type": "number" },
+        "reason": { "type": "string" },
+        "adminId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "amount", "reason", "timestamp"]
     }
   },
   "auth": {
@@ -116,12 +132,26 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores individual user profiles, including their unique ID (matching Firebase Auth UID), email, display name, assigned role, experience points (XP), and super administrator status. This path is primarily owned by the user themselves, but admin/super admin roles have elevated privileges. Includes `role` and `isSuperAdmin` fields for DBAC (Database Access Control) to define authorization levels.",
+          "description": "Stores individual user profiles.",
           "params": [
             {
               "name": "userId",
-              "description": "The unique identifier of the user, corresponding to their Firebase Authentication UID."
+              "description": "The unique identifier of the user."
             }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/xp_logs/{logId}",
+        "definition": {
+          "entityName": "XPLog",
+          "schema": {
+            "$ref": "#/backend/entities/XPLog"
+          },
+          "description": "Subcollection for each user tracking their XP history.",
+          "params": [
+            { "name": "userId", "description": "The user receiving the XP change" },
+            { "name": "logId", "description": "Unique log identifier" }
           ]
         }
       },
@@ -132,7 +162,7 @@
           "schema": {
             "$ref": "#/backend/entities/Announcement"
           },
-          "description": "Contains all announcements published by users with the 'Council' role. Each document includes `authorId` (denormalized for authorization independence) and `status` ('Draft', 'Published', 'Archived'). 'Published' announcements are readable by all authenticated users. 'Draft' announcements are only readable/writable by the `authorId` or 'Administration'/'SuperAdmin' users. The `status` field enables QAP-compliant list queries and clear security rule enforcement.",
+          "description": "Contains all announcements published by users.",
           "params": [
             {
               "name": "announcementId",
@@ -142,6 +172,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to be secure, scalable, and highly debuggable, strictly adhering to the core design principles and mandates. \n\n**Authorization Independence via Denormalization (Mandate A):**\n*   For the `Announcement` entity, the `authorId` field is explicitly denormalized into each announcement document. This is critical for authorization independence. When evaluating access to an announcement, security rules can directly check `request.auth.uid == resource.data.authorId` without needing to perform a `get()` operation to fetch the author's user document. This eliminates hierarchical authorization dependencies, enabling atomic operations and simplifying rule evaluation significantly.\n\n**QAPs (Rules are not Filters) and Structural Segregation (Mandate B):**\n*   **User Profiles (`/users/{userId}`):** This collection stores user-specific data including their `role` and `isSuperAdmin` status. It naturally adheres to a homogeneous security posture: a user can read/update their own profile (with restrictions on role/admin status fields), while 'Administration' or 'SuperAdmin' users have broader management rights. `list` operations are typically restricted to administrative roles or specific, filtered views (e.g., 'list all students for a teacher' would require an administrative rule based on the querying user's role).\n*   **Announcements (`/announcements/{announcementId}`):** While all announcements reside in a single collection, the `status` field (`Draft`, `Published`, `Archived`) combined with `authorId` is used to achieve *logical segregation* of security postures within the same collection, simplifying client-side queries and rule definitions. This design ensures QAP compliance:\n    *   To list *published* announcements: Client queries `/announcements` with `where('status', '==', 'Published')`. Rules can then simply enforce `allow list: if resource.data.status == 'Published';`. This is QAP-compliant as the query filter directly aligns with the rule condition.\n    *   To list *draft* announcements by the current user: Client queries `/announcements` with `where('authorId', '==', request.auth.uid).where('status', '==', 'Draft')`. Rules can enforce `allow list: if request.auth.uid == resource.data.authorId && resource.data.status == 'Draft';`. This is also QAP-compliant.\n    This approach avoids splitting announcements into separate physical collections (e.g., `/public_announcements`, `/users/{uid}/drafts`) which could complicate cross-status querying and management for administrative roles, while still ensuring secure and efficient list operations.\n\n**Access Modeling (Mandate C):**\n*   **Private Data:** `/users/{userId}` utilizes path-based ownership for individual user profiles, where `userId` directly corresponds to `request.auth.uid`.\n*   **Global Roles (DBAC):** User roles (`role` field) and the `isSuperAdmin` flag are stored directly within the `/users/{userId}` documents. This allows security rules to perform efficient, database-centric authorization checks (e.g., `request.resource.data.role == 'Administration'` or `get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSuperAdmin == true`) without relying on custom claims or complex `get()` calls to other parts of the database (except for checking the requesting user's own role, which is typically cached or available via `request.auth.uid`)."
+    "reasoning": "XP history is modeled as a subcollection under each user to ensure high-performance per-user history queries and clear security isolation. Administrative actions trigger both a user profile update and an entry in this subcollection."
   }
 }

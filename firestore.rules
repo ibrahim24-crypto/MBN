@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -43,17 +44,9 @@ service cloud.firestore {
     // --- Collection Rules ---
 
     match /users/{userId} {
-      // Users can read their own profile, Admins can read all.
       allow get: if isOwner(userId) || isAdmin();
-      
-      // Only Admins can list all users.
       allow list: if isAdmin();
-      
-      // Allow creation during first-time sign-in.
       allow create: if isOwner(userId) && request.resource.data.id == userId;
-      
-      // Users can update their own non-sensitive fields.
-      // Admins can update everything.
       allow update: if resource != null && (
         isAdmin() || 
         (isOwner(userId) && 
@@ -61,31 +54,26 @@ service cloud.firestore {
          request.resource.data.isSuperAdmin == resource.data.isSuperAdmin && 
          request.resource.data.id == resource.data.id)
       );
-      
       allow delete: if isAdmin();
+
+      match /xp_logs/{logId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isAdmin();
+      }
     }
 
     match /announcements/{announcementId} {
-      // Anyone signed in can read published announcements.
-      // Drafts require ownership or Admin role.
       allow get: if isSignedIn() && (
         resource.data.status == 'Published' || 
         isOwner(resource.data.authorId) || 
         isAdmin()
       );
-      
-      // List allows based on individual document security.
       allow list: if isSignedIn();
-
-      // Only Council members or Admins can create.
       allow create: if isCouncil() && request.resource.data.authorId == request.auth.uid;
-
-      // Authors can update their own content, Admins can update anything.
       allow update: if resource != null && (
         isAdmin() || 
         (isOwner(resource.data.authorId) && request.resource.data.authorId == resource.data.authorId)
       );
-
       allow delete: if resource != null && (isOwner(resource.data.authorId) || isAdmin());
     }
   }

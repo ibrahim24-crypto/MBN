@@ -1,3 +1,4 @@
+
 export type Language = 'ar' | 'fr';
 
 export const translations = {
@@ -35,7 +36,14 @@ export const translations = {
     studentGamification: 'تحفيز الطلاب',
     xpIncentive: 'يكسب الطلاب 100 XP عند دخولهم الأول لتحفيز المشاركة.',
     smartBoard: 'اللوحة الذكية',
-    roleManagement: 'إدارة الأدوار'
+    roleManagement: 'إدارة الأدوار',
+    xpHistory: 'سجل النقاط',
+    reason: 'السبب',
+    amount: 'النقاط',
+    timestamp: 'التاريخ',
+    noLogs: 'لا يوجد سجل لنقاط الخبرة بعد.',
+    xpUpdated: 'تم تحديث النقاط بنجاح',
+    manualAdjustment: 'تعديل يدوي من قبل الإدارة'
   },
   fr: {
     title: 'Conseil MBN',
@@ -71,6 +79,13 @@ export const translations = {
     studentGamification: 'Gamification des élèves',
     xpIncentive: 'Les élèves gagnent 100 XP dès leur première entrée pour encourer la participation.',
     smartBoard: 'Tableau intelligent',
-    roleManagement: 'Gestion des rôles'
+    roleManagement: 'Gestion des rôles',
+    xpHistory: 'Historique XP',
+    reason: 'Raison',
+    amount: 'Points',
+    timestamp: 'Date',
+    noLogs: 'Aucun historique XP disponible.',
+    xpUpdated: 'Points XP mis à jour avec succès',
+    manualAdjustment: 'Ajustement manuel par l\'administration'
   }
 };

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -22,7 +23,8 @@ import {
   collection, 
   getDocs, 
   doc, 
-  updateDoc 
+  updateDoc,
+  addDoc
 } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -32,6 +34,8 @@ import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface UserData {
   id: string;
@@ -42,8 +46,9 @@ interface UserData {
 }
 
 export default function AdminPage() {
-  const { isSuperAdmin, loading: authLoading } = useAuth();
+  const { isSuperAdmin, loading: authLoading, profile } = useAuth();
   const db = useFirestore();
+  const { t } = useLanguage();
   const [users, setUsers] = useState<UserData[]>([]);
   const [fetching, setFetching] = useState(true);
   const [search, setSearch] = useState('');
@@ -86,19 +91,35 @@ export default function AdminPage() {
   };
 
   const saveUserChanges = async (id: string) => {
-    if (!db) return;
+    if (!db || !profile) return;
     const userDocRef = doc(db, 'users', id);
+    const currentUser = users.find(u => u.id === id);
+    const xpDifference = Number(editForm.xp) - (currentUser?.xp || 0);
+
     try {
+      // 1. Update User Profile
       await updateDoc(userDocRef, { 
         displayName: editForm.displayName, 
         xp: Number(editForm.xp),
         role: editForm.role 
       });
+
+      // 2. Create XP Log if XP changed
+      if (xpDifference !== 0) {
+        await addDoc(collection(db, 'users', id, 'xp_logs'), {
+          userId: id,
+          amount: xpDifference,
+          reason: t.manualAdjustment,
+          adminId: profile.id,
+          timestamp: new Date().toISOString()
+        });
+      }
+
       setUsers(prev => prev.map(u => u.id === id ? { ...u, ...editForm, xp: Number(editForm.xp!) } : u));
       setEditingId(null);
       toast({
-        title: "User Updated",
-        description: "User information has been successfully changed.",
+        title: t.xpUpdated,
+        description: `Name and XP (${xpDifference > 0 ? '+' : ''}${xpDifference}) updated.`,
       });
     } catch (error: any) {
       if (error.code === 'permission-denied') {
@@ -137,9 +158,9 @@ export default function AdminPage() {
         <div>
           <h1 className="text-3xl font-bold font-headline tracking-tight flex items-center gap-2">
             <UserCog className="text-primary" />
-            Administration
+            {t.adminPanel}
           </h1>
-          <p className="text-muted-foreground">Manage user names, XP, and roles.</p>
+          <p className="text-muted-foreground">{t.manageUsers}</p>
         </div>
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
