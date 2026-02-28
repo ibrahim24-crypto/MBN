@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -8,11 +9,10 @@ import {
   ShieldCheck, 
   LogOut,
   UserCircle,
-  Trophy,
-  Languages,
   ChevronRight,
-  Sparkles,
-  Command
+  Command,
+  Languages,
+  Zap
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Separator } from '@/components/ui/separator';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -103,6 +104,13 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                   <div className="flex items-center gap-2.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/40 animate-pulse"></div>
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em]">{profile?.role}</p>
+                    <Separator orientation="vertical" className="h-3 mx-1 bg-slate-200 dark:bg-slate-700" />
+                    <span className={cn(
+                      "text-[10px] font-black flex items-center gap-0.5",
+                      (profile?.xp ?? 0) < 0 ? "text-destructive" : "text-primary"
+                    )}>
+                      {profile?.xp} XP
+                    </span>
                   </div>
                 </div>
               </div>
@@ -154,7 +162,13 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             <div className="bg-primary p-2.5 rounded-xl text-white shadow-lg shadow-primary/20">
               <Command size={28} />
             </div>
-            <span className="text-2xl font-black font-headline text-slate-900 dark:text-white tracking-tighter">MBN</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <Zap size={10} className="text-primary fill-primary" />
+                <span className="text-[10px] font-black text-primary">{profile?.xp} XP</span>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-4">
              <ThemeToggle />

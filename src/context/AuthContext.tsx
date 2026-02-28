@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -21,7 +22,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 export type UserRole = 'student' | 'teacher' | 'council' | 'administration';
 
 interface UserProfile {
-  id: string; // Changed from uid to id to match backend.json and rules
+  id: string;
   email: string;
   displayName: string;
   photoURL: string;
@@ -66,7 +67,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (!userDoc.exists()) {
             const initialRole: UserRole = firebaseUser.email === SUPER_ADMIN_EMAIL ? 'administration' : 'student';
-            const initialXP = initialRole === 'student' ? 100 : 0;
+            // All new users start with 100 XP unless they are super admins/admins
+            const initialXP = initialRole === 'administration' ? 0 : 100;
             const now = new Date();
             
             currentProfile = {
