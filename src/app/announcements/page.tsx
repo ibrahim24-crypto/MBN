@@ -1,14 +1,12 @@
-
 "use client";
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { 
   Card, 
-  CardContent, 
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
@@ -37,8 +35,8 @@ interface Announcement {
   content: string;
   authorName: string;
   authorRole: string;
+  visibility: string;
   createdAt: any;
-  status: string;
 }
 
 export default function AnnouncementsPage() {
@@ -48,7 +46,8 @@ export default function AnnouncementsPage() {
   
   const announcementsQuery = useMemoFirebase(() => {
     if (!db) return null;
-    return query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
+    // Query the 'proposals' collection as these are the source of official announcements
+    return query(collection(db, 'proposals'), orderBy('createdAt', 'desc'));
   }, [db]);
 
   const { data: announcements, isLoading: fetching } = useCollection<Announcement>(announcementsQuery);
@@ -61,22 +60,23 @@ export default function AnnouncementsPage() {
 
   const canCreate = profile?.role === 'council' || profile?.role === 'administration';
 
-  const filteredAnnouncements = announcements?.filter(ann => 
-    ann.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    ann.content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Client-side filtering as secondary layer to security rules
+  const filteredAnnouncements = announcements?.filter(ann => {
+    const matchesSearch = ann.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         ann.content.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
+  });
 
   const createAnnouncement = () => {
-    if (!newTitle || !newContent || !db) return;
+    if (!newTitle || !newContent || !db || !profile) return;
 
-    addDocumentNonBlocking(collection(db, 'announcements'), {
+    addDocumentNonBlocking(collection(db, 'proposals'), {
       title: newTitle,
       content: newContent,
-      authorName: profile?.displayName,
-      authorRole: profile?.role,
-      authorId: profile?.id,
+      authorId: profile.id,
+      visibility: 'PUBLIC',
       createdAt: new Date(),
-      status: 'Published'
+      updatedAt: new Date().toISOString()
     });
     
     setIsDialogOpen(false);
@@ -142,6 +142,7 @@ export default function AnnouncementsPage() {
         )}
       </header>
 
+      {/* Reworked High-Fidelity Search Bar */}
       <div className="w-full max-w-3xl mx-auto mb-20 relative group px-6 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150">
         <div className="absolute inset-0 bg-primary/10 blur-[80px] -z-10 rounded-full opacity-30"></div>
         <Search size={28} className="absolute left-12 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-all duration-300" />
@@ -176,7 +177,7 @@ export default function AnnouncementsPage() {
                 <div className="lg:w-2/5 flex flex-col justify-between">
                   <div className="space-y-10">
                     <Badge variant="outline" className="uppercase tracking-[0.4em] text-[11px] font-black border-primary/20 text-primary bg-primary/5 px-8 py-4 rounded-full shadow-sm w-fit">
-                      {ann.authorRole}
+                      {ann.visibility}
                     </Badge>
                     <CardTitle className="text-5xl md:text-6xl font-black font-headline text-slate-900 dark:text-white leading-[0.95] tracking-tight group-hover:text-primary transition-colors duration-500">
                       {ann.title}
@@ -186,14 +187,14 @@ export default function AnnouncementsPage() {
                   <div className="mt-20 flex items-center gap-8 border-t dark:border-slate-800/50 pt-12">
                     <Avatar className="h-20 w-20 border-[8px] border-slate-50 dark:border-slate-800 shadow-2xl group-hover:scale-110 transition-transform duration-700">
                       <AvatarFallback className="bg-primary text-white font-black text-3xl">
-                        {ann.authorName?.charAt(0)}
+                        {ann.authorRole?.charAt(0) || 'M'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-2xl font-black text-slate-900 dark:text-white leading-none mb-3">{ann.authorName}</span>
+                      <span className="text-2xl font-black text-slate-900 dark:text-white leading-none mb-3">MBN Hub</span>
                       <span className="text-xs font-black text-slate-400 flex items-center gap-3 uppercase tracking-[0.3em]">
                         <Calendar size={18} className="text-primary" />
-                        {ann.createdAt?.toDate ? format(ann.createdAt.toDate(), 'PPP') : '...'}
+                        {ann.createdAt?.toDate ? format(ann.createdAt.toDate(), 'PPP') : 'Recently'}
                       </span>
                     </div>
                   </div>

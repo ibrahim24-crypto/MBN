@@ -17,16 +17,6 @@ service cloud.firestore {
      * - /roles_council/{userId}: Presence of a document here grants school council privileges.
      * - /proposals/{proposalId}: Shared announcements with field-based visibility control.
      * - /meetingMinutes/{meetingMinuteId}: Confidential records restricted to Admin and Council.
-     * 
-     * KEY SECURITY DECISIONS:
-     * 1. Authorization Independence: We use exists() checks on dedicated role collections 
-     *    (/roles_admin, /roles_council) to avoid expensive get() calls and complex dependencies.
-     * 2. Visibility-Based Access: Proposals use a 'visibility' field to determine if a Student or 
-     *    Teacher can read the content, while Admin/Council retain full control.
-     * 3. Immutability: Critical relational fields like 'authorId' or 'id' are protected from 
-     *    modification after creation.
-     * 4. Prototyping Flexibility: Schema validation (data types, optional fields) is omitted to 
-     *    allow for rapid frontend iteration, focusing purely on secure authorization.
      */
 
     // --- GLOBAL HELPER FUNCTIONS ---
@@ -35,9 +25,12 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Checks if the user is in the Admin role collection
+    // Checks if the user is in the Admin role collection or is the Super Admin
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid)) ||
+        request.auth.token.email == 'ibrahimezzine09@gmail.com'
+      );
     }
 
     // Checks if the user is in the Council role collection
@@ -61,14 +54,6 @@ service cloud.firestore {
 
     // --- COLLECTION RULES ---
 
-    /**
-     * @description Rules for user profile documents. Users can manage their own profile, 
-     * while Admins and Council members have broader lookup and management rights.
-     * @path /users/{userId}
-     * @allow (get) Any signed-in user viewing their own profile, or an Admin/Council member.
-     * @deny (list) Anonymous users or standard students listing all users.
-     * @principle Path-based ownership combined with role-based administrative access.
-     */
     match /users/{userId} {
       allow get: if isOwner(userId) || isStaff();
       allow list: if isStaff();
@@ -77,49 +62,26 @@ service cloud.firestore {
       allow delete: if isAdmin() && resource != null;
     }
 
-    /**
-     * @description System-level marker for Admin privileges. 
-     * @path /roles_admin/{userId}
-     * @allow (get) The user checking their own status or an Admin.
-     * @deny (create/update/delete) Anyone except an Admin.
-     * @principle Structural Segregation for efficient authorization checks.
-     */
     match /roles_admin/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isAdmin();
       allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description System-level marker for Council privileges.
-     * @path /roles_council/{userId}
-     * @allow (get) The user checking their own status or an Admin.
-     * @deny (create/update/delete) Anyone except an Admin.
-     * @principle Structural Segregation for efficient authorization checks.
-     */
     match /roles_council/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isAdmin();
       allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Rules for Proposals. Content visibility is managed by a field. 
-     * Only Admin and Council members can modify this collection.
-     * @path /proposals/{proposalId}
-     * @allow (list) A student listing proposals marked with 'STUDENT' visibility.
-     * @deny (create) A student attempting to create a proposal.
-     * @principle Field-based access control for reads; Role-based control for writes.
-     */
     match /proposals/{proposalId} {
       allow get: if isStaff() 
                  || resource.data.visibility == 'PUBLIC'
-                 || (resource.data.visibility == 'STUDENT' && getUserRole() == 'Student')
-                 || (resource.data.visibility == 'TEACHER' && getUserRole() == 'Teacher');
+                 || (resource.data.visibility == 'STUDENT' && getUserRole() == 'student')
+                 || (resource.data.visibility == 'TEACHER' && getUserRole() == 'teacher');
       
-      // List rules mirror get logic for query security
       allow list: if isStaff()
-                  || (isSignedIn() && (getUserRole() == 'Student' || getUserRole() == 'Teacher'));
+                  || (isSignedIn() && (getUserRole() == 'student' || getUserRole() == 'teacher'));
       
       allow create: if isStaff() 
                     && request.resource.data.authorId == request.auth.uid;
@@ -131,14 +93,6 @@ service cloud.firestore {
       allow delete: if isStaff() && resource != null;
     }
 
-    /**
-     * @description Rules for Meeting Minutes. Access is restricted exclusively to 
-     * Admin and Council members.
-     * @path /meetingMinutes/{meetingMinuteId}
-     * @allow (read/write) Any user with an 'Admin' or 'Council' marker.
-     * @deny (read) A standard 'Student' user.
-     * @principle Homogeneous security posture for a sensitive collection.
-     */
     match /meetingMinutes/{meetingMinuteId} {
       allow get, list: if isStaff();
       
@@ -150,6 +104,12 @@ service cloud.firestore {
                     && request.resource.data.authorId == resource.data.authorId;
                     
       allow delete: if isStaff() && resource != null;
+    }
+
+    // Log collection for XP changes
+    match /users/{userId}/xp_logs/{logId} {
+      allow read: if isOwner(userId) || isStaff();
+      allow create: if isStaff();
     }
   }
 }
