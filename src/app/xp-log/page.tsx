@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -14,7 +13,7 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { History, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { History, TrendingUp, TrendingDown, Clock, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
