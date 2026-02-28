@@ -122,7 +122,7 @@ export default function ProfilePage() {
           </div>
           
           <div className="relative z-10">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10 mb-12">
+            <div className="flex flex-col gap-6 mb-12 text-center md:text-left">
               <div className="space-y-2">
                 <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">XP <span className="text-primary">Dashboard</span></CardTitle>
                 <p className="text-slate-400 font-bold">Point accumulation & milestone progress.</p>
