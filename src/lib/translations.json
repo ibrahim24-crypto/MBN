@@ -64,7 +64,19 @@
     "studentGamification": "تحفيز الطلاب",
     "xpIncentive": "يكسب الطلاب 100 XP عند دخولهم الأول.",
     "totalImpact": "الأثر الكلي",
-    "totalImpactDesc": "الاستمرارية هي مفتاح الارتقاء في الرتب."
+    "totalImpactDesc": "الاستمرارية هي مفتاح الارتقاء في الرتب.",
+    "councilWorkspace": "مساحة عمل المجلس",
+    "manageProposals": "إدارة المقترحات",
+    "manageMinutes": "إدارة محاضر الاجتماعات",
+    "newProposal": "مقترح جديد",
+    "newMinute": "محضر اجتماع جديد",
+    "visibility": "الظهور",
+    "visibilityPublic": "عام",
+    "visibilityStudents": "للطلاب",
+    "visibilityTeachers": "للمعلمين",
+    "visibilityCouncil": "للمجلس فقط",
+    "deleteConfirm": "هل أنت متأكد؟",
+    "meetingDate": "تاريخ الاجتماع"
   },
   "fr": {
     "dashboard": "Tableau de Bord",
@@ -130,6 +142,18 @@
     "studentGamification": "Gamification des Élèves",
     "xpIncentive": "Les élèves gagnent 100 XP lors de leur première connexion.",
     "totalImpact": "Impact Total",
-    "totalImpactDesc": "La régularité est la clé pour grimper dans les rangs."
+    "totalImpactDesc": "La régularité est la clé pour grimper dans les rangs.",
+    "councilWorkspace": "Workspace Conseil",
+    "manageProposals": "Gérer les Propositions",
+    "manageMinutes": "Gérer les Procès-verbaux",
+    "newProposal": "Nouvelle Proposition",
+    "newMinute": "Nouveau Procès-verbal",
+    "visibility": "Visibilité",
+    "visibilityPublic": "Public",
+    "visibilityStudents": "Étudiants",
+    "visibilityTeachers": "Enseignants",
+    "visibilityCouncil": "Conseil Uniquement",
+    "deleteConfirm": "Êtes-vous sûr ?",
+    "meetingDate": "Date de réunion"
   }
 }
