@@ -26,7 +26,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, Sparkles, User } from 'lucide-react';
+import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -34,7 +34,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
-import { updateDocumentNonBlocking, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { updateDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface UserData {
@@ -102,7 +102,6 @@ export default function AdminPage() {
     const xpDifference = newXP - currentUser.xp;
     const roleChanged = editForm.role !== currentUser.role;
 
-    // 1. Update User Profile (Non-blocking)
     updateDocumentNonBlocking(userDocRef, { 
       displayName: editForm.displayName, 
       xp: newXP,
@@ -110,16 +109,13 @@ export default function AdminPage() {
       updatedAt: new Date().toISOString()
     });
 
-    // 2. Handle Role Markers (Structural Segregation Sync)
     if (roleChanged) {
-      // Remove old role marker if it was admin or council
       if (currentUser.role === 'administration') {
         deleteDocumentNonBlocking(doc(db, 'roles_admin', id));
       } else if (currentUser.role === 'council') {
         deleteDocumentNonBlocking(doc(db, 'roles_council', id));
       }
 
-      // Add new role marker if applicable
       if (editForm.role === 'administration') {
         setDocumentNonBlocking(doc(db, 'roles_admin', id), { userId: id, createdAt: new Date().toISOString() }, { merge: true });
       } else if (editForm.role === 'council') {
@@ -127,7 +123,6 @@ export default function AdminPage() {
       }
     }
 
-    // 3. Create XP Log if XP changed (Non-blocking)
     if (xpDifference !== 0) {
       addDocumentNonBlocking(collection(db, 'users', id, 'xp_logs'), {
         userId: id,
@@ -138,7 +133,6 @@ export default function AdminPage() {
       });
     }
 
-    // Optimistic Update
     setUsers(prev => prev.map(u => u.id === id ? { ...u, ...editForm, xp: newXP } : u));
     setEditingId(null);
     
@@ -197,16 +191,16 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <div className="w-full bg-white dark:bg-slate-900 rounded-[4rem] border-none shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200 mb-40">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-[4rem] border-none shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] overflow-x-auto animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200 mb-40 no-scrollbar">
         <TooltipProvider>
-          <Table>
+          <Table className="table-fixed min-w-[1000px] lg:min-w-full">
             <TableHeader className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md">
               <TableRow className="border-none">
-                <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.name}</TableHead>
-                <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.email}</TableHead>
-                <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.xp}</TableHead>
-                <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.role}</TableHead>
-                <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px] text-right">{t.actions}</TableHead>
+                <TableHead className="w-[25%] py-8 md:py-12 px-6 md:px-8 lg:px-12 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.name}</TableHead>
+                <TableHead className="w-[25%] py-8 md:py-12 px-6 md:px-8 lg:px-12 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.email}</TableHead>
+                <TableHead className="w-[15%] py-8 md:py-12 px-6 md:px-8 lg:px-12 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.xp}</TableHead>
+                <TableHead className="w-[20%] py-8 md:py-12 px-6 md:px-8 lg:px-12 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.role}</TableHead>
+                <TableHead className="w-[15%] py-8 md:py-12 px-6 md:px-8 lg:px-12 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -231,72 +225,77 @@ export default function AdminPage() {
               ) : (
                 filteredUsers.map((u) => (
                   <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-500 group/row">
-                    <TableCell className="py-12 px-14">
+                    <TableCell className="py-8 md:py-12 px-6 md:px-8 lg:px-12">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
-                          className="h-16 w-80 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-8 shadow-inner"
+                          className="h-16 w-full max-w-[280px] rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-6 shadow-inner"
                         />
                       ) : (
-                        <div className="flex items-center gap-6">
-                          <div className="h-16 w-16 rounded-[1.5rem] bg-primary/10 flex items-center justify-center text-primary font-black text-3xl group-hover/row:scale-110 group-hover/row:rotate-3 transition-all duration-500 shadow-sm overflow-hidden">
-                            <span className="z-10">{u.displayName?.charAt(0)}</span>
-                            <div className="absolute inset-0 bg-primary/5 blur-xl -z-0"></div>
+                        <div className="flex items-center gap-4 md:gap-6 overflow-hidden">
+                          <div className="h-12 w-12 md:h-16 md:w-16 shrink-0 rounded-[1.5rem] bg-primary/10 flex items-center justify-center text-primary font-black text-2xl md:text-3xl group-hover/row:scale-110 transition-all duration-500 shadow-sm">
+                            {u.displayName?.charAt(0)}
                           </div>
-                          <span className="text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">{u.displayName}</span>
+                          <span className="text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight truncate">{u.displayName}</span>
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-12 px-14 text-slate-400 dark:text-slate-500 font-bold text-xl">{u.email}</TableCell>
-                    <TableCell className="py-12 px-14">
+                    <TableCell className="py-8 md:py-12 px-6 md:px-8 lg:px-12 text-slate-400 dark:text-slate-500 font-bold text-base md:text-xl truncate">
+                      {u.email}
+                    </TableCell>
+                    <TableCell className="py-8 md:py-12 px-6 md:px-8 lg:px-12">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
                           value={editForm.xp} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, xp: parseInt(e.target.value) }))}
-                          className="h-16 w-32 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-8 shadow-inner"
+                          className="h-16 w-24 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-4 shadow-inner"
                         />
                       ) : (
-                        <Badge className={cn(
-                          "h-14 px-8 rounded-2xl font-black text-xl shadow-sm border-2",
-                          u.xp < 0 
-                            ? "bg-destructive/5 text-destructive border-destructive/10" 
-                            : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20"
-                        )}>
-                          {u.xp > 0 ? '+' : ''}{u.xp} XP
-                        </Badge>
+                        u.role === 'student' || u.role === 'council' ? (
+                          <Badge className={cn(
+                            "h-12 md:h-14 px-4 md:px-6 rounded-2xl font-black text-lg md:text-xl shadow-sm border-2",
+                            u.xp < 0 
+                              ? "bg-destructive/5 text-destructive border-destructive/10" 
+                              : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20"
+                          )}>
+                            {u.xp > 0 ? '+' : ''}{u.xp} XP
+                          </Badge>
+                        ) : (
+                          <span className="text-slate-200 dark:text-slate-800 font-black">—</span>
+                        )
                       )}
                     </TableCell>
-                    <TableCell className="py-12 px-14">
+                    <TableCell className="py-8 md:py-12 px-6 md:px-8 lg:px-12">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
                         >
-                          <SelectTrigger className="w-56 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-8 shadow-inner">
+                          <SelectTrigger className="w-full h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base md:text-xl px-6 shadow-inner">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-[2rem] shadow-2xl border-none p-4">
-                            <SelectItem value="student" className="rounded-2xl px-8 py-5 font-black text-lg">Student</SelectItem>
-                            <SelectItem value="teacher" className="rounded-2xl px-8 py-5 font-black text-lg">Teacher</SelectItem>
-                            <SelectItem value="council" className="rounded-2xl px-8 py-5 font-black text-lg">Council</SelectItem>
-                            <SelectItem value="administration" className="rounded-2xl px-8 py-5 font-black text-lg">Administration</SelectItem>
+                            <SelectItem value="student" className="rounded-2xl px-6 py-4 font-black text-lg">Student</SelectItem>
+                            <SelectItem value="teacher" className="rounded-2xl px-6 py-4 font-black text-lg">Teacher</SelectItem>
+                            <SelectItem value="council" className="rounded-2xl px-6 py-4 font-black text-lg">Council</SelectItem>
+                            <SelectItem value="administration" className="rounded-2xl px-6 py-4 font-black text-lg">Administration</SelectItem>
                           </SelectContent>
                         </Select>
                       ) : (
-                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-none px-8 py-4 rounded-2xl font-black text-xs tracking-[0.2em]">
+                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-none px-4 md:px-6 py-3 rounded-2xl font-black text-[10px] md:text-xs tracking-[0.2em]">
                           {u.role}
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-12 px-14 text-right">
+                    <TableCell className="py-8 md:py-12 px-6 md:px-8 lg:px-12 text-right">
                       {editingId === u.id ? (
-                        <div className="flex justify-end gap-5">
+                        <div className="flex justify-end gap-3 md:gap-4">
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button size="icon" className="h-16 w-16 rounded-2xl bg-emerald-500 hover:bg-emerald-600 shadow-xl shadow-emerald-500/20 text-white" onClick={() => saveUserChanges(u.id)}>
-                                <Save size={28} />
+                              <Button size="icon" className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 shadow-lg text-white" onClick={() => saveUserChanges(u.id)}>
+                                <Save size={24} />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent className="font-black text-xs px-4 py-2 rounded-xl bg-emerald-500 text-white border-none shadow-lg">Save Changes</TooltipContent>
@@ -304,8 +303,8 @@ export default function AdminPage() {
 
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button size="icon" variant="outline" className="h-16 w-16 rounded-2xl border-slate-200 dark:border-slate-800 text-destructive hover:bg-destructive hover:text-white" onClick={cancelEditing}>
-                                <X size={28} />
+                              <Button size="icon" variant="outline" className="h-12 w-12 md:h-14 md:w-14 rounded-2xl border-slate-200 dark:border-slate-800 text-destructive hover:bg-destructive hover:text-white" onClick={cancelEditing}>
+                                <X size={24} />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent className="font-black text-xs px-4 py-2 rounded-xl bg-destructive text-white border-none shadow-lg">Cancel</TooltipContent>
@@ -314,8 +313,8 @@ export default function AdminPage() {
                       ) : (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost" className="h-16 w-16 rounded-2xl text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-primary/10 transition-all group-hover/row:text-primary" onClick={() => startEditing(u)}>
-                              <Edit2 size={28} />
+                            <Button size="icon" variant="ghost" className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-primary/10 transition-all group-hover/row:text-primary" onClick={() => startEditing(u)}>
+                              <Edit2 size={24} />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent className="font-black text-xs px-4 py-2 rounded-xl bg-slate-900 text-white border-none shadow-lg">Edit Identity</TooltipContent>
@@ -332,3 +331,4 @@ export default function AdminPage() {
     </AppLayout>
   );
 }
+
