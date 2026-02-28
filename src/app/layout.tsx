@@ -1,3 +1,4 @@
+
 "use client";
 
 import './globals.css';
@@ -21,14 +22,14 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <html lang={language} dir={isRtl ? 'rtl' : 'ltr'}>
+    <html lang={language} dir={isRtl ? 'rtl' : 'ltr'} className="no-scrollbar">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
         <title>Moussa Ibn Nousayr School Council</title>
       </head>
-      <body className="font-body antialiased min-h-screen bg-background text-foreground">
+      <body className="font-body antialiased min-h-screen bg-background text-foreground transition-colors duration-300">
         <FirebaseClientProvider>
           <AuthProvider>
             {children}
