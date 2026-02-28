@@ -40,6 +40,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   const pathname = usePathname();
   const { profile, logout, isSuperAdmin } = useAuth();
   const { t, setLanguage, language } = useLanguage();
+  // Sidebar starts collapsed for the icons-only experience
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   const navItems = [
@@ -62,7 +63,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         {/* Sidebar */}
         <aside className={cn(
           "hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 transition-all duration-500 ease-in-out",
-          isCollapsed ? "w-[90px]" : "w-[300px]"
+          isCollapsed ? "w-[80px]" : "w-[300px]"
         )}>
           <div className="p-6 flex flex-col items-center gap-8">
             <Button 

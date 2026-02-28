@@ -12,15 +12,13 @@ import {
   Trophy, 
   Mail, 
   ShieldCheck, 
-  Zap,
   ShieldAlert,
   Award,
   TrendingUp,
   Activity,
-  Star,
   ExternalLink,
   CheckCircle2,
-  Lock
+  Zap
 } from 'lucide-react';
 import { 
   Tooltip,
@@ -47,8 +45,8 @@ export default function ProfilePage() {
 
   if (!profile) return null;
 
-  const currentLevel = Math.floor(Math.abs(profile.xp) / 100) + 1;
-  const progressToNext = Math.abs(profile.xp % 100);
+  // Progress logic: 200 XP is 100%, so 100 XP is 50%.
+  const progressToTarget = Math.min(Math.max((profile.xp / 200) * 100, 0), 100);
 
   return (
     <AppLayout>
@@ -61,10 +59,10 @@ export default function ProfilePage() {
         </h1>
       </header>
 
-      <div className="flex flex-col items-center gap-12 pb-20 w-full max-w-4xl">
+      <div className="flex flex-col items-center gap-8 pb-20 w-full max-w-4xl">
         
         {/* Profile Identity Card */}
-        <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden w-full max-w-md group transition-all duration-500 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-8">
+        <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden w-full max-w-md group transition-all duration-500 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-8 adaptive-card mx-auto">
           <div className="h-32 bg-gradient-to-br from-primary via-primary/90 to-accent w-full relative">
             <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px]"></div>
           </div>
@@ -110,8 +108,8 @@ export default function ProfilePage() {
                   <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
                 </div>
               </div>
-              <Button variant="ghost" className="w-full rounded-2xl h-14 font-black gap-2 text-slate-400 hover:text-primary transition-all">
-                Edit Profile
+              <Button variant="ghost" className="w-full rounded-2xl h-14 font-black gap-2 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
+                Edit Information
                 <ExternalLink size={14} />
               </Button>
             </div>
@@ -119,7 +117,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Performance Stats Card */}
-        <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/90 rounded-[3.5rem] overflow-hidden relative group p-8 md:p-12 transition-all duration-500 w-full animate-in fade-in slide-in-from-bottom-8 delay-100">
+        <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/90 rounded-[3.5rem] overflow-hidden relative group p-8 md:p-12 transition-all duration-500 w-full max-w-2xl adaptive-card mx-auto animate-in fade-in slide-in-from-bottom-8 delay-100">
           <div className="absolute -top-10 -right-10 p-12 opacity-[0.05] group-hover:scale-125 transition-transform duration-1000">
             <Activity size={320} className="text-primary blur-sm" />
           </div>
@@ -127,20 +125,8 @@ export default function ProfilePage() {
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10 mb-12">
               <div className="space-y-2">
-                <Badge className="bg-primary text-white border-none font-black px-4 py-2 rounded-full flex items-center gap-2 w-fit shadow-xl shadow-primary/20">
-                  <Trophy size={14} />
-                  Academic Engagement
-                </Badge>
-                <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">Engagement <span className="text-primary">Metrics</span></CardTitle>
-              </div>
-              <div className="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 pr-10 rounded-[2rem] border border-slate-100 shadow-xl">
-                 <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-black text-3xl">
-                    {currentLevel}
-                 </div>
-                 <div className="flex flex-col">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Rank Tier</span>
-                    <span className="text-xl font-black">Level {currentLevel}</span>
-                 </div>
+                <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">Hub <span className="text-primary">Metrics</span></CardTitle>
+                <p className="text-slate-400 font-bold">Contribution Overview</p>
               </div>
             </div>
 
@@ -158,56 +144,51 @@ export default function ProfilePage() {
                   {profile.xp >= 0 && (
                     <div className="max-w-md space-y-4">
                       <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-slate-400">
-                        <span>Progress to Level {currentLevel + 1}</span>
-                        <span>{progressToNext}%</span>
+                        <span>Milestone Progress</span>
+                        <span>{Math.round(progressToTarget)}%</span>
                       </div>
                       <div className="relative">
                         <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden border border-slate-200/50">
                           <div 
                             className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-1000"
-                            style={{ width: `${progressToNext}%` }}
+                            style={{ width: `${progressToTarget}%` }}
                           />
                         </div>
-                        {progressToNext > 80 && (
+                        {progressToTarget > 80 && (
                           <div className="absolute inset-0 rounded-full animate-pulse bg-primary/20 blur-md -z-10" />
                         )}
                       </div>
-                    </div>
-                  )}
-
-                  {profile.xp < 0 ? (
-                    <div className="flex items-center gap-3 text-destructive font-black text-xs bg-destructive/5 border border-destructive/10 w-fit px-6 py-3 rounded-2xl animate-pulse">
-                      <ShieldAlert size={18} />
-                      DISCIPLINARY ACTION ACTIVE
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-3 text-primary font-black text-xs bg-primary/5 border border-primary/10 w-fit px-6 py-3 rounded-2xl">
-                      <TrendingUp size={18} />
-                      STATUS: EXEMPLARY
                     </div>
                   )}
                 </div>
               </div>
 
               <div className="space-y-6">
-                <div className="p-8 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-100 shadow-xl group/badge transition-all hover:scale-[1.02]">
-                  <div className="flex items-center gap-6">
-                    <div className="p-4 bg-primary/5 rounded-2xl text-primary transition-colors group-hover:bg-primary group-hover:text-white">
-                      <Zap size={28} className="fill-current opacity-80" />
+                 {/* Status Div Stylized */}
+                 <div className={cn(
+                    "p-8 rounded-[2rem] border transition-all duration-500 shadow-xl",
+                    profile.xp < 0 
+                      ? "bg-destructive/5 border-destructive/20 text-destructive animate-pulse" 
+                      : "bg-primary/5 border-primary/20 text-primary"
+                 )}>
+                    <div className="flex items-center gap-4 mb-2">
+                      {profile.xp < 0 ? <ShieldAlert size={24} /> : <TrendingUp size={24} />}
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">Community Status</span>
                     </div>
-                    <div>
-                      <h4 className="font-black text-xl leading-none mb-1 text-slate-900 dark:text-white">Community Impact</h4>
-                      <p className="text-sm font-medium text-slate-500">Contribution to school spirit.</p>
-                    </div>
-                  </div>
-                </div>
+                    <p className="text-2xl font-black leading-none">
+                      {profile.xp < 0 ? "Limited Participation" : "Active Contributor"}
+                    </p>
+                    <p className="text-[11px] font-bold opacity-60 mt-2 uppercase tracking-wider">
+                      {profile.xp < 0 ? "Disciplinary action logged" : "Exemplary conduct verified"}
+                    </p>
+                 </div>
               </div>
             </div>
           </div>
         </Card>
 
         {/* Achievement Gallery */}
-        <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-full p-2 animate-in fade-in slide-in-from-bottom-8 delay-200">
+        <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-full max-w-2xl adaptive-card mx-auto p-2 animate-in fade-in slide-in-from-bottom-8 delay-200">
           <CardHeader className="p-8">
             <CardTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
               <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
@@ -215,22 +196,26 @@ export default function ProfilePage() {
               </div>
               Achievement Gallery
             </CardTitle>
+            <p className="text-sm text-slate-400 font-bold px-1">Rewards issued by school administration.</p>
           </CardHeader>
           <CardContent className="px-8 pb-8">
+             {/* Empty/Placeholder Gallery */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-center group transition-all hover:bg-white">
-                  <div className="mx-auto p-4 rounded-2xl bg-yellow-50 text-yellow-600 shadow-sm transition-all group-hover:scale-110 w-fit mb-4">
-                    <Star size={28} className="fill-current" />
+                <div className="p-10 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center bg-slate-50/30 dark:bg-slate-900/50 group hover:bg-white transition-all duration-500">
+                  <div className="p-6 rounded-3xl bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-700 mb-4 group-hover:scale-110 transition-transform">
+                    <CheckCircle2 size={32} />
                   </div>
-                  <h4 className="font-black text-slate-900 dark:text-white text-sm mb-1">MBN Pioneer</h4>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Early Adopter</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">No achievements yet</p>
                 </div>
 
-                <div className="p-6 rounded-[2rem] border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center opacity-40 grayscale">
-                  <div className="p-4 rounded-2xl bg-slate-100 text-slate-400 mb-3">
-                    <CheckCircle2 size={28} />
-                  </div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase">Coming Soon</p>
+                <div className="p-10 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center opacity-30 grayscale pointer-events-none">
+                   <Zap size={32} className="text-slate-300 mb-4" />
+                   <div className="h-2 w-16 bg-slate-200 rounded-full" />
+                </div>
+
+                <div className="p-10 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center opacity-30 grayscale pointer-events-none">
+                   <Award size={32} className="text-slate-300 mb-4" />
+                   <div className="h-2 w-16 bg-slate-200 rounded-full" />
                 </div>
              </div>
           </CardContent>
