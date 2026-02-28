@@ -37,6 +37,12 @@ import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/context/LanguageContext';
 import { cn } from '@/lib/utils';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
 
 interface Proposal {
   id: string;
@@ -242,8 +248,8 @@ export default function CouncilPage() {
                   </div>
                 </div>
                 <DialogFooter className="gap-4">
-                  <Button variant="ghost" className="h-14 rounded-2xl font-black px-10 text-lg" onClick={() => setProposalDialog(false)}>{t.cancel}</Button>
-                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-primary/20 text-lg gap-3" onClick={handleSaveProposal}>
+                  <Button variant="outline" className="h-14 rounded-2xl font-black px-10 text-lg border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800" onClick={() => setProposalDialog(false)}>{t.cancel}</Button>
+                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-primary/20 text-lg gap-3 text-white" onClick={handleSaveProposal}>
                     <Send size={20} />
                     {t.publish}
                   </Button>
@@ -263,25 +269,38 @@ export default function CouncilPage() {
                   <p className="text-2xl font-black uppercase tracking-[0.2em]">{t.noAnnouncements}</p>
                </div>
             ) : (
-              proposals.map(p => (
-                <div key={p.id} className="group/item p-8 rounded-[3rem] bg-slate-50/50 dark:bg-slate-800/30 border-2 border-transparent hover:border-primary/20 hover:bg-white dark:hover:bg-slate-800 transition-all duration-500 shadow-sm relative overflow-hidden">
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="space-y-3">
-                      <Badge className="bg-primary/5 text-primary border-primary/20 font-black px-4 py-1.5 rounded-full uppercase tracking-widest text-[9px]">{p.visibility}</Badge>
-                      <h4 className="text-3xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">{p.title}</h4>
+              <TooltipProvider>
+                {proposals.map(p => (
+                  <div key={p.id} className="group/item p-8 rounded-[3rem] bg-slate-50/50 dark:bg-slate-800/30 border-2 border-transparent hover:border-primary/20 hover:bg-white dark:hover:bg-slate-800 transition-all duration-500 shadow-sm relative overflow-hidden">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="space-y-3">
+                        <Badge className="bg-primary/5 text-primary border-primary/20 font-black px-4 py-1.5 rounded-full uppercase tracking-widest text-[9px]">{p.visibility}</Badge>
+                        <h4 className="text-3xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">{p.title}</h4>
+                      </div>
+                      <div className="flex gap-2">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-primary/10 transition-all" onClick={() => openEditProposal(p)}>
+                              <Edit2 size={20} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="font-black text-xs px-4 py-2 rounded-xl bg-slate-900 text-white border-none shadow-lg">Edit Proposal</TooltipContent>
+                        </Tooltip>
+                        
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('proposals', p.id)}>
+                              <Trash2 size={20} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="font-black text-xs px-4 py-2 rounded-xl bg-destructive text-white border-none shadow-lg">Remove Proposal</TooltipContent>
+                        </Tooltip>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-300 hover:text-primary hover:bg-primary/10 transition-all" onClick={() => openEditProposal(p)}>
-                        <Edit2 size={20} />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-300 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('proposals', p.id)}>
-                        <Trash2 size={20} />
-                      </Button>
-                    </div>
+                    <p className="text-lg text-slate-500 font-medium line-clamp-3 mb-6 italic">"{p.content}"</p>
                   </div>
-                  <p className="text-lg text-slate-500 font-medium line-clamp-3 mb-6 italic">"{p.content}"</p>
-                </div>
-              ))
+                ))}
+              </TooltipProvider>
             )}
           </CardContent>
         </Card>
@@ -298,7 +317,7 @@ export default function CouncilPage() {
             </div>
             <Dialog open={minuteDialog} onOpenChange={(open) => { setMinuteDialog(open); if (!open) resetMinuteForm(); }}>
               <DialogTrigger asChild>
-                <Button className="gap-4 rounded-[2rem] font-black shadow-xl shadow-accent/30 bg-accent hover:bg-accent/90 h-16 px-8 hover:scale-[1.02] transition-all text-lg shrink-0">
+                <Button className="gap-4 rounded-[2rem] font-black shadow-xl shadow-accent/30 bg-accent hover:bg-accent/90 h-16 px-8 hover:scale-[1.02] transition-all text-lg shrink-0 text-white">
                   <Plus size={24} />
                   {t.newMinute}
                 </Button>
@@ -337,8 +356,8 @@ export default function CouncilPage() {
                   </div>
                 </div>
                 <DialogFooter className="gap-4">
-                  <Button variant="ghost" className="h-14 rounded-2xl font-black px-10 text-lg" onClick={() => setMinuteDialog(false)}>{t.cancel}</Button>
-                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-accent/20 bg-accent hover:bg-accent/90 text-lg gap-3" onClick={handleSaveMinute}>
+                  <Button variant="outline" className="h-14 rounded-2xl font-black px-10 text-lg border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800" onClick={() => setMinuteDialog(false)}>{t.cancel}</Button>
+                  <Button className="h-14 rounded-2xl font-black px-14 shadow-xl shadow-accent/20 bg-accent hover:bg-accent/90 text-lg gap-3 text-white" onClick={handleSaveMinute}>
                     <Send size={20} />
                     {t.publish}
                   </Button>
@@ -358,27 +377,40 @@ export default function CouncilPage() {
                   <p className="text-2xl font-black uppercase tracking-[0.2em]">{t.noLogs}</p>
                </div>
             ) : (
-              minutes.map(m => (
-                <div key={m.id} className="group/item flex items-center justify-between p-8 rounded-[2.5rem] bg-slate-50/50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border-2 border-transparent hover:border-accent/20 transition-all duration-500 shadow-sm">
-                  <div className="flex items-center gap-6">
-                    <div className="h-16 w-16 bg-accent/10 rounded-2xl flex flex-col items-center justify-center text-accent group-hover/item:bg-accent group-hover/item:text-white transition-all">
-                       <Calendar size={28} />
+              <TooltipProvider>
+                {minutes.map(m => (
+                  <div key={m.id} className="group/item flex items-center justify-between p-8 rounded-[2.5rem] bg-slate-50/50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border-2 border-transparent hover:border-accent/20 transition-all duration-500 shadow-sm">
+                    <div className="flex items-center gap-6">
+                      <div className="h-16 w-16 bg-accent/10 rounded-2xl flex flex-col items-center justify-center text-accent group-hover/item:bg-accent group-hover/item:text-white transition-all">
+                         <Calendar size={28} />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{m.title}</h4>
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{m.meetingDate}</p>
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <h4 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{m.title}</h4>
-                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{m.meetingDate}</p>
+                    <div className="flex gap-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-accent hover:bg-accent/10 transition-all" onClick={() => openEditMinute(m)}>
+                            <Edit2 size={20} />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="font-black text-xs px-4 py-2 rounded-xl bg-slate-900 text-white border-none shadow-lg">Edit Record</TooltipContent>
+                      </Tooltip>
+
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-400 dark:text-slate-500 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('meetingMinutes', m.id)}>
+                            <Trash2 size={20} />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="font-black text-xs px-4 py-2 rounded-xl bg-destructive text-white border-none shadow-lg">Remove Record</TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-300 hover:text-accent hover:bg-accent/10 transition-all" onClick={() => openEditMinute(m)}>
-                      <Edit2 size={20} />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-slate-300 hover:text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete('meetingMinutes', m.id)}>
-                      <Trash2 size={20} />
-                    </Button>
-                  </div>
-                </div>
-              ))
+                ))}
+              </TooltipProvider>
             )}
           </CardContent>
         </Card>

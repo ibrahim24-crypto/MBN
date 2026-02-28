@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -104,7 +105,7 @@ export default function AnnouncementsPage() {
         {canCreate && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-4 rounded-[2rem] font-black shadow-2xl shadow-primary/30 h-20 px-12 hover:scale-[1.05] transition-all text-xl">
+              <Button className="gap-4 rounded-[2rem] font-black shadow-2xl shadow-primary/30 h-20 px-12 hover:scale-[1.05] transition-all text-xl text-white">
                 <Plus size={32} />
                 {t.newAnnouncement}
               </Button>
@@ -134,8 +135,8 @@ export default function AnnouncementsPage() {
                 </div>
               </div>
               <DialogFooter className="gap-4">
-                <Button variant="ghost" className="font-black h-14 rounded-2xl px-8 text-lg" onClick={() => setIsDialogOpen(false)}>{t.cancel}</Button>
-                <Button className="font-black h-14 rounded-2xl px-12 shadow-xl shadow-primary/20 text-lg" onClick={createAnnouncement}>{t.publish}</Button>
+                <Button variant="outline" className="font-black h-14 rounded-2xl px-8 text-lg border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800" onClick={() => setIsDialogOpen(false)}>{t.cancel}</Button>
+                <Button className="font-black h-14 rounded-2xl px-12 shadow-xl shadow-primary/20 text-lg text-white" onClick={createAnnouncement}>{t.publish}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
