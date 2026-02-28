@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, UserRole } from '@/context/AuthContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { 
   Table, 
@@ -24,14 +24,14 @@ import {
   doc, 
   updateDoc 
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { UserRole } from '@/context/AuthContext';
+import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, UserCog, Search } from 'lucide-react';
+import { ShieldCheck, UserCog, Search, Save, Edit2, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Button } from '@/components/ui/button';
 
 interface UserData {
   id: string;
@@ -43,18 +43,22 @@ interface UserData {
 
 export default function AdminPage() {
   const { isSuperAdmin, loading: authLoading } = useAuth();
+  const db = useFirestore();
   const [users, setUsers] = useState<UserData[]>([]);
   const [fetching, setFetching] = useState(true);
   const [search, setSearch] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!authLoading && isSuperAdmin) {
+    if (!authLoading && isSuperAdmin && db) {
       fetchUsers();
     }
-  }, [authLoading, isSuperAdmin]);
+  }, [authLoading, isSuperAdmin, db]);
 
   const fetchUsers = async () => {
+    if (!db) return;
     try {
       const querySnapshot = await getDocs(collection(db, 'users'));
       const userData = querySnapshot.docs.map(doc => doc.data() as UserData);
@@ -71,27 +75,43 @@ export default function AdminPage() {
     }
   };
 
-  const updateRole = async (id: string, newRole: UserRole) => {
+  const startEditing = (user: UserData) => {
+    setEditingId(user.id);
+    setEditForm({ displayName: user.displayName, xp: user.xp, role: user.role });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
+  const saveUserChanges = async (id: string) => {
+    if (!db) return;
     const userDocRef = doc(db, 'users', id);
     try {
-      await updateDoc(userDocRef, { role: newRole });
-      setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u));
+      await updateDoc(userDocRef, { 
+        displayName: editForm.displayName, 
+        xp: Number(editForm.xp),
+        role: editForm.role 
+      });
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, ...editForm, xp: Number(editForm.xp!) } : u));
+      setEditingId(null);
       toast({
-        title: "Role Updated",
-        description: "User role has been successfully changed.",
+        title: "User Updated",
+        description: "User information has been successfully changed.",
       });
     } catch (error: any) {
       if (error.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: userDocRef.path,
           operation: 'update',
-          requestResourceData: { role: newRole }
+          requestResourceData: editForm
         }));
       }
       toast({
         variant: "destructive",
         title: "Update Failed",
-        description: "Could not update the user role.",
+        description: "Could not update the user.",
       });
     }
   };
@@ -119,63 +139,108 @@ export default function AdminPage() {
             <UserCog className="text-primary" />
             Administration
           </h1>
-          <p className="text-muted-foreground">Manage user permissions and school roles.</p>
+          <p className="text-muted-foreground">Manage user names, XP, and roles.</p>
         </div>
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input 
             placeholder="Search users..." 
-            className="pl-9"
+            className="pl-9 rounded-xl"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </header>
 
-      <div className="bg-card rounded-2xl border shadow-sm overflow-hidden">
+      <div className="bg-card dark:bg-slate-900/50 backdrop-blur-md rounded-2xl border shadow-sm overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/50">
+          <TableHeader className="bg-muted/50 dark:bg-slate-800/50">
             <TableRow>
               <TableHead className="font-bold">Name</TableHead>
               <TableHead className="font-bold">Email</TableHead>
               <TableHead className="font-bold">XP</TableHead>
               <TableHead className="font-bold">Role</TableHead>
+              <TableHead className="font-bold text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {fetching ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10">Loading users...</TableCell>
+                <TableCell colSpan={5} className="text-center py-10">Loading users...</TableCell>
               </TableRow>
             ) : filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10">No users found.</TableCell>
+                <TableCell colSpan={5} className="text-center py-10">No users found.</TableCell>
               </TableRow>
             ) : (
               filteredUsers.map((u) => (
-                <TableRow key={u.id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell className="font-medium">{u.displayName}</TableCell>
+                <TableRow key={u.id} className="hover:bg-muted/30 dark:hover:bg-slate-800/30 transition-colors">
+                  <TableCell className="font-medium">
+                    {editingId === u.id ? (
+                      <Input 
+                        value={editForm.displayName} 
+                        onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
+                        className="h-9 w-40"
+                      />
+                    ) : (
+                      u.displayName
+                    )}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">{u.email}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5">
-                      {u.xp}
-                    </Badge>
+                    {editingId === u.id ? (
+                      <Input 
+                        type="number"
+                        value={editForm.xp} 
+                        onChange={(e) => setEditForm(prev => ({ ...prev, xp: parseInt(e.target.value) }))}
+                        className="h-9 w-24"
+                      />
+                    ) : (
+                      <Badge variant="outline" className={cn(
+                        "font-black",
+                        u.xp < 0 ? "text-destructive border-destructive/20 bg-destructive/5" : "text-primary border-primary/20 bg-primary/5"
+                      )}>
+                        {u.xp}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell>
-                    <Select 
-                      defaultValue={u.role} 
-                      onValueChange={(val: UserRole) => updateRole(u.id, val)}
-                    >
-                      <SelectTrigger className="w-40 border-primary/20 bg-background focus:ring-primary/20">
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="teacher">Teacher</SelectItem>
-                        <SelectItem value="council">Council</SelectItem>
-                        <SelectItem value="administration">Administration</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {editingId === u.id ? (
+                      <Select 
+                        value={editForm.role} 
+                        onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
+                      >
+                        <SelectTrigger className="w-32 h-9">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="student">Student</SelectItem>
+                          <SelectItem value="teacher">Teacher</SelectItem>
+                          <SelectItem value="council">Council</SelectItem>
+                          <SelectItem value="administration">Administration</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge className="capitalize bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-none">
+                        {u.role}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {editingId === u.id ? (
+                      <div className="flex justify-end gap-2">
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-emerald-500" onClick={() => saveUserChanges(u.id)}>
+                          <Save size={16} />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={cancelEditing}>
+                          <X size={16} />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400" onClick={() => startEditing(u)}>
+                        <Edit2 size={16} />
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

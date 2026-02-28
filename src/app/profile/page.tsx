@@ -11,211 +11,232 @@ import {
   ShieldCheck, 
   Star, 
   Megaphone, 
-  Settings, 
-  Key, 
   Bell, 
   UserCheck,
   Zap,
-  ShieldAlert
+  ShieldAlert,
+  ArrowUpRight,
+  TrendingUp,
+  Award
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const { profile, loading } = useAuth();
 
   if (loading || !profile) return null;
 
-  const currentLevel = Math.floor(profile.xp / 100) + 1;
-  const xpToNextLevel = (currentLevel * 100) - profile.xp;
-  const progressPercent = profile.xp % 100;
+  const currentLevel = Math.floor(Math.abs(profile.xp) / 100) + 1;
+  const xpToNextLevel = (currentLevel * 100) - Math.abs(profile.xp);
+  const progressPercent = Math.abs(profile.xp) % 100;
 
   return (
     <AppLayout>
       <header className="mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
         <Badge className="bg-primary/10 text-primary font-bold mb-3 px-4 py-1 rounded-full">User Hub</Badge>
-        <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tight text-slate-900">
+        <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tight text-slate-900 dark:text-white">
           Your Profile
         </h1>
-        <p className="text-lg text-slate-500 font-medium mt-2">Manage your identity and track your council contributions.</p>
+        <p className="text-lg text-slate-500 dark:text-slate-400 font-medium mt-2">Manage your identity and track your school contributions.</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Profile Identity Card */}
-        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 bg-white rounded-[2.5rem] overflow-hidden sticky top-8">
-          <div className="h-32 bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20 w-full relative">
-            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]"></div>
+        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden sticky top-8">
+          <div className="h-40 bg-gradient-to-br from-primary via-primary/80 to-accent w-full relative">
+            <div className="absolute inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-[1px]"></div>
           </div>
-          <CardContent className="relative flex flex-col items-center -mt-16 text-center pb-10 px-8">
-            <Avatar className="h-32 w-32 border-[6px] border-white shadow-xl mb-4 group transition-transform hover:scale-105 duration-500">
+          <CardContent className="relative flex flex-col items-center -mt-20 text-center pb-12 px-8">
+            <Avatar className="h-40 w-40 border-[8px] border-white dark:border-slate-900 shadow-2xl mb-6 group transition-transform hover:scale-105 duration-500">
               <AvatarImage src={profile.photoURL} className="object-cover" />
-              <AvatarFallback className="text-4xl bg-gradient-to-br from-primary to-accent text-white font-black">
+              <AvatarFallback className="text-5xl bg-gradient-to-br from-primary to-accent text-white font-black">
                 {profile.displayName.charAt(0)}
               </AvatarFallback>
             </Avatar>
             
-            <div className="space-y-1 mb-6">
-              <h2 className="text-3xl font-black text-slate-900 leading-tight tracking-tight">
+            <div className="space-y-2 mb-8">
+              <h2 className="text-4xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">
                 {profile.displayName}
               </h2>
-              <Badge variant="secondary" className="bg-slate-100 text-slate-500 uppercase tracking-widest text-[10px] font-black px-3 py-1 border-none">
+              <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 uppercase tracking-widest text-[11px] font-black px-4 py-1.5 border-none">
                 {profile.role}
               </Badge>
             </div>
             
-            <div className="w-full space-y-3">
-              <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:bg-white hover:shadow-md hover:border-transparent transition-all duration-300">
-                <div className="p-2.5 bg-white rounded-xl text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Mail size={18} />
+            <div className="w-full space-y-4">
+              <div className="flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 hover:shadow-xl hover:border-transparent transition-all duration-300">
+                <div className="p-3.5 bg-white dark:bg-slate-900 rounded-2xl text-primary shadow-lg group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Mail size={22} />
                 </div>
                 <div className="flex flex-col text-left overflow-hidden">
-                  <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Official Email</span>
-                  <span className="text-sm font-bold text-slate-700 truncate">{profile.email}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:bg-white hover:shadow-md hover:border-transparent transition-all duration-300">
-                <div className="p-2.5 bg-white rounded-xl text-slate-400 shadow-sm group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                  <Key size={18} />
-                </div>
-                <div className="flex flex-col text-left overflow-hidden">
-                  <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Unique Token</span>
-                  <span className="text-xs font-mono font-bold text-slate-400 truncate tracking-tighter">{profile.id}</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em]">School Email</span>
+                  <span className="text-base font-bold text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
                 </div>
               </div>
             </div>
-
-            <Button variant="outline" className="w-full mt-8 rounded-xl font-bold h-12 border-slate-200 gap-2 hover:bg-slate-50 transition-colors">
-              <Settings size={18} />
-              Account Settings
-            </Button>
           </CardContent>
         </Card>
 
         {/* Main Profile Sections */}
-        <div className="lg:col-span-8 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+        <div className="lg:col-span-8 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           
-          {/* XP Dashboard (Student Specific) */}
-          {profile.role === 'student' && (
-            <Card className="border-none shadow-2xl shadow-accent/10 bg-gradient-to-br from-accent to-accent/90 text-white rounded-[2.5rem] overflow-hidden relative group">
-              <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
-                <Trophy size={200} />
-              </div>
-              <CardHeader className="relative z-10 p-8 md:p-10 pb-0">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <CardTitle className="text-2xl font-black flex items-center gap-2">
-                      <Zap size={24} className="text-white fill-white" />
-                      XP Dashboard
-                    </CardTitle>
-                    <CardDescription className="text-white/70 font-bold">Your engagement score & rank</CardDescription>
-                  </div>
-                  <Badge className="bg-white/20 hover:bg-white/30 text-white font-black px-4 py-1.5 border-none backdrop-blur-md">
-                    Level {currentLevel}
+          {/* Enhanced XP Dashboard */}
+          <Card className="border-none shadow-[0_40px_100px_rgba(59,130,246,0.15)] bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10">
+            <div className="absolute top-0 right-0 p-12 opacity-[0.03] dark:opacity-[0.05] group-hover:scale-110 transition-transform duration-1000">
+              <Trophy size={350} />
+            </div>
+            
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
+                <div className="space-y-2">
+                  <Badge className="bg-primary/10 text-primary border-none font-black px-4 py-1 rounded-full flex items-center gap-2 w-fit">
+                    <Zap size={14} className="fill-primary" />
+                    Engagement Metrics
                   </Badge>
+                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Performance Statistics</CardTitle>
                 </div>
-              </CardHeader>
-              <CardContent className="relative z-10 p-8 md:p-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-6">
-                    <div>
-                      <span className="text-7xl font-black tracking-tighter">{profile.xp}</span>
-                      <span className="text-2xl font-bold text-white/50 ml-3 uppercase">Total XP</span>
+                <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-2 pr-6 rounded-full border border-slate-100 dark:border-slate-800">
+                   <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center font-black text-xl shadow-lg shadow-primary/20">
+                      {currentLevel}
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Level</span>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">Veteran Contributor</span>
+                   </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="space-y-8">
+                  <div className="relative">
+                    <div className="flex items-baseline gap-4 mb-4">
+                      <span className={cn(
+                        "text-9xl font-black tracking-tighter leading-none transition-colors",
+                        profile.xp < 0 ? "text-destructive" : "text-primary"
+                      )}>{profile.xp}</span>
+                      <span className="text-4xl font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest">XP</span>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm font-black uppercase tracking-widest">
-                        <span>Progress</span>
-                        <span>{xpToNextLevel} XP to Level {currentLevel + 1}</span>
+                    {profile.xp < 0 && (
+                      <div className="flex items-center gap-2 text-destructive font-bold text-sm bg-destructive/5 border border-destructive/10 w-fit px-4 py-2 rounded-xl mb-4">
+                        <ShieldAlert size={16} />
+                        Disciplinary Penalty Active
                       </div>
-                      <Progress value={progressPercent} className="h-4 bg-white/20 border-none" />
-                    </div>
+                    )}
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-5 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/10 flex flex-col items-center justify-center text-center gap-2 group/item hover:bg-white/20 transition-all">
-                      <Star className="text-yellow-300 fill-yellow-300 mb-1 group-hover/item:scale-110 transition-transform" size={24} />
-                      <span className="text-xs font-black uppercase tracking-wider">Early Access</span>
-                      <Badge variant="outline" className="text-[9px] font-black border-white/20 text-white bg-white/10">UNLOCKED</Badge>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <div className="space-y-1">
+                        <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Season Progress</span>
+                        <p className="text-lg font-bold text-slate-700 dark:text-slate-200">{xpToNextLevel} XP to Level {currentLevel + 1}</p>
+                      </div>
+                      <TrendingUp size={20} className="text-emerald-500" />
                     </div>
-                    <div className="p-5 rounded-3xl bg-black/5 backdrop-blur-sm border border-white/5 flex flex-col items-center justify-center text-center gap-2 opacity-50 grayscale hover:grayscale-0 transition-all cursor-not-allowed">
-                      <Megaphone className="text-white mb-1" size={24} />
-                      <span className="text-xs font-black uppercase tracking-wider">First Post</span>
-                      <Badge variant="outline" className="text-[9px] font-black border-white/20 text-white">LOCKED</Badge>
+                    <Progress value={progressPercent} className="h-6 bg-slate-100 dark:bg-slate-800 border-none rounded-full overflow-hidden">
+                       <div className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000" style={{ width: `${progressPercent}%` }} />
+                    </Progress>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center gap-4 group/item hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl transition-all duration-500">
+                    <div className="p-5 bg-white dark:bg-slate-900 rounded-3xl text-yellow-500 shadow-xl group-hover/item:scale-110 transition-transform">
+                      <Star className="fill-yellow-500" size={32} />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Pioneer</span>
+                      <p className="text-sm font-black text-slate-900 dark:text-white">Active Founder</p>
+                    </div>
+                  </div>
+                  <div className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center gap-4 group/item hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl transition-all duration-500">
+                    <div className="p-5 bg-white dark:bg-slate-900 rounded-3xl text-primary shadow-xl group-hover/item:scale-110 transition-transform">
+                      <Award size={32} />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Competitor</span>
+                      <p className="text-sm font-black text-slate-900 dark:text-white">Eligibility: {profile.xp >= 100 ? 'YES' : 'NO'}</p>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
+
+              <Separator className="my-12 bg-slate-100 dark:bg-slate-800" />
+              
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                 <div className="flex items-center gap-4">
+                    <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl text-emerald-600 dark:text-emerald-400">
+                       <UserCheck size={24} />
+                    </div>
+                    <div>
+                       <h4 className="font-black text-slate-900 dark:text-white">Competition Status</h4>
+                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">You need 100+ XP to enter regional events.</p>
+                    </div>
+                 </div>
+                 <Badge variant="outline" className="h-10 px-6 rounded-full font-black border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300">
+                    Details
+                    <ArrowUpRight size={14} className="ml-2" />
+                 </Badge>
+              </div>
+            </div>
+          </Card>
 
           {/* Activity & Settings Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2.5rem] overflow-hidden">
-              <CardHeader className="p-8 pb-0">
-                <CardTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
-                  <UserCheck size={20} className="text-primary" />
-                  Privileges
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12">
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden">
+              <CardHeader className="p-10 pb-0">
+                <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                  <ShieldCheck size={24} className="text-primary" />
+                  Security
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500">Security permissions & status</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Account protection & access</CardDescription>
               </CardHeader>
-              <CardContent className="p-8 pt-6 space-y-6">
+              <CardContent className="p-10 pt-8 space-y-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck size={18} className="text-emerald-500" />
-                      <span className="text-sm font-bold text-slate-700">Verified Account</span>
+                  <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google Verified</span>
                     </div>
-                    <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 font-black text-[9px]">ACTIVE</Badge>
+                    <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[10px]">ACTIVE</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <Bell size={18} className="text-primary" />
-                      <span className="text-sm font-bold text-slate-700">Email Alerts</span>
+                  <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Session Guard</span>
                     </div>
-                    <Badge className="bg-primary/5 text-primary border-primary/10 font-black text-[9px]">ON</Badge>
+                    <Badge className="bg-primary/5 dark:bg-primary/10 text-primary border-none font-black text-[10px]">ENFORCED</Badge>
                   </div>
-                </div>
-                <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100/50 flex gap-4">
-                   <ShieldAlert size={20} className="text-amber-600 shrink-0 mt-0.5" />
-                   <p className="text-xs font-medium text-amber-800 leading-relaxed">
-                     Your role is assigned by Administration. For changes, please contact our support team.
-                   </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2.5rem] overflow-hidden">
-              <CardHeader className="p-8 pb-0">
-                <CardTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
-                  <Star size={20} className="text-primary" />
-                  Recent Badges
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden">
+              <CardHeader className="p-10 pb-0">
+                <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                  <Star size={24} className="text-primary" />
+                  Milestones
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500">Milestones achieved this year</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Recognition & history</CardDescription>
               </CardHeader>
-              <CardContent className="p-8 pt-6">
-                 <div className="space-y-6">
+              <CardContent className="p-10 pt-8">
+                 <div className="space-y-8">
                    {[
-                     { name: 'Pioneer', desc: 'Joined during launch week', date: 'Oct 2023', icon: Star, color: 'text-yellow-500 bg-yellow-50' },
-                     { name: 'Active Student', desc: '100+ XP Milestone', date: 'Nov 2023', icon: Trophy, color: 'text-blue-500 bg-blue-50' }
+                     { name: 'Pioneer', desc: 'School launch member', date: 'OCT 24', color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10' },
+                     { name: 'Contributor', desc: '100+ Positive XP', date: 'NOV 24', color: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10' }
                    ].map((badge, i) => (
-                     <div key={i} className="flex items-center gap-5 group cursor-pointer">
-                       <div className={`p-4 rounded-2xl ${badge.color} group-hover:scale-110 transition-transform duration-300`}>
-                         <badge.icon size={22} />
+                     <div key={i} className="flex items-center gap-5 group">
+                       <div className={cn("p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 shadow-sm", badge.color)}>
+                         <Award size={22} />
                        </div>
-                       <div className="flex-1 space-y-0.5">
-                         <h4 className="font-black text-slate-900 text-sm">{badge.name}</h4>
-                         <p className="text-xs font-medium text-slate-400">{badge.desc}</p>
+                       <div className="flex-1">
+                         <h4 className="font-black text-slate-900 dark:text-white text-base">{badge.name}</h4>
+                         <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{badge.desc}</p>
                        </div>
-                       <span className="text-[10px] font-black text-slate-300 uppercase">{badge.date}</span>
+                       <span className="text-[10px] font-black text-slate-300 dark:text-slate-700">{badge.date}</span>
                      </div>
                    ))}
-                   
-                   <Separator className="bg-slate-100" />
-                   
-                   <Button variant="ghost" className="w-full text-slate-400 font-black text-[10px] uppercase tracking-widest hover:text-primary hover:bg-primary/5">
-                     View All Achievements
-                   </Button>
                  </div>
               </CardContent>
             </Card>

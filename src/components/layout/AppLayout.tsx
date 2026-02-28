@@ -5,7 +5,6 @@ import {
   LayoutDashboard, 
   Megaphone, 
   Users, 
-  GraduationCap, 
   ShieldCheck, 
   LogOut,
   UserCircle,
@@ -28,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -48,17 +48,17 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f8fafc] selection:bg-primary/20">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-slate-950 selection:bg-primary/20">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-96 flex-col border-r border-slate-200/50 bg-white shadow-2xl shadow-slate-200/40 relative z-50">
+      <aside className="hidden md:flex w-96 flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl shadow-slate-200/40 dark:shadow-none relative z-50">
         <div className="p-12 flex flex-col items-start gap-8">
           <div className="flex items-center gap-5 group cursor-pointer">
             <div className="bg-primary p-4 rounded-[1.75rem] text-white shadow-3xl shadow-primary/40 group-hover:rotate-12 transition-all duration-500">
               <Command size={36} />
             </div>
             <div className="flex flex-col">
-              <span className="text-3xl font-black font-headline text-slate-900 tracking-tighter leading-none">MBN</span>
-              <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-black mt-2">Executive Hub</span>
+              <span className="text-3xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 font-black mt-2">Executive Hub</span>
             </div>
           </div>
         </div>
@@ -71,16 +71,16 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 <span className={cn(
                   "flex items-center justify-between px-7 py-5 rounded-[1.5rem] text-base font-black transition-all group relative overflow-hidden",
                   isActive 
-                    ? "bg-slate-900 text-white shadow-3xl shadow-slate-900/30 scale-[1.03] translate-x-1" 
-                    : "text-slate-400 hover:text-slate-900 hover:bg-slate-50"
+                    ? "bg-slate-900 dark:bg-primary text-white shadow-3xl shadow-slate-900/30 dark:shadow-primary/20 scale-[1.03] translate-x-1" 
+                    : "text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
                 )}>
                   <div className="flex items-center gap-5 relative z-10">
-                    <item.icon size={24} className={cn(isActive ? "text-primary" : "text-slate-300 group-hover:text-primary transition-colors")} />
+                    <item.icon size={24} className={cn(isActive ? "text-primary dark:text-white" : "text-slate-300 dark:text-slate-700 group-hover:text-primary transition-colors")} />
                     {item.name}
                   </div>
                   {isActive && (
                     <div className="relative z-10 animate-in fade-in slide-in-from-left-2 duration-500">
-                      <ChevronRight size={18} className="text-primary" />
+                      <ChevronRight size={18} className="text-primary dark:text-white" />
                     </div>
                   )}
                 </span>
@@ -89,55 +89,42 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           })}
         </nav>
 
-        <div className="p-10 mt-auto space-y-8 bg-slate-50/50 border-t border-slate-100">
-          {profile?.role === 'student' && (
-            <div className="p-8 bg-white rounded-[2rem] border border-slate-200/60 group cursor-pointer hover:shadow-2xl hover:border-primary/20 transition-all duration-700 relative overflow-hidden">
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/5 rounded-full group-hover:scale-150 transition-transform"></div>
-              <div className="flex items-center justify-between mb-5">
-                <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/20">
-                  <Trophy size={20} />
+        <div className="p-10 mt-auto space-y-8 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between gap-4">
+             <div className="flex items-center gap-5 group">
+                <Avatar className="h-14 w-14 border-[3px] border-white dark:border-slate-800 shadow-2xl shadow-black/10 cursor-pointer hover:scale-110 transition-transform duration-500">
+                  <AvatarImage src={profile?.photoURL} className="object-cover" />
+                  <AvatarFallback className="bg-gradient-to-br from-primary via-primary to-accent text-white font-black text-xl">
+                    {profile?.displayName?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col min-w-0">
+                  <p className="text-base font-black text-slate-900 dark:text-white truncate tracking-tight">{profile?.displayName}</p>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/40 animate-pulse"></div>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em]">{profile?.role}</p>
+                  </div>
                 </div>
-                <Sparkles size={18} className="text-accent animate-pulse" />
               </div>
-              <div className="space-y-1">
-                <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Global Influence</span>
-                <p className="text-3xl font-black text-slate-900 tabular-nums">{profile.xp} <span className="text-xs text-slate-400 uppercase font-black ml-1">XP</span></p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center gap-5 p-3 group">
-            <Avatar className="h-14 w-14 border-[3px] border-white shadow-2xl shadow-black/10 cursor-pointer hover:scale-110 transition-transform duration-500">
-              <AvatarImage src={profile?.photoURL} className="object-cover" />
-              <AvatarFallback className="bg-gradient-to-br from-primary via-primary to-accent text-white font-black text-xl">
-                {profile?.displayName?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col min-w-0">
-              <p className="text-base font-black text-slate-900 truncate tracking-tight">{profile?.displayName}</p>
-              <div className="flex items-center gap-2.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/40 animate-pulse"></div>
-                <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.25em]">{profile?.role}</p>
-              </div>
-            </div>
+              <ThemeToggle />
           </div>
 
           <div className="flex flex-col gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between font-black border-slate-200 rounded-3xl h-14 shadow-sm hover:bg-white hover:border-primary transition-all px-6">
+                <Button variant="outline" className="w-full justify-between font-black border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl h-14 shadow-sm hover:bg-white dark:hover:bg-slate-800 hover:border-primary transition-all px-6">
                   <div className="flex items-center gap-4">
                     <Languages size={20} className="text-slate-400" />
-                    <span className="text-sm">{language === 'ar' ? 'العربية' : 'Français'}</span>
+                    <span className="text-sm dark:text-white">{language === 'ar' ? 'العربية' : 'Français'}</span>
                   </div>
                   <ChevronRight size={16} className="rotate-90 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-[300px] rounded-[2rem] p-4 shadow-3xl border-none animate-in zoom-in-95 duration-300">
-                <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'ar' ? "bg-primary text-white" : "hover:bg-primary/5 hover:text-primary")}>
+              <DropdownMenuContent align="center" className="w-[300px] rounded-[2rem] p-4 shadow-3xl border-none bg-white dark:bg-slate-900 animate-in zoom-in-95 duration-300">
+                <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'ar' ? "bg-primary text-white" : "hover:bg-primary/5 dark:hover:bg-slate-800 hover:text-primary dark:text-slate-300")}>
                   العربية (Arabic)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'fr' ? "bg-primary text-white" : "hover:bg-primary/5 hover:text-primary")}>
+                <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("rounded-2xl py-4 px-6 font-black cursor-pointer transition-colors", language === 'fr' ? "bg-primary text-white" : "hover:bg-primary/5 dark:hover:bg-slate-800 hover:text-primary dark:text-slate-300")}>
                   Français (French)
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -162,15 +149,16 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         <div className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-accent/5 blur-[130px] rounded-full -z-10 -translate-x-1/4 translate-y-1/4"></div>
 
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-8 border-b bg-white shadow-xl z-50">
+        <header className="md:hidden flex items-center justify-between p-8 border-b dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl z-50">
           <div className="flex items-center gap-4">
             <div className="bg-primary p-2.5 rounded-xl text-white shadow-lg shadow-primary/20">
               <Command size={28} />
             </div>
-            <span className="text-2xl font-black font-headline text-slate-900 tracking-tighter">MBN</span>
+            <span className="text-2xl font-black font-headline text-slate-900 dark:text-white tracking-tighter">MBN</span>
           </div>
           <div className="flex items-center gap-4">
-             <Avatar className="h-12 w-12 border-2 border-slate-100" onClick={() => logout()}>
+             <ThemeToggle />
+             <Avatar className="h-12 w-12 border-2 border-slate-100 dark:border-slate-800" onClick={() => logout()}>
               <AvatarImage src={profile?.photoURL} />
               <AvatarFallback className="font-black">U</AvatarFallback>
             </Avatar>
