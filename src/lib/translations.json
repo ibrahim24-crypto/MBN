@@ -61,7 +61,9 @@
     "roleManagement": "إدارة الأدوار",
     "xpRewards": "مكافآت XP",
     "studentGamification": "تحفيز الطلاب",
-    "xpIncentive": "يكسب الطلاب 100 XP عند دخولهم الأول."
+    "xpIncentive": "يكسب الطلاب 100 XP عند دخولهم الأول.",
+    "totalImpact": "الأثر الكلي",
+    "totalImpactDesc": "الاستمرارية هي مفتاح الارتقاء في الرتب."
   },
   "fr": {
     "dashboard": "Tableau de Bord",
@@ -125,6 +127,8 @@
     "roleManagement": "Gestion des Rôles",
     "xpRewards": "Récompenses XP",
     "studentGamification": "Gamification des Élèves",
-    "xpIncentive": "Les élèves gagnent 100 XP lors de leur première connexion."
+    "xpIncentive": "Les élèves gagnent 100 XP lors de leur première connexion.",
+    "totalImpact": "Impact Total",
+    "totalImpactDesc": "La régularité est la clé pour grimper dans les rangs."
   }
 }

@@ -17,7 +17,8 @@ import {
   ExternalLink,
   CheckCircle2,
   Zap,
-  Languages
+  Languages,
+  User
 } from 'lucide-react';
 import { 
   Tooltip,
@@ -68,56 +69,63 @@ export default function ProfilePage() {
 
       <div className="flex flex-col items-center gap-8 pb-20 w-full max-w-4xl">
         
-        {/* Profile Identity Card */}
-        <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden w-full max-w-md group transition-all duration-500 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-8 adaptive-card mx-auto">
-          <div className="h-32 bg-gradient-to-br from-primary via-primary/90 to-accent w-full relative">
-            <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px]"></div>
+        {/* Profile Identity Card - REWORKED */}
+        <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden w-full max-w-md group transition-all duration-700 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-8 adaptive-card mx-auto">
+          <div className="h-40 bg-gradient-to-br from-primary via-primary/80 to-accent w-full relative overflow-hidden">
+            <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px]"></div>
+            <div className="absolute -right-10 -bottom-10 opacity-10 group-hover:scale-110 transition-transform duration-1000">
+               <User size={240} className="text-white" />
+            </div>
           </div>
-          <CardContent className="relative flex flex-col items-center -mt-16 text-center pb-10 px-8">
-            <div className="relative mb-6">
-              <Avatar className="h-32 w-32 border-[6px] border-white dark:border-slate-900 shadow-2xl group-hover:scale-105 transition-transform duration-700">
+          <CardContent className="relative flex flex-col items-center -mt-20 text-center pb-12 px-10">
+            <div className="relative mb-8">
+              <Avatar className="h-40 w-40 border-[8px] border-white dark:border-slate-900 shadow-2xl group-hover:scale-105 transition-transform duration-700">
                 <AvatarImage 
                   src={profile.photoURL || "/logo.png"} 
                   className="object-cover" 
                 />
-                <AvatarFallback className="text-4xl bg-primary text-white font-black">
+                <AvatarFallback className="text-5xl bg-primary text-white font-black">
                   {profile.displayName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="absolute bottom-3 right-3 w-6 h-6 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full shadow-lg cursor-help"></span>
+                    <span className="absolute bottom-5 right-5 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full shadow-lg cursor-help flex items-center justify-center">
+                       <CheckCircle2 size={14} className="text-white" />
+                    </span>
                   </TooltipTrigger>
-                  <TooltipContent className="rounded-xl font-bold">
+                  <TooltipContent className="rounded-xl font-bold bg-emerald-500 text-white border-none px-4 py-2">
                     <p className="text-xs">{t.activeMember}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
             
-            <div className="space-y-2 mb-8">
-              <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
+            <div className="space-y-3 mb-10">
+              <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
                 {profile.displayName}
               </h2>
-              <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase tracking-[0.2em] text-[9px] font-black px-4 py-1.5 rounded-full">
-                {profile.role}
-              </Badge>
+              <div className="flex items-center justify-center gap-2">
+                <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/20 uppercase tracking-[0.2em] text-[10px] font-black px-5 py-2 rounded-full">
+                  {profile.role}
+                </Badge>
+              </div>
             </div>
             
-            <div className="w-full space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-[1.5rem] border border-slate-100 dark:border-slate-800 hover:bg-white transition-all">
-                <div className="p-3 bg-primary/10 rounded-xl text-primary">
-                  <Mail size={18} />
+            <div className="w-full space-y-5">
+              <div className="flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] border border-slate-100 dark:border-slate-800 group/item hover:bg-white dark:hover:bg-slate-800 transition-all duration-500">
+                <div className="p-4 bg-primary/10 rounded-2xl text-primary group-hover/item:bg-primary group-hover/item:text-white transition-all">
+                  <Mail size={22} />
                 </div>
                 <div className="flex flex-col text-left overflow-hidden">
-                  <span className="text-[8px] text-slate-400 font-black uppercase tracking-widest">{t.schoolEmail}</span>
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
+                  <span className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">{t.schoolEmail}</span>
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
                 </div>
               </div>
-              <Button variant="ghost" className="w-full rounded-2xl h-14 font-black gap-2 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
+              <Button className="w-full rounded-[1.5rem] h-16 font-black gap-3 text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">
                 {t.editInfo}
-                <ExternalLink size={14} />
+                <ExternalLink size={20} />
               </Button>
             </div>
           </CardContent>

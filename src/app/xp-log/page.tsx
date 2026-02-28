@@ -117,8 +117,8 @@ export default function XPLogPage() {
             <Zap size={200} />
          </div>
          <div className="relative z-10">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-1">Total Impact</h3>
-            <p className="text-slate-500 dark:text-slate-400 font-bold">Consistency is key to climbing the ranks.</p>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-1">{t.totalImpact}</h3>
+            <p className="text-slate-500 dark:text-slate-400 font-bold">{t.totalImpactDesc}</p>
          </div>
          <div className="text-4xl font-black text-primary relative z-10">
             {profile?.xp} XP
