@@ -15,17 +15,22 @@ import {
   updateDoc 
 } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export type UserRole = 'student' | 'teacher' | 'council' | 'administration';
 
 interface UserProfile {
-  uid: string;
+  id: string; // Changed from uid to id to match backend.json and rules
   email: string;
   displayName: string;
   photoURL: string;
   role: UserRole;
   xp: number;
   lastLogin: any;
+  isSuperAdmin: boolean;
+  createdAt: any;
+  updatedAt: any;
 }
 
 interface AuthContextType {
@@ -54,36 +59,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(firebaseUser);
       if (firebaseUser) {
         const userDocRef = doc(firestore, 'users', firebaseUser.uid);
-        const userDoc = await getDoc(userDocRef);
+        
+        try {
+          const userDoc = await getDoc(userDocRef);
+          let currentProfile: UserProfile;
 
-        let currentProfile: UserProfile;
-
-        if (!userDoc.exists()) {
-          // New User Setup
-          const initialRole: UserRole = firebaseUser.email === SUPER_ADMIN_EMAIL ? 'administration' : 'student';
-          const initialXP = initialRole === 'student' ? 100 : 0;
-          
-          currentProfile = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            displayName: firebaseUser.displayName || 'Anonymous',
-            photoURL: firebaseUser.photoURL || '',
-            role: initialRole,
-            xp: initialXP,
-            lastLogin: new Date(),
-          };
-          
-          await setDoc(userDocRef, currentProfile);
-        } else {
-          // Existing User
-          const data = userDoc.data() as UserProfile;
-          currentProfile = {
-            ...data,
-            lastLogin: new Date(),
-          };
-          await updateDoc(userDocRef, { lastLogin: new Date() });
+          if (!userDoc.exists()) {
+            const initialRole: UserRole = firebaseUser.email === SUPER_ADMIN_EMAIL ? 'administration' : 'student';
+            const initialXP = initialRole === 'student' ? 100 : 0;
+            const now = new Date();
+            
+            currentProfile = {
+              id: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              displayName: firebaseUser.displayName || 'Anonymous',
+              photoURL: firebaseUser.photoURL || '',
+              role: initialRole,
+              xp: initialXP,
+              lastLogin: now,
+              isSuperAdmin: firebaseUser.email === SUPER_ADMIN_EMAIL,
+              createdAt: now,
+              updatedAt: now,
+            };
+            
+            await setDoc(userDocRef, currentProfile);
+          } else {
+            const data = userDoc.data() as UserProfile;
+            currentProfile = {
+              ...data,
+              lastLogin: new Date(),
+              updatedAt: new Date(),
+            };
+            await updateDoc(userDocRef, { 
+              lastLogin: currentProfile.lastLogin,
+              updatedAt: currentProfile.updatedAt
+            });
+          }
+          setProfile(currentProfile);
+        } catch (error: any) {
+          if (error.code === 'permission-denied') {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+              path: userDocRef.path,
+              operation: 'get'
+            }));
+          }
         }
-        setProfile(currentProfile);
       } else {
         setProfile(null);
       }

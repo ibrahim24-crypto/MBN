@@ -5,7 +5,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Mail, Calendar, ShieldCheck, Star } from 'lucide-react';
+import { Trophy, Mail, ShieldCheck, Star, Megaphone } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 export default function ProfilePage() {
@@ -52,7 +52,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase">UID</span>
-                  <span className="font-mono text-[10px] truncate max-w-[150px]">{profile.uid}</span>
+                  <span className="font-mono text-[10px] truncate max-w-[150px]">{profile.id}</span>
                 </div>
               </div>
             </div>

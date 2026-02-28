@@ -30,9 +30,11 @@ import { useToast } from '@/hooks/use-toast';
 import { ShieldCheck, UserCog, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 interface UserData {
-  uid: string;
+  id: string;
   displayName: string;
   email: string;
   role: UserRole;
@@ -40,41 +42,52 @@ interface UserData {
 }
 
 export default function AdminPage() {
-  const { isSuperAdmin, loading } = useAuth();
+  const { isSuperAdmin, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserData[]>([]);
   const [fetching, setFetching] = useState(true);
   const [search, setSearch] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!loading && !isSuperAdmin) {
-      // Should redirect or show error
-    } else if (isSuperAdmin) {
+    if (!authLoading && isSuperAdmin) {
       fetchUsers();
     }
-  }, [loading, isSuperAdmin]);
+  }, [authLoading, isSuperAdmin]);
 
   const fetchUsers = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, 'users'));
       const userData = querySnapshot.docs.map(doc => doc.data() as UserData);
       setUsers(userData);
-    } catch (error) {
-      console.error("Error fetching users", error);
+    } catch (error: any) {
+      if (error.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: 'users',
+          operation: 'list'
+        }));
+      }
     } finally {
       setFetching(false);
     }
   };
 
-  const updateRole = async (uid: string, newRole: UserRole) => {
+  const updateRole = async (id: string, newRole: UserRole) => {
+    const userDocRef = doc(db, 'users', id);
     try {
-      await updateDoc(doc(db, 'users', uid), { role: newRole });
-      setUsers(prev => prev.map(u => u.uid === uid ? { ...u, role: newRole } : u));
+      await updateDoc(userDocRef, { role: newRole });
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u));
       toast({
         title: "Role Updated",
         description: "User role has been successfully changed.",
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: userDocRef.path,
+          operation: 'update',
+          requestResourceData: { role: newRole }
+        }));
+      }
       toast({
         variant: "destructive",
         title: "Update Failed",
@@ -84,11 +97,11 @@ export default function AdminPage() {
   };
 
   const filteredUsers = users.filter(u => 
-    u.displayName.toLowerCase().includes(search.toLowerCase()) || 
-    u.email.toLowerCase().includes(search.toLowerCase())
+    u.displayName?.toLowerCase().includes(search.toLowerCase()) || 
+    u.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (!isSuperAdmin && !loading) return (
+  if (!isSuperAdmin && !authLoading) return (
     <div className="h-screen flex items-center justify-center p-4">
       <div className="text-center">
         <ShieldCheck size={48} className="mx-auto text-destructive mb-4" />
@@ -140,7 +153,7 @@ export default function AdminPage() {
               </TableRow>
             ) : (
               filteredUsers.map((u) => (
-                <TableRow key={u.uid} className="hover:bg-muted/30 transition-colors">
+                <TableRow key={u.id} className="hover:bg-muted/30 transition-colors">
                   <TableCell className="font-medium">{u.displayName}</TableCell>
                   <TableCell className="text-muted-foreground">{u.email}</TableCell>
                   <TableCell>
@@ -151,7 +164,7 @@ export default function AdminPage() {
                   <TableCell>
                     <Select 
                       defaultValue={u.role} 
-                      onValueChange={(val: UserRole) => updateRole(u.uid, val)}
+                      onValueChange={(val: UserRole) => updateRole(u.id, val)}
                     >
                       <SelectTrigger className="w-40 border-primary/20 bg-background focus:ring-primary/20">
                         <SelectValue placeholder="Select role" />
