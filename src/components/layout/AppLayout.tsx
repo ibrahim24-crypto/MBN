@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   LayoutDashboard, 
   Megaphone, 
@@ -9,10 +8,7 @@ import {
   ShieldCheck, 
   LogOut,
   UserCircle,
-  History,
-  Menu,
-  AlignLeft,
-  ChevronRight
+  History
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -29,14 +25,12 @@ import {
 import { ThemeToggle } from '@/components/ThemeToggle';
 import NextLink from 'next/link';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { profile, logout, isSuperAdmin } = useAuth();
   const { t } = useLanguage();
   
-  // Use local logo from public root
   const logoSrc = "/logo.png";
 
   const navItems = [
@@ -57,10 +51,10 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-slate-950 selection:bg-primary/20">
       <TooltipProvider delayDuration={0}>
         {/* Icons-Only Sidebar */}
-        <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[80px] transition-all duration-500 ease-in-out">
+        <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[88px] transition-all duration-500 ease-in-out">
           <div className="p-6 flex flex-col items-center gap-8">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800 bg-white">
+              <div className="w-14 h-14 relative rounded-2xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800 bg-white">
                 <Image 
                   src={logoSrc} 
                   fill 
@@ -85,7 +79,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                           ? "bg-primary text-white shadow-lg shadow-primary/20" 
                           : "text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
                       )}>
-                        <item.icon size={22} className={cn(isActive ? "text-white" : "text-slate-400 dark:text-slate-600 group-hover:text-primary transition-colors")} />
+                        <item.icon size={24} className={cn(isActive ? "text-white" : "text-slate-400 dark:text-slate-600 group-hover:text-primary transition-colors")} />
                       </div>
                     </NextLink>
                   </TooltipTrigger>
@@ -105,17 +99,17 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 <TooltipTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="w-12 h-12 justify-center p-0 text-destructive hover:text-white hover:bg-destructive rounded-2xl font-black transition-all"
+                    className="w-14 h-14 justify-center p-0 text-destructive hover:text-white hover:bg-destructive rounded-2xl font-black transition-all"
                     onClick={() => logout()}
                   >
-                    <LogOut size={20} />
+                    <LogOut size={22} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="font-black text-xs">{t.signOut}</TooltipContent>
               </Tooltip>
 
               <div className="flex items-center justify-center">
-                <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-xl cursor-pointer hover:scale-110 transition-all">
+                <Avatar className="h-14 w-14 border-2 border-white dark:border-slate-800 shadow-xl cursor-pointer hover:scale-110 transition-all">
                   <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
                   <AvatarFallback className="bg-primary text-white font-black">{profile?.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -131,8 +125,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
-          <div className="w-10 h-10 relative rounded-xl overflow-hidden bg-white shadow-md">
-            <Image src={logoSrc} fill alt="MBN Logo" className="object-contain p-1" unoptimized />
+          <div className="w-12 h-12 relative rounded-xl overflow-hidden bg-white shadow-md border border-slate-100">
+            <Image src={logoSrc} fill alt="MBN Logo" className="object-contain p-1.5" unoptimized />
           </div>
           <div className="flex items-center gap-3">
              <ThemeToggle />

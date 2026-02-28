@@ -1,10 +1,8 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, GraduationCap, Users, Megaphone, Languages, ArrowRight, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+import { ShieldCheck, GraduationCap, Users, Megaphone, Languages, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -51,13 +49,13 @@ export default function LandingPage() {
       </div>
 
       <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl shadow-primary/20 group hover:rotate-6 transition-transform bg-white">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 group hover:rotate-6 transition-transform bg-white border border-slate-100">
             <Image 
               src={logoSrc} 
               fill 
               alt="MBN Logo" 
-              className="object-contain p-1" 
+              className="object-contain p-1.5" 
               unoptimized
             />
           </div>
@@ -133,8 +131,8 @@ export default function LandingPage() {
       <footer className="py-24 px-8 text-center bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 relative rounded-lg overflow-hidden bg-white">
-              <Image src={logoSrc} fill alt="MBN Logo" className="object-contain" unoptimized />
+            <div className="w-10 h-10 relative rounded-lg overflow-hidden bg-white border border-slate-100 shadow-sm">
+              <Image src={logoSrc} fill alt="MBN Logo" className="object-contain p-0.5" unoptimized />
             </div>
             <span className="font-black text-2xl text-slate-900 tracking-tighter uppercase">MBN Hub</span>
           </div>
