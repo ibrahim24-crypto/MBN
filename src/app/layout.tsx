@@ -5,9 +5,21 @@ import { AuthProvider } from '@/context/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { LanguageProvider, useLanguage } from '@/context/LanguageContext';
+import { useEffect } from 'react';
 
 function RootLayoutInner({ children }: { children: React.ReactNode }) {
   const { isRtl, language } = useLanguage();
+
+  useEffect(() => {
+    // Theme initialization to prevent flash and ensure persistence
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   return (
     <html lang={language} dir={isRtl ? 'rtl' : 'ltr'}>
       <head>
