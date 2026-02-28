@@ -26,7 +26,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, Sparkles } from 'lucide-react';
+import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, Sparkles, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -34,7 +34,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
-import { updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { updateDocumentNonBlocking, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 interface UserData {
   id: string;
@@ -95,8 +95,11 @@ export default function AdminPage() {
     if (!db || !profile) return;
     const userDocRef = doc(db, 'users', id);
     const currentUser = users.find(u => u.id === id);
+    if (!currentUser) return;
+
     const newXP = Number(editForm.xp);
-    const xpDifference = newXP - (currentUser?.xp || 0);
+    const xpDifference = newXP - currentUser.xp;
+    const roleChanged = editForm.role !== currentUser.role;
 
     // 1. Update User Profile (Non-blocking)
     updateDocumentNonBlocking(userDocRef, { 
@@ -106,7 +109,24 @@ export default function AdminPage() {
       updatedAt: new Date().toISOString()
     });
 
-    // 2. Create XP Log if XP changed (Non-blocking)
+    // 2. Handle Role Markers (Structural Segregation Sync)
+    if (roleChanged) {
+      // Remove old role marker if it was admin or council
+      if (currentUser.role === 'administration') {
+        deleteDocumentNonBlocking(doc(db, 'roles_admin', id));
+      } else if (currentUser.role === 'council') {
+        deleteDocumentNonBlocking(doc(db, 'roles_council', id));
+      }
+
+      // Add new role marker if applicable
+      if (editForm.role === 'administration') {
+        setDocumentNonBlocking(doc(db, 'roles_admin', id), { userId: id, createdAt: new Date().toISOString() }, { merge: true });
+      } else if (editForm.role === 'council') {
+        setDocumentNonBlocking(doc(db, 'roles_council', id), { userId: id, createdAt: new Date().toISOString() }, { merge: true });
+      }
+    }
+
+    // 3. Create XP Log if XP changed (Non-blocking)
     if (xpDifference !== 0) {
       addDocumentNonBlocking(collection(db, 'users', id, 'xp_logs'), {
         userId: id,
@@ -123,7 +143,7 @@ export default function AdminPage() {
     
     toast({
       title: t.xpUpdated,
-      description: `Name and XP (${xpDifference > 0 ? '+' : ''}${xpDifference}) updated.`,
+      description: `Identity updated successfully.`,
     });
   };
 
@@ -164,79 +184,80 @@ export default function AdminPage() {
           <p className="text-slate-500 dark:text-slate-400 font-bold text-2xl tracking-tight">{t.manageUsers}</p>
         </div>
         
-        <div className="relative w-full md:w-[400px] group">
+        <div className="relative w-full md:w-[450px] group">
           <div className="absolute inset-0 bg-primary/10 blur-[60px] -z-10 rounded-full opacity-30 group-focus-within:opacity-60 transition-opacity"></div>
-          <Search size={24} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all" />
+          <Search size={28} className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all" />
           <Input 
-            placeholder={t.searchUsers || "Search identities..."} 
-            className="pl-16 h-20 w-full rounded-[2rem] bg-white dark:bg-slate-900 border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] focus:ring-12 focus:ring-primary/5 transition-all font-black text-xl placeholder:text-slate-200"
+            placeholder={t.searchUsers} 
+            className="pl-20 h-20 w-full rounded-[2.5rem] bg-white dark:bg-slate-900 border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] focus:ring-12 focus:ring-primary/5 transition-all font-black text-2xl placeholder:text-slate-200"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </header>
 
-      <div className="w-full bg-white dark:bg-slate-900 rounded-[4rem] border-none shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-[4rem] border-none shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200 mb-40">
         <Table>
-          <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
+          <TableHeader className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md">
             <TableRow className="border-none">
-              <TableHead className="py-10 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px]">{t.name || "Identity"}</TableHead>
-              <TableHead className="py-10 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px]">{t.email || "Contact"}</TableHead>
-              <TableHead className="py-10 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px]">{t.xp || "XP Credits"}</TableHead>
-              <TableHead className="py-10 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px]">{t.role || "Authority"}</TableHead>
-              <TableHead className="py-10 px-12 font-black text-slate-400 uppercase tracking-[0.3em] text-[10px] text-right">{t.actions || "Ops"}</TableHead>
+              <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.name}</TableHead>
+              <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.email}</TableHead>
+              <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.xp}</TableHead>
+              <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px]">{t.role}</TableHead>
+              <TableHead className="py-12 px-14 font-black text-slate-400 uppercase tracking-[0.4em] text-[11px] text-right">{t.actions}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {fetching ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-48">
-                  <div className="flex flex-col items-center gap-6">
-                    <Loader2 size={48} className="animate-spin text-primary opacity-40" />
-                    <span className="text-slate-300 font-black uppercase tracking-[0.3em] animate-pulse">Syncing Records...</span>
+                <TableCell colSpan={5} className="text-center py-60">
+                  <div className="flex flex-col items-center gap-8">
+                    <Loader2 size={64} className="animate-spin text-primary opacity-40" />
+                    <span className="text-slate-300 font-black uppercase tracking-[0.5em] animate-pulse text-xl">Syncing Hub Registry...</span>
                   </div>
                 </TableCell>
               </TableRow>
             ) : filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-48">
-                   <div className="flex flex-col items-center gap-10 opacity-30 grayscale">
-                      <Search size={100} />
-                      <p className="text-2xl font-black uppercase tracking-[0.2em]">No Identities Found</p>
+                <TableCell colSpan={5} className="text-center py-60">
+                   <div className="flex flex-col items-center gap-12 opacity-20 grayscale">
+                      <User size={120} />
+                      <p className="text-3xl font-black uppercase tracking-[0.3em]">No Identities Detected</p>
                    </div>
                 </TableCell>
               </TableRow>
             ) : (
-              filteredUsers.map((u, idx) => (
-                <TableRow key={u.id} className="border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                  <TableCell className="py-10 px-12">
+              filteredUsers.map((u) => (
+                <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-500 group/row">
+                  <TableCell className="py-12 px-14">
                     {editingId === u.id ? (
                       <Input 
                         value={editForm.displayName} 
                         onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
-                        className="h-14 w-64 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-lg px-6"
+                        className="h-16 w-80 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-8 shadow-inner"
                       />
                     ) : (
-                      <div className="flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-2xl group-hover/row:scale-110 transition-transform">
-                          {u.displayName?.charAt(0)}
+                      <div className="flex items-center gap-6">
+                        <div className="h-16 w-16 rounded-[1.5rem] bg-primary/10 flex items-center justify-center text-primary font-black text-3xl group-hover/row:scale-110 group-hover/row:rotate-3 transition-all duration-500 shadow-sm overflow-hidden">
+                           <span className="z-10">{u.displayName?.charAt(0)}</span>
+                           <div className="absolute inset-0 bg-primary/5 blur-xl -z-0"></div>
                         </div>
-                        <span className="text-xl font-black text-slate-900 dark:text-white leading-tight">{u.displayName}</span>
+                        <span className="text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">{u.displayName}</span>
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="py-10 px-12 text-slate-500 dark:text-slate-400 font-bold text-lg">{u.email}</TableCell>
-                  <TableCell className="py-10 px-12">
+                  <TableCell className="py-12 px-14 text-slate-400 dark:text-slate-500 font-bold text-xl">{u.email}</TableCell>
+                  <TableCell className="py-12 px-14">
                     {editingId === u.id ? (
                       <Input 
                         type="number"
                         value={editForm.xp} 
                         onChange={(e) => setEditForm(prev => ({ ...prev, xp: parseInt(e.target.value) }))}
-                        className="h-14 w-32 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-lg px-6"
+                        className="h-16 w-32 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-8 shadow-inner"
                       />
                     ) : (
                       <Badge className={cn(
-                        "h-12 px-6 rounded-2xl font-black text-lg shadow-sm border-2",
+                        "h-14 px-8 rounded-2xl font-black text-xl shadow-sm border-2",
                         u.xp < 0 
                           ? "bg-destructive/5 text-destructive border-destructive/10" 
                           : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20"
@@ -245,41 +266,41 @@ export default function AdminPage() {
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="py-10 px-12">
+                  <TableCell className="py-12 px-14">
                     {editingId === u.id ? (
                       <Select 
                         value={editForm.role} 
                         onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
                       >
-                        <SelectTrigger className="w-48 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-lg px-6">
+                        <SelectTrigger className="w-56 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-xl px-8 shadow-inner">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="rounded-2xl shadow-2xl border-none p-4">
-                          <SelectItem value="student" className="rounded-xl px-6 py-4 font-black">Student</SelectItem>
-                          <SelectItem value="teacher" className="rounded-xl px-6 py-4 font-black">Teacher</SelectItem>
-                          <SelectItem value="council" className="rounded-xl px-6 py-4 font-black">Council</SelectItem>
-                          <SelectItem value="administration" className="rounded-xl px-6 py-4 font-black">Administration</SelectItem>
+                        <SelectContent className="rounded-[2rem] shadow-2xl border-none p-4">
+                          <SelectItem value="student" className="rounded-2xl px-8 py-5 font-black text-lg">Student</SelectItem>
+                          <SelectItem value="teacher" className="rounded-2xl px-8 py-5 font-black text-lg">Teacher</SelectItem>
+                          <SelectItem value="council" className="rounded-2xl px-8 py-5 font-black text-lg">Council</SelectItem>
+                          <SelectItem value="administration" className="rounded-2xl px-8 py-5 font-black text-lg">Administration</SelectItem>
                         </SelectContent>
                       </Select>
                     ) : (
-                      <Badge className="capitalize bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-none px-6 py-3 rounded-xl font-black text-xs tracking-widest">
+                      <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-none px-8 py-4 rounded-2xl font-black text-xs tracking-[0.2em]">
                         {u.role}
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="py-10 px-12 text-right">
+                  <TableCell className="py-12 px-14 text-right">
                     {editingId === u.id ? (
-                      <div className="flex justify-end gap-4">
-                        <Button size="icon" className="h-14 w-14 rounded-2xl bg-emerald-500 hover:bg-emerald-600 shadow-xl shadow-emerald-500/20 text-white" onClick={() => saveUserChanges(u.id)}>
-                          <Save size={24} />
+                      <div className="flex justify-end gap-5">
+                        <Button size="icon" className="h-16 w-16 rounded-2xl bg-emerald-500 hover:bg-emerald-600 shadow-xl shadow-emerald-500/20 text-white" onClick={() => saveUserChanges(u.id)}>
+                          <Save size={28} />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-destructive hover:bg-destructive hover:text-white" onClick={cancelEditing}>
-                          <X size={24} />
+                        <Button size="icon" variant="ghost" className="h-16 w-16 rounded-2xl bg-slate-100 dark:bg-slate-800 text-destructive hover:bg-destructive hover:text-white" onClick={cancelEditing}>
+                          <X size={28} />
                         </Button>
                       </div>
                     ) : (
-                      <Button size="icon" variant="ghost" className="h-14 w-14 rounded-2xl text-slate-300 hover:text-primary hover:bg-primary/10 transition-all" onClick={() => startEditing(u)}>
-                        <Edit2 size={24} />
+                      <Button size="icon" variant="ghost" className="h-16 w-16 rounded-2xl text-slate-300 hover:text-primary hover:bg-primary/10 transition-all group-hover/row:text-primary" onClick={() => startEditing(u)}>
+                        <Edit2 size={28} />
                       </Button>
                     )}
                   </TableCell>
@@ -292,4 +313,3 @@ export default function AdminPage() {
     </AppLayout>
   );
 }
-
