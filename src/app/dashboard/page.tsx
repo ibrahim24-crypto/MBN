@@ -27,7 +27,6 @@ export default function DashboardPage() {
   );
 
   const isStudent = profile?.role === 'student';
-  // Calibrate: 100 XP = 50%, target is 200 XP
   const xpProgress = Math.min(((profile?.xp || 0) / 200) * 100, 100);
 
   return (
@@ -64,7 +63,6 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className={cn("space-y-8", isStudent ? "lg:col-span-12" : "lg:col-span-8")}>
             <div className="flex flex-wrap gap-8">
-              {/* XP Dashboard Widget - HIGH END STYLE */}
               {isStudent && (
                 <Card className="flex-1 min-w-[320px] border-none bg-gradient-to-br from-primary via-primary/90 to-accent text-white shadow-2xl relative overflow-hidden group rounded-[3.5rem] p-1 transition-all hover:scale-[1.01]">
                   <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
@@ -106,7 +104,6 @@ export default function DashboardPage() {
                 </Card>
               )}
 
-              {/* Admin Panel Access */}
               {(profile?.role === 'administration' || isSuperAdmin) && (
                 <Card className="flex-1 min-w-[320px] border-none bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-[3.5rem] p-1 transition-all hover:scale-[1.01]">
                   <div className="absolute -bottom-10 -right-10 p-12 opacity-10 group-hover:scale-125 transition-transform duration-1000">
@@ -127,7 +124,6 @@ export default function DashboardPage() {
                 </Card>
               )}
 
-              {/* News Snippet */}
               <Card className="flex-1 min-w-[320px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all duration-500 rounded-[3.5rem] overflow-hidden p-1">
                 <CardHeader className="p-10 pb-4">
                   <div className="flex items-center justify-between mb-4">
