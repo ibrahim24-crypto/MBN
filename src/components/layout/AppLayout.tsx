@@ -36,7 +36,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   const { profile, logout, isSuperAdmin } = useAuth();
   const { t } = useLanguage();
   
-  const logoPlaceholder = PlaceHolderImages.find(img => img.id === 'mbn-logo')?.imageUrl || '/logo.png';
+  // Use local logo from public root
+  const logoSrc = "/logo.png";
 
   const navItems = [
     { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
@@ -61,11 +62,11 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800 bg-white">
                 <Image 
-                  src={logoPlaceholder} 
+                  src={logoSrc} 
                   fill 
                   alt="MBN Logo" 
                   className="object-contain p-1.5" 
-                  unoptimized // Bypasses optimization for external placeholders to avoid 400s
+                  unoptimized
                 />
               </div>
             </div>
@@ -115,7 +116,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
 
               <div className="flex items-center justify-center">
                 <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-xl cursor-pointer hover:scale-110 transition-all">
-                  <AvatarImage src={profile?.photoURL || logoPlaceholder} className="object-cover" />
+                  <AvatarImage src={profile?.photoURL || logoSrc} className="object-cover" />
                   <AvatarFallback className="bg-primary text-white font-black">{profile?.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
@@ -131,12 +132,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
           <div className="w-10 h-10 relative rounded-xl overflow-hidden bg-white shadow-md">
-            <Image src={logoPlaceholder} fill alt="MBN Logo" className="object-contain p-1" unoptimized />
+            <Image src={logoSrc} fill alt="MBN Logo" className="object-contain p-1" unoptimized />
           </div>
           <div className="flex items-center gap-3">
              <ThemeToggle />
              <Avatar className="h-10 w-10 border-2 border-slate-100" onClick={() => logout()}>
-              <AvatarImage src={profile?.photoURL || logoPlaceholder} />
+              <AvatarImage src={profile?.photoURL || logoSrc} />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>

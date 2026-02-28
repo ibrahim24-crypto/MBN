@@ -27,11 +27,12 @@ export default function DashboardPage() {
   );
 
   const isStudent = profile?.role === 'student';
+  // Calibrate: 100 XP = 50%, target is 200 XP
   const xpProgress = Math.min(((profile?.xp || 0) / 200) * 100, 100);
 
   return (
     <AppLayout>
-      <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 w-full">
         <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -63,9 +64,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className={cn("space-y-8", isStudent ? "lg:col-span-12" : "lg:col-span-8")}>
             <div className="flex flex-wrap gap-8">
-              {/* XP Dashboard Widget (High-End Styling) */}
+              {/* XP Dashboard Widget - HIGH END STYLE */}
               {isStudent && (
-                <Card className="flex-1 min-w-[320px] border-none bg-gradient-to-br from-primary via-primary/90 to-accent text-white shadow-2xl relative overflow-hidden group rounded-[3rem] p-1 transition-all hover:scale-[1.01]">
+                <Card className="flex-1 min-w-[320px] border-none bg-gradient-to-br from-primary via-primary/90 to-accent text-white shadow-2xl relative overflow-hidden group rounded-[3.5rem] p-1 transition-all hover:scale-[1.01]">
                   <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
                     <Trophy size={200} />
                   </div>
@@ -74,8 +75,8 @@ export default function DashboardPage() {
                       <div className="space-y-2">
                         <span className="text-xs font-black tracking-[0.3em] uppercase opacity-70 block">{t.progress}</span>
                         <div className="flex items-baseline gap-4">
-                          <span className="text-8xl font-black tracking-tighter leading-none">{profile?.xp || 0}</span>
-                          <span className="text-2xl font-black opacity-60 uppercase tracking-widest">XP</span>
+                          <span className="text-8xl font-black tracking-tighter leading-none font-mono">{profile?.xp || 0}</span>
+                          <span className="text-2xl font-black opacity-60 uppercase tracking-widest">{t.xp}</span>
                         </div>
                       </div>
 
@@ -85,11 +86,14 @@ export default function DashboardPage() {
                              <p className="text-sm font-bold text-white/80">{t.targetXP}</p>
                              <span className="text-xs font-black bg-white/20 px-3 py-1 rounded-full">{Math.round(xpProgress)}%</span>
                           </div>
-                          <div className="h-5 bg-white/20 rounded-full p-1 border border-white/10 backdrop-blur-sm overflow-hidden">
+                          <div className="h-5 bg-white/20 rounded-full p-1 border border-white/10 backdrop-blur-sm overflow-hidden relative">
                             <div 
                               className="h-full bg-white rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
                               style={{ width: `${xpProgress}%` }}
                             />
+                            {xpProgress > 80 && (
+                              <div className="absolute inset-0 bg-white/20 animate-pulse blur-md" />
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-4 bg-white/10 p-5 rounded-3xl border border-white/10 backdrop-blur-sm">
@@ -104,7 +108,7 @@ export default function DashboardPage() {
 
               {/* Admin Panel Access */}
               {(profile?.role === 'administration' || isSuperAdmin) && (
-                <Card className="flex-1 min-w-[320px] border-none bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-[3rem] p-1 transition-all hover:scale-[1.01]">
+                <Card className="flex-1 min-w-[320px] border-none bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-[3.5rem] p-1 transition-all hover:scale-[1.01]">
                   <div className="absolute -bottom-10 -right-10 p-12 opacity-10 group-hover:scale-125 transition-transform duration-1000">
                     <Users size={200} />
                   </div>
@@ -124,7 +128,7 @@ export default function DashboardPage() {
               )}
 
               {/* News Snippet */}
-              <Card className="flex-1 min-w-[320px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all duration-500 rounded-[3rem] overflow-hidden p-1">
+              <Card className="flex-1 min-w-[320px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all duration-500 rounded-[3.5rem] overflow-hidden p-1">
                 <CardHeader className="p-10 pb-4">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-4 bg-primary/10 rounded-2xl text-primary">
@@ -147,7 +151,7 @@ export default function DashboardPage() {
             </div>
 
             {profile?.role === 'council' && (
-              <div className="p-10 rounded-[3rem] bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/40 flex flex-col md:flex-row items-center gap-10 shadow-xl group transition-all hover:bg-orange-100/30">
+              <div className="p-10 rounded-[3.5rem] bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/40 flex flex-col md:flex-row items-center gap-10 shadow-xl group transition-all hover:bg-orange-100/30">
                 <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl text-orange-600 shadow-xl group-hover:scale-110 transition-transform duration-500">
                   <ShieldAlert size={48} />
                 </div>
@@ -164,7 +168,7 @@ export default function DashboardPage() {
 
           {!isStudent && (
             <div className="lg:col-span-4">
-              <Card className="shadow-xl border-none bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden p-1">
+              <Card className="shadow-xl border-none bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden p-1">
                 <CardHeader className="p-10 pb-4">
                   <div className="flex items-center justify-between mb-8">
                     <div className="space-y-1">

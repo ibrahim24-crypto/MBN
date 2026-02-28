@@ -23,7 +23,8 @@ export default function LandingPage() {
   const { t, setLanguage } = useLanguage();
   const router = useRouter();
   
-  const logoPlaceholder = PlaceHolderImages.find(img => img.id === 'mbn-logo')?.imageUrl || '/logo.png';
+  // Directly use logo.png
+  const logoSrc = "/logo.png";
 
   useEffect(() => {
     if (!loading && user) {
@@ -54,7 +55,7 @@ export default function LandingPage() {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl shadow-primary/20 group hover:rotate-6 transition-transform bg-white">
             <Image 
-              src={logoPlaceholder} 
+              src={logoSrc} 
               fill 
               alt="MBN Logo" 
               className="object-contain p-1" 
@@ -134,7 +135,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 relative rounded-lg overflow-hidden bg-white">
-              <Image src={logoPlaceholder} fill alt="MBN Logo" className="object-contain" unoptimized />
+              <Image src={logoSrc} fill alt="MBN Logo" className="object-contain" unoptimized />
             </div>
             <span className="font-black text-2xl text-slate-900 tracking-tighter uppercase">MBN Hub</span>
           </div>
