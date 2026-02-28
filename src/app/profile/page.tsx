@@ -191,7 +191,7 @@ export default function ProfilePage() {
                   <Star size={20} className="text-primary" />
                   Recent Badges
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500">Milestones achieved this year</CardLevel>
+                <CardDescription className="font-medium text-slate-500">Milestones achieved this year</CardDescription>
               </CardHeader>
               <CardContent className="p-8 pt-6">
                  <div className="space-y-6">
