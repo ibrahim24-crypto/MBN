@@ -23,9 +23,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Megaphone, Plus, Calendar, User, Search, Filter } from 'lucide-react';
+import { Megaphone, Plus, Calendar, User, Search, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -92,11 +93,11 @@ export default function AnnouncementsPage() {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
         <div>
           <Badge className="bg-primary/10 text-primary font-bold mb-2">Notice Board</Badge>
-          <h1 className="text-4xl font-black font-headline tracking-tight flex items-center gap-3 text-slate-900">
+          <h1 className="text-4xl font-black font-headline tracking-tight flex items-center gap-3 text-slate-900 dark:text-white">
             <Megaphone className="text-primary" size={32} />
             {t.announcements}
           </h1>
-          <p className="text-slate-500 font-medium text-lg mt-1">{t.checkLatest}</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium text-lg mt-1">{t.checkLatest}</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -104,7 +105,7 @@ export default function AnnouncementsPage() {
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
             <Input 
               placeholder="Search news..." 
-              className="pl-10 w-full md:w-72 rounded-xl bg-white border-slate-200 focus:ring-primary/20 transition-all"
+              className="pl-10 w-full md:w-72 rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 focus:ring-primary/20 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -118,25 +119,25 @@ export default function AnnouncementsPage() {
                   {t.newAnnouncement}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[550px] rounded-3xl p-8">
+              <DialogContent className="sm:max-w-[550px] rounded-3xl p-8 bg-white dark:bg-slate-900 border-none">
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-black">{t.newAnnouncement}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 py-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 px-1">Headline</label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 px-1">Headline</label>
                     <Input 
                       placeholder={t.headline} 
-                      className="rounded-xl bg-slate-50 border-slate-200 h-12 px-4 font-semibold"
+                      className="rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 h-12 px-4 font-semibold"
                       value={newTitle} 
                       onChange={(e) => setNewTitle(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 px-1">Details</label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 px-1">Details</label>
                     <Textarea 
                       placeholder={t.details} 
-                      className="min-h-[180px] rounded-xl bg-slate-50 border-slate-200 p-4 font-medium leading-relaxed"
+                      className="min-h-[180px] rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-4 font-medium leading-relaxed"
                       value={newContent}
                       onChange={(e) => setNewContent(e.target.value)}
                     />
@@ -152,46 +153,44 @@ export default function AnnouncementsPage() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 gap-8">
         {fetching ? (
-          <div className="col-span-full text-center py-32">
-            <div className="animate-spin text-primary mx-auto mb-4">
-               <Megaphone size={40} />
-            </div>
-            <p className="text-slate-500 font-bold">Fetching latest news...</p>
+          <div className="col-span-full text-center py-32 flex flex-col items-center gap-4">
+            <Loader2 size={48} className="animate-spin text-primary" />
+            <p className="text-slate-500 font-bold">Retrieving MBN Bulletins...</p>
           </div>
         ) : !filteredAnnouncements || filteredAnnouncements.length === 0 ? (
-          <div className="col-span-full text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 flex flex-col items-center gap-6 shadow-sm">
-            <div className="p-8 bg-slate-50 rounded-full text-slate-200">
+          <div className="col-span-full text-center py-32 bg-white dark:bg-slate-900 rounded-[3rem] border-2 border-dashed border-slate-100 dark:border-slate-800 flex flex-col items-center gap-6 shadow-sm">
+            <div className="p-8 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-200 dark:text-slate-700">
                <Megaphone size={80} />
             </div>
             <div className="space-y-1">
-              <h3 className="text-2xl font-black text-slate-900">{t.noAnnouncements}</h3>
-              <p className="text-slate-500 font-medium max-w-xs mx-auto">Check back later for official school updates and council proposals.</p>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{t.noAnnouncements}</h3>
+              <p className="text-slate-500 dark:text-slate-400 font-medium max-w-xs mx-auto">Check back later for official school updates and council proposals.</p>
             </div>
           </div>
         ) : (
           filteredAnnouncements.map((ann, idx) => (
-            <Card key={ann.id} className="group border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2rem] overflow-hidden hover:scale-[1.01] transition-all duration-500 animate-in fade-in slide-in-from-bottom-8 fill-mode-both" style={{ animationDelay: `${idx * 100}ms` }}>
+            <Card key={ann.id} className="group border-none shadow-xl shadow-slate-200/50 dark:shadow-black/60 bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden hover:scale-[1.01] transition-all duration-500 animate-in fade-in slide-in-from-bottom-8 fill-mode-both" style={{ animationDelay: `${idx * 100}ms` }}>
               <div className="p-8 md:p-10 flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-1/3 flex flex-col justify-between">
                   <div className="space-y-4">
                     <Badge variant="outline" className="uppercase tracking-[0.2em] text-[10px] font-black border-primary/20 text-primary bg-primary/5 px-3 py-1">
                       {ann.authorRole}
                     </Badge>
-                    <CardTitle className="text-2xl md:text-3xl font-black font-headline text-slate-900 leading-tight group-hover:text-primary transition-colors">
+                    <CardTitle className="text-2xl md:text-3xl font-black font-headline text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">
                       {ann.title}
                     </CardTitle>
                   </div>
                   
-                  <div className="mt-8 flex items-center gap-4 border-t pt-6">
-                    <Avatar className="h-10 w-10 border-2 border-slate-50">
-                      <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xs">
+                  <div className="mt-8 flex items-center gap-4 border-t dark:border-slate-800 pt-6">
+                    <Avatar className="h-10 w-10 border-2 border-slate-50 dark:border-slate-800">
+                      <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs">
                         {ann.authorName?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold text-slate-900">{ann.authorName}</span>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">{ann.authorName}</span>
                       <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1.5 uppercase tracking-wider">
                         <Calendar size={12} className="text-primary/60" />
                         {ann.createdAt?.toDate ? format(ann.createdAt.toDate(), 'PPP') : '...'}
@@ -200,8 +199,8 @@ export default function AnnouncementsPage() {
                   </div>
                 </div>
                 
-                <div className="lg:w-2/3 bg-slate-50/50 rounded-3xl p-6 md:p-8 border border-slate-100/50">
-                  <p className="whitespace-pre-wrap text-slate-600 text-lg leading-relaxed font-medium font-body">
+                <div className="lg:w-2/3 bg-slate-50/50 dark:bg-slate-800/30 rounded-3xl p-6 md:p-8 border border-slate-100/50 dark:border-slate-800/50">
+                  <p className="whitespace-pre-wrap text-slate-600 dark:text-slate-300 text-lg leading-relaxed font-medium font-body">
                     {ann.content}
                   </p>
                 </div>
