@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export default function ProfilePage() {
   const { profile, loading } = useAuth();
@@ -37,7 +39,7 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center gap-10 w-full">
             <Skeleton className="w-full max-w-md h-[500px] rounded-[3rem]" />
             <Skeleton className="w-full max-w-4xl h-[400px] rounded-[3.5rem]" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+            <div className="grid grid-cols-1 gap-8 w-full max-w-4xl">
               <Skeleton className="h-[300px] rounded-[3rem]" />
               <Skeleton className="h-[300px] rounded-[3rem]" />
             </div>
@@ -66,53 +68,56 @@ export default function ProfilePage() {
         </p>
       </header>
 
-      <div className="flex flex-col items-center gap-12 pb-20">
+      <div className="flex flex-col items-center gap-12 pb-20 max-w-4xl mx-auto">
         
-        {/* Profile Identity Card */}
-        <Card className="border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/60 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full mx-auto group/card transition-all duration-500 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div className="h-40 bg-gradient-to-br from-primary via-primary/90 to-accent w-full relative">
+        {/* Profile Identity Card - No sticky, part of vertical flow */}
+        <Card className="border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/60 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-full max-w-md group/card transition-all duration-500 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="h-32 bg-gradient-to-br from-primary via-primary/90 to-accent w-full relative">
             <div className="absolute inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-[2px]"></div>
           </div>
-          <CardContent className="relative flex flex-col items-center -mt-20 text-center pb-12 px-10">
-            <div className="relative mb-8">
-              <Avatar className="h-40 w-40 border-[8px] border-white dark:border-slate-900 shadow-2xl group-hover/card:scale-105 transition-transform duration-700">
-                <AvatarImage src={profile.photoURL || "/logo.png"} className="object-cover" />
-                <AvatarFallback className="text-5xl bg-gradient-to-br from-primary to-accent text-white font-black">
+          <CardContent className="relative flex flex-col items-center -mt-16 text-center pb-10 px-8">
+            <div className="relative mb-6">
+              <Avatar className="h-32 w-32 border-[6px] border-white dark:border-slate-900 shadow-2xl group-hover/card:scale-105 transition-transform duration-700">
+                <AvatarImage 
+                  src={profile.photoURL || "/logo.png"} 
+                  className="object-cover" 
+                />
+                <AvatarFallback className="text-4xl bg-gradient-to-br from-primary to-accent text-white font-black uppercase">
                   {profile.displayName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute bottom-4 right-4 w-6 h-6 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full animate-pulse shadow-lg"></span>
+              <span className="absolute bottom-3 right-3 w-5 h-5 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full animate-pulse shadow-lg"></span>
             </div>
             
-            <div className="space-y-3 mb-10">
-              <h2 className="text-4xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
+            <div className="space-y-2 mb-8">
+              <h2 className="text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
                 {profile.displayName}
               </h2>
-              <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] text-[10px] font-black px-5 py-2 border-none rounded-full">
+              <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] text-[9px] font-black px-4 py-1.5 border-none rounded-full">
                 {profile.role}
               </Badge>
             </div>
             
             <div className="w-full space-y-4">
-              <div className="flex items-center gap-5 p-5 bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 hover:shadow-xl hover:border-transparent transition-all duration-300">
-                <div className="p-3.5 bg-white dark:bg-slate-900 rounded-2xl text-primary shadow-lg group-hover:bg-primary group-hover:text-white transition-colors duration-500">
-                  <Mail size={22} />
+              <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-[1.5rem] border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 hover:shadow-lg transition-all duration-300">
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl text-primary shadow-md group-hover:bg-primary group-hover:text-white transition-colors duration-500">
+                  <Mail size={18} />
                 </div>
                 <div className="flex flex-col text-left overflow-hidden">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em]">Institutional Email</span>
-                  <span className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
+                  <span className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em]">Institutional Email</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{profile.email}</span>
                 </div>
               </div>
-              <Button variant="ghost" className="w-full rounded-2xl h-14 font-black gap-2 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
+              <Button variant="ghost" className="w-full rounded-xl h-12 font-black gap-2 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all text-xs">
                 Edit Information
-                <ExternalLink size={14} />
+                <ExternalLink size={12} />
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Enhanced Performance Stats Card */}
-        <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/90 rounded-[3.5rem] overflow-hidden relative group p-8 md:p-12 transition-all duration-500 hover:shadow-primary/10 w-fit max-w-full mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+        {/* Performance Stats Card - Adaptive Width */}
+        <Card className="border-none shadow-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/90 rounded-[3.5rem] overflow-hidden relative group p-8 md:p-12 transition-all duration-500 hover:shadow-primary/10 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           <div className="absolute -top-10 -right-10 p-12 opacity-[0.05] dark:opacity-[0.1] group-hover:scale-125 group-hover:-rotate-6 transition-all duration-1000">
             <Activity size={320} className="text-primary blur-sm" />
           </div>
@@ -122,42 +127,42 @@ export default function ProfilePage() {
               <div className="space-y-2">
                 <Badge className="bg-primary text-white border-none font-black px-4 py-2 rounded-full flex items-center gap-2 w-fit shadow-xl shadow-primary/20">
                   <Trophy size={14} className="fill-white" />
-                  School Performance
+                  Performance
                 </Badge>
-                <CardTitle className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Academic <span className="text-primary">Impact</span></CardTitle>
+                <CardTitle className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Academic <span className="text-primary">Impact</span></CardTitle>
               </div>
               <div className="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 pr-10 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-xl transition-all hover:scale-105">
                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-black text-3xl shadow-xl shadow-primary/20">
                     {currentLevel}
                  </div>
                  <div className="flex flex-col">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Rank Tier</span>
-                    <span className="text-xl font-black text-slate-900 dark:text-white">Level {currentLevel}</span>
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Current Level</span>
+                    <span className="text-xl font-black text-slate-900 dark:text-white">MBN Level {currentLevel}</span>
                  </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-12 items-center">
+            <div className="grid grid-cols-1 gap-12">
               <div className="space-y-8 text-center md:text-left">
                 <div className="relative">
                   <div className="flex items-baseline justify-center md:justify-start gap-4 mb-4">
                     <span className={cn(
-                      "text-8xl md:text-9xl font-black font-headline tracking-tighter leading-none transition-all duration-500",
-                      profile.xp < 0 ? "text-destructive drop-shadow-[0_0_15px_rgba(239,68,68,0.3)]" : "text-primary drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                      "text-8xl md:text-9xl font-black font-headline tracking-tighter leading-none",
+                      profile.xp < 0 ? "text-destructive" : "text-primary"
                     )}>{profile.xp}</span>
                     <span className="text-4xl font-black text-slate-300 dark:text-slate-600 uppercase tracking-[0.2em]">XP</span>
                   </div>
 
-                  {/* Progress to next level bar */}
+                  {/* Progress bar */}
                   {profile.xp >= 0 && (
                     <div className="max-w-md mx-auto md:mx-0 space-y-3">
                       <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-slate-400">
                         <span>Progress to Level {currentLevel + 1}</span>
                         <span>{progressToNext}%</span>
                       </div>
-                      <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700/50 shadow-inner">
+                      <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
                         <div 
-                          className="h-full bg-gradient-to-r from-primary via-primary to-accent rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                          className="h-full bg-gradient-to-r from-primary via-primary to-accent rounded-full transition-all duration-1000 ease-out"
                           style={{ width: `${progressToNext}%` }}
                         />
                       </div>
@@ -165,12 +170,12 @@ export default function ProfilePage() {
                   )}
 
                   {profile.xp < 0 ? (
-                    <div className="flex items-center gap-3 text-destructive font-black text-xs bg-destructive/5 border border-destructive/10 w-fit px-6 py-3 rounded-2xl shadow-sm animate-pulse mx-auto md:mx-0">
+                    <div className="flex items-center gap-3 text-destructive font-black text-xs bg-destructive/5 border border-destructive/10 w-fit px-6 py-3 rounded-2xl shadow-sm animate-pulse mx-auto md:mx-0 mt-6">
                       <ShieldAlert size={18} />
-                      DISCIPLINARY ACTION ACTIVE
+                      DISCIPLINARY ACTION LOGGED
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3 text-primary font-black text-xs bg-primary/5 border border-primary/10 w-fit px-6 py-3 rounded-2xl shadow-sm mx-auto md:mx-0">
+                    <div className="flex items-center gap-3 text-primary font-black text-xs bg-primary/5 border border-primary/10 w-fit px-6 py-3 rounded-2xl shadow-sm mx-auto md:mx-0 mt-6">
                       <TrendingUp size={18} />
                       STANDING: EXEMPLARY
                     </div>
@@ -179,67 +184,59 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <Separator className="my-12 bg-slate-200/50 dark:bg-slate-800" />
+            <Separator className="my-10 bg-slate-200/50 dark:bg-slate-800" />
             
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-               <div className="flex items-center gap-6 p-6 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-xl group/badge transition-all hover:scale-[1.02]">
-                  <div className="p-4 bg-primary/5 rounded-2xl text-primary transition-colors group-hover/badge:bg-primary group-hover/badge:text-white">
-                     <Zap size={28} className="fill-current opacity-80" />
-                  </div>
-                  <div>
-                     <h4 className="font-black text-slate-900 dark:text-white text-xl leading-none mb-1">Council Influence</h4>
-                     <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Your engagement points determine your voting weight.</p>
-                  </div>
-               </div>
+            <div className="flex items-center gap-6 p-6 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-xl group/badge transition-all hover:scale-[1.02] w-fit">
+              <div className="p-4 bg-primary/5 rounded-2xl text-primary transition-colors group-hover/badge:bg-primary group-hover/badge:text-white">
+                <Zap size={28} className="fill-current opacity-80" />
+              </div>
+              <div>
+                <h4 className="font-black text-slate-900 dark:text-white text-xl leading-none mb-1">Council Influence</h4>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Participation determines voting weight.</p>
+              </div>
             </div>
           </div>
         </Card>
 
-        {/* Account Security & Milestones Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-fit max-w-full mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full group/sec hover:shadow-2xl transition-all mx-auto">
-            <CardHeader className="p-10 pb-0">
-              <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover/sec:scale-110 transition-transform">
-                  <ShieldCheck size={24} />
+        {/* Bottom Cards - Still stacked on mobile, adaptive side-by-side on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden group/sec hover:shadow-2xl transition-all">
+            <CardHeader className="p-8 pb-0">
+              <CardTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+                  <ShieldCheck size={20} />
                 </div>
-                Account Security
+                Security
               </CardTitle>
-              <CardDescription className="font-medium text-slate-500 dark:text-slate-400 mt-2">Verified institutional access</CardDescription>
             </CardHeader>
-            <CardContent className="p-10 pt-8">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800/30 rounded-[2rem] border border-slate-100 dark:border-slate-800 gap-10">
-                  <div className="flex items-center gap-4">
-                    <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50" />
-                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google Authentication</span>
-                  </div>
-                  <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[10px] tracking-widest">ACTIVE</Badge>
+            <CardContent className="p-8 pt-6">
+              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/30 rounded-[1.5rem] border border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg" />
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google Auth</span>
                 </div>
+                <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[9px] tracking-widest px-2 py-0.5">ACTIVE</Badge>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full group/mile hover:shadow-2xl transition-all mx-auto">
-            <CardHeader className="p-10 pb-0">
-              <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover/mile:scale-110 transition-transform">
-                  <Award size={24} />
+          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden group/mile hover:shadow-2xl transition-all">
+            <CardHeader className="p-8 pb-0">
+              <CardTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+                  <Award size={20} />
                 </div>
                 Milestones
               </CardTitle>
-              <CardDescription className="font-medium text-slate-500 dark:text-slate-400 mt-2">Personal achievements</CardDescription>
             </CardHeader>
-            <CardContent className="p-10 pt-8">
-               <div className="space-y-8">
-                 <div className="flex items-center gap-6 group/item cursor-pointer">
-                   <div className="p-4 rounded-2xl bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10 shadow-sm transition-all group-hover/item:scale-110 group-hover/item:rotate-6">
-                     <Star size={24} className="fill-current" />
-                   </div>
-                   <div className="flex-1">
-                     <h4 className="font-black text-slate-900 dark:text-white text-lg leading-none mb-1">Pioneer Member</h4>
-                     <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Launch Contribution</p>
-                   </div>
+            <CardContent className="p-8 pt-6">
+               <div className="flex items-center gap-4 group/item cursor-pointer">
+                 <div className="p-3 rounded-xl bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10 shadow-sm transition-all group-hover/item:scale-110">
+                   <Star size={20} className="fill-current" />
+                 </div>
+                 <div className="flex-1">
+                   <h4 className="font-black text-slate-900 dark:text-white text-md leading-none mb-1">Pioneer</h4>
+                   <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Contribution</p>
                  </div>
                </div>
             </CardContent>
@@ -250,3 +247,4 @@ export default function ProfilePage() {
     </AppLayout>
   );
 }
+
