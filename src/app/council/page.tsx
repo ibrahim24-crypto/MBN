@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -209,7 +208,7 @@ export default function CouncilPage() {
                   {t.newProposal}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+              <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto no-scrollbar rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-4xl font-black tracking-tighter">{editingId ? t.edit : t.newProposal}</DialogTitle>
                 </DialogHeader>
@@ -322,7 +321,7 @@ export default function CouncilPage() {
                   {t.newMinute}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+              <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto no-scrollbar rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-4xl font-black tracking-tighter">{editingId ? t.edit : t.newMinute}</DialogTitle>
                 </DialogHeader>

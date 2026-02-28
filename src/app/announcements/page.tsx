@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -47,7 +46,6 @@ export default function AnnouncementsPage() {
   
   const announcementsQuery = useMemoFirebase(() => {
     if (!db) return null;
-    // Query the 'proposals' collection as these are the source of official announcements
     return query(collection(db, 'proposals'), orderBy('createdAt', 'desc'));
   }, [db]);
 
@@ -61,7 +59,6 @@ export default function AnnouncementsPage() {
 
   const canCreate = profile?.role === 'council' || profile?.role === 'administration';
 
-  // Client-side filtering as secondary layer to security rules
   const filteredAnnouncements = announcements?.filter(ann => {
     const matchesSearch = ann.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          ann.content.toLowerCase().includes(searchQuery.toLowerCase());
@@ -110,7 +107,7 @@ export default function AnnouncementsPage() {
                 {t.newAnnouncement}
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
+            <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto no-scrollbar rounded-[4rem] p-8 md:p-12 bg-white dark:bg-slate-950 border-none shadow-2xl">
               <DialogHeader>
                 <DialogTitle className="text-4xl font-black tracking-tighter">{t.newAnnouncement}</DialogTitle>
               </DialogHeader>
@@ -143,7 +140,6 @@ export default function AnnouncementsPage() {
         )}
       </header>
 
-      {/* Reworked High-Fidelity Search Bar */}
       <div className="w-full max-w-3xl mx-auto mb-20 relative group px-6 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150">
         <div className="absolute inset-0 bg-primary/10 blur-[80px] -z-10 rounded-full opacity-30"></div>
         <Search size={28} className="absolute left-12 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-all duration-300" />
