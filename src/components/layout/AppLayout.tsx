@@ -21,12 +21,6 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useLanguage } from '@/context/LanguageContext';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { 
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -35,13 +29,14 @@ import {
 import { ThemeToggle } from '@/components/ThemeToggle';
 import NextLink from 'next/link';
 import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { profile, logout, isSuperAdmin } = useAuth();
-  const { t, setLanguage, language } = useLanguage();
-  // Sidebar is now strictly icons-only for a modern feel
-  const [isCollapsed] = useState(true);
+  const { t } = useLanguage();
+  
+  const logoPlaceholder = PlaceHolderImages.find(img => img.id === 'mbn-logo')?.imageUrl || '/logo.png';
 
   const navItems = [
     { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
@@ -60,12 +55,18 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   return (
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-slate-950 selection:bg-primary/20">
       <TooltipProvider delayDuration={0}>
-        {/* Sidebar */}
+        {/* Icons-Only Sidebar */}
         <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[80px] transition-all duration-500 ease-in-out">
           <div className="p-6 flex flex-col items-center gap-8">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl border border-slate-100 dark:border-slate-800 bg-white">
-                <Image src="/logo.png" fill alt="MBN Logo" className="object-contain p-1.5" />
+                <Image 
+                  src={logoPlaceholder} 
+                  fill 
+                  alt="MBN Logo" 
+                  className="object-contain p-1.5" 
+                  unoptimized // Bypasses optimization for external placeholders to avoid 400s
+                />
               </div>
             </div>
           </div>
@@ -114,7 +115,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
 
               <div className="flex items-center justify-center">
                 <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-xl cursor-pointer hover:scale-110 transition-all">
-                  <AvatarImage src={profile?.photoURL || "/logo.png"} className="object-cover" />
+                  <AvatarImage src={profile?.photoURL || logoPlaceholder} className="object-cover" />
                   <AvatarFallback className="bg-primary text-white font-black">{profile?.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
@@ -130,12 +131,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
           <div className="w-10 h-10 relative rounded-xl overflow-hidden bg-white shadow-md">
-            <Image src="/logo.png" fill alt="MBN Logo" className="object-contain p-1" />
+            <Image src={logoPlaceholder} fill alt="MBN Logo" className="object-contain p-1" unoptimized />
           </div>
           <div className="flex items-center gap-3">
              <ThemeToggle />
              <Avatar className="h-10 w-10 border-2 border-slate-100" onClick={() => logout()}>
-              <AvatarImage src={profile?.photoURL || "/logo.png"} />
+              <AvatarImage src={profile?.photoURL || logoPlaceholder} />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>

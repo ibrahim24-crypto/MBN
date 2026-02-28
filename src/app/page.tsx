@@ -16,11 +16,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
   const { user, loading, signInWithGoogle } = useAuth();
   const { t, setLanguage } = useLanguage();
   const router = useRouter();
+  
+  const logoPlaceholder = PlaceHolderImages.find(img => img.id === 'mbn-logo')?.imageUrl || '/logo.png';
 
   useEffect(() => {
     if (!loading && user) {
@@ -51,13 +54,14 @@ export default function LandingPage() {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl shadow-primary/20 group hover:rotate-6 transition-transform bg-white">
             <Image 
-              src="/logo.png" 
+              src={logoPlaceholder} 
               fill 
               alt="MBN Logo" 
               className="object-contain p-1" 
+              unoptimized
             />
           </div>
-          <span className="text-2xl font-black font-headline tracking-tighter text-slate-900">MBN COUNCIL</span>
+          <span className="text-2xl font-black font-headline tracking-tighter text-slate-900 uppercase">MBN Hub</span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -73,12 +77,11 @@ export default function LandingPage() {
         </DropdownMenu>
       </nav>
 
-      {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-32 text-center relative overflow-hidden">
         <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <Badge variant="secondary" className="mb-8 rounded-full px-6 py-2 bg-primary/10 text-primary border-primary/20 font-black tracking-[0.2em] uppercase text-[11px] shadow-sm">
             <Sparkles size={14} className="mr-2 inline-block text-accent" />
-            Moussa Ibn Nousayr School
+            Moussa Ibn Nousayr Hub
           </Badge>
           <h1 className="text-6xl md:text-9xl font-black font-headline text-slate-900 mb-10 tracking-tight leading-[0.85] text-balance">
             {t.title} <span className="text-primary">.</span>
@@ -90,28 +93,16 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-6 w-full max-w-xl mx-auto items-center justify-center">
             <Button 
               size="lg" 
-              className="h-20 px-12 text-xl font-black gap-4 rounded-[2rem] shadow-2xl shadow-primary/40 hover:scale-[1.05] hover:shadow-primary/50 transition-all w-full sm:w-auto"
+              className="h-20 px-12 text-xl font-black gap-4 rounded-[2.5rem] shadow-2xl shadow-primary/40 hover:scale-[1.05] hover:shadow-primary/50 transition-all w-full sm:w-auto"
               onClick={signInWithGoogle}
             >
               <ShieldCheck size={28} />
               {t.loginWithGoogle}
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="h-20 px-12 text-xl font-black rounded-[2rem] border-2 border-slate-200 hover:bg-white hover:border-primary transition-all backdrop-blur-sm w-full sm:w-auto"
-              asChild
-            >
-              <Link href="#features" className="gap-3">
-                {t.learnMore}
-                <ArrowRight size={24} />
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
       <section id="features" className="py-40 px-6 relative bg-slate-50/50 backdrop-blur-3xl border-y border-slate-100">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
           {[
@@ -121,7 +112,12 @@ export default function LandingPage() {
           ].map((feature, i) => (
             <div key={i} className="p-12 rounded-[3rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 hover:translate-y-[-12px] transition-all duration-500 group relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/5 transition-colors"></div>
-              <div className={`w-20 h-20 bg-${feature.color}/10 rounded-3xl flex items-center justify-center text-${feature.color} mb-10 group-hover:scale-110 group-hover:bg-${feature.color} group-hover:text-white transition-all duration-700 shadow-lg shadow-black/5`}>
+              <div className={cn(
+                "w-20 h-20 rounded-3xl flex items-center justify-center mb-10 group-hover:scale-110 transition-all duration-700 shadow-lg shadow-black/5",
+                feature.color === 'primary' ? "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white" :
+                feature.color === 'accent' ? "bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white" :
+                "bg-emerald-100 text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white"
+              )}>
                 <feature.icon size={40} />
               </div>
               <h3 className="text-3xl font-black mb-6 font-headline text-slate-900 leading-tight">{feature.title}</h3>
@@ -134,21 +130,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="py-24 px-8 text-center bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 relative rounded-lg overflow-hidden bg-white">
-              <Image src="/logo.png" fill alt="MBN Logo" className="object-contain" />
+              <Image src={logoPlaceholder} fill alt="MBN Logo" className="object-contain" unoptimized />
             </div>
-            <span className="font-black text-2xl text-slate-900 tracking-tighter">MBN SCHOOL</span>
+            <span className="font-black text-2xl text-slate-900 tracking-tighter uppercase">MBN Hub</span>
           </div>
           <p className="text-slate-400 font-bold text-lg">&copy; {new Date().getFullYear()} Moussa Ibn Nousayr. Elevating every voice.</p>
-          <div className="flex gap-10 text-sm font-black text-slate-500 uppercase tracking-widest">
-            <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-            <a href="#" className="hover:text-primary transition-colors">Terms</a>
-            <a href="#" className="hover:text-primary transition-colors">Support</a>
-          </div>
         </div>
       </footer>
     </div>

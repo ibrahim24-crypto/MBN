@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -26,6 +27,7 @@ export default function DashboardPage() {
   );
 
   const isStudent = profile?.role === 'student';
+  const xpProgress = Math.min(((profile?.xp || 0) / 200) * 100, 100);
 
   return (
     <AppLayout>
@@ -59,29 +61,41 @@ export default function DashboardPage() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Main Content Area */}
           <div className={cn("space-y-8", isStudent ? "lg:col-span-12" : "lg:col-span-8")}>
             <div className="flex flex-wrap gap-8">
-              {/* XP Widget (Student) */}
+              {/* XP Dashboard Widget (High-End Styling) */}
               {isStudent && (
-                <Card className="flex-1 min-w-[300px] border-none bg-gradient-to-br from-primary via-primary to-accent text-white shadow-2xl relative overflow-hidden group rounded-[2.5rem] p-2 transition-all hover:scale-[1.01]">
+                <Card className="flex-1 min-w-[320px] border-none bg-gradient-to-br from-primary via-primary/90 to-accent text-white shadow-2xl relative overflow-hidden group rounded-[3rem] p-1 transition-all hover:scale-[1.01]">
                   <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
                     <Trophy size={200} />
                   </div>
-                  <CardHeader className="relative p-8 pb-0">
-                    <CardTitle className="text-sm font-black tracking-[0.2em] uppercase opacity-80 mb-1">{t.progress}</CardTitle>
-                    <CardDescription className="text-white/80 font-bold">{t.targetXP}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="relative p-8">
-                    <div className="flex items-baseline gap-3 mb-6">
-                      <span className="text-7xl font-black tracking-tighter leading-none">{profile?.xp || 0}</span>
-                      <span className="text-xl font-black opacity-60 uppercase tracking-widest">{t.xp}</span>
-                    </div>
-                    <div className="space-y-4">
-                      <Progress value={Math.min(((profile?.xp || 0) / 200) * 100, 100)} className="h-4 bg-white/20 border-none rounded-full" />
-                      <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-sm w-fit">
-                         <p className="text-[10px] font-black text-white uppercase tracking-[0.1em]">{t.keepParticipating}</p>
-                         <TrendingUp size={16} className="text-white/60" />
+                  <CardContent className="relative p-10">
+                    <div className="flex flex-col gap-10">
+                      <div className="space-y-2">
+                        <span className="text-xs font-black tracking-[0.3em] uppercase opacity-70 block">{t.progress}</span>
+                        <div className="flex items-baseline gap-4">
+                          <span className="text-8xl font-black tracking-tighter leading-none">{profile?.xp || 0}</span>
+                          <span className="text-2xl font-black opacity-60 uppercase tracking-widest">XP</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-end">
+                             <p className="text-sm font-bold text-white/80">{t.targetXP}</p>
+                             <span className="text-xs font-black bg-white/20 px-3 py-1 rounded-full">{Math.round(xpProgress)}%</span>
+                          </div>
+                          <div className="h-5 bg-white/20 rounded-full p-1 border border-white/10 backdrop-blur-sm overflow-hidden">
+                            <div 
+                              className="h-full bg-white rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
+                              style={{ width: `${xpProgress}%` }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 bg-white/10 p-5 rounded-3xl border border-white/10 backdrop-blur-sm">
+                           <Zap size={20} className="text-yellow-300" />
+                           <p className="text-[11px] font-black uppercase tracking-[0.1em]">{t.keepParticipating}</p>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -90,20 +104,19 @@ export default function DashboardPage() {
 
               {/* Admin Panel Access */}
               {(profile?.role === 'administration' || isSuperAdmin) && (
-                <Card className="flex-1 min-w-[300px] border-none bg-slate-900 dark:bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-[2.5rem] p-2 transition-all hover:scale-[1.01]">
+                <Card className="flex-1 min-w-[320px] border-none bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-[3rem] p-1 transition-all hover:scale-[1.01]">
                   <div className="absolute -bottom-10 -right-10 p-12 opacity-10 group-hover:scale-125 transition-transform duration-1000">
                     <Users size={200} />
                   </div>
-                  <CardHeader className="relative p-8 pb-0">
-                    <CardTitle className="text-sm font-black tracking-[0.2em] uppercase opacity-50 mb-1">{t.adminPanel}</CardTitle>
-                    <CardDescription className="text-slate-400 font-bold">{t.manageUsers}</CardDescription>
+                  <CardHeader className="relative p-10 pb-0">
+                    <CardTitle className="text-xs font-black tracking-[0.3em] uppercase opacity-50 mb-1">{t.adminPanel}</CardTitle>
+                    <CardDescription className="text-slate-400 font-bold text-lg">{t.manageUsers}</CardDescription>
                   </CardHeader>
-                  <CardContent className="relative p-8">
-                    <div className="text-4xl font-black mb-8 leading-tight tracking-tight">{t.adminPanel}</div>
-                    <Button variant="secondary" className="w-full h-14 font-black rounded-2xl bg-white text-slate-900 hover:bg-slate-100 shadow-xl group" asChild>
+                  <CardContent className="relative p-10">
+                    <Button variant="secondary" className="w-full h-16 font-black rounded-[2rem] bg-white text-slate-900 hover:bg-slate-100 shadow-xl group text-lg" asChild>
                       <Link href="/admin">
                         {t.manageUsers}
-                        <ExternalLink size={18} className="ml-3 group-hover:translate-x-1 transition-transform" />
+                        <ExternalLink size={20} className="ml-3 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </Button>
                   </CardContent>
@@ -111,87 +124,85 @@ export default function DashboardPage() {
               )}
 
               {/* News Snippet */}
-              <Card className="flex-1 min-w-[300px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all duration-500 rounded-[2.5rem] overflow-hidden p-1">
-                <CardHeader className="p-8 pb-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-3 bg-primary/10 rounded-xl text-primary">
-                      <Megaphone size={24} />
+              <Card className="flex-1 min-w-[320px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all duration-500 rounded-[3rem] overflow-hidden p-1">
+                <CardHeader className="p-10 pb-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-4 bg-primary/10 rounded-2xl text-primary">
+                      <Megaphone size={28} />
                     </div>
-                    <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[9px] uppercase tracking-[0.2em] border-none px-3 py-1 rounded-full">Active Feed</Badge>
+                    <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[9px] uppercase tracking-[0.2em] border-none px-4 py-1.5 rounded-full">Official Feed</Badge>
                   </div>
-                  <CardTitle className="text-2xl font-black text-slate-900 dark:text-white">{t.recentBulletin}</CardTitle>
+                  <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t.recentBulletin}</CardTitle>
                 </CardHeader>
-                <CardContent className="px-8 pb-8">
-                  <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 mb-6 group-hover:bg-white dark:group-hover:bg-slate-800 transition-all duration-500">
-                    <h4 className="font-black text-slate-900 dark:text-white text-lg mb-2">Campus Infrastructure</h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed line-clamp-2">Major renovations planned for the main auditorium are set to begin next semester...</p>
+                <CardContent className="px-10 pb-10">
+                  <div className="p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 mb-8 group-hover:bg-white dark:group-hover:bg-slate-800 transition-all duration-500">
+                    <h4 className="font-black text-slate-900 dark:text-white text-xl mb-3">Campus Update</h4>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed line-clamp-2">Latest changes to our infrastructure are underway. Read the full announcement for details.</p>
                   </div>
-                  <Button variant="ghost" className="w-full h-14 font-black rounded-2xl hover:bg-primary hover:text-white transition-all duration-500" asChild>
+                  <Button variant="ghost" className="w-full h-16 font-black rounded-[2rem] hover:bg-primary hover:text-white transition-all duration-500 text-lg" asChild>
                     <Link href="/announcements">{t.viewBoard}</Link>
                   </Button>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Council Notification */}
             {profile?.role === 'council' && (
-              <div className="p-8 rounded-[2.5rem] bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/40 flex flex-col md:flex-row items-center gap-8 shadow-xl group transition-all hover:bg-orange-100/30">
-                <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl text-orange-600 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                  <ShieldAlert size={40} />
+              <div className="p-10 rounded-[3rem] bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/40 flex flex-col md:flex-row items-center gap-10 shadow-xl group transition-all hover:bg-orange-100/30">
+                <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl text-orange-600 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                  <ShieldAlert size={48} />
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-2xl font-black text-orange-950 dark:text-orange-100 mb-1 leading-none">{t.actionRequired}</h3>
-                  <p className="text-orange-800/60 dark:text-orange-400 font-bold text-lg">{t.proposalsReview}</p>
+                  <h3 className="text-3xl font-black text-orange-950 dark:text-orange-100 mb-2 leading-none">{t.actionRequired}</h3>
+                  <p className="text-orange-800/60 dark:text-orange-400 font-bold text-xl">{t.proposalsReview}</p>
                 </div>
-                <Button className="bg-orange-600 hover:bg-orange-700 text-white font-black rounded-2xl h-14 px-10 shadow-xl shrink-0" asChild>
+                <Button className="bg-orange-600 hover:bg-orange-700 text-white font-black rounded-[2rem] h-16 px-12 shadow-xl shrink-0 text-lg" asChild>
                   <Link href="/council">{t.reviewProposals}</Link>
                 </Button>
               </div>
             )}
           </div>
 
-          {/* Sidebar Area - Hidden for Students */}
           {!isStudent && (
             <div className="lg:col-span-4">
-              <Card className="shadow-xl border-none bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden p-1">
-                <CardHeader className="p-8 pb-4">
-                  <div className="flex items-center justify-between mb-6">
+              <Card className="shadow-xl border-none bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden p-1">
+                <CardHeader className="p-10 pb-4">
+                  <div className="flex items-center justify-between mb-8">
                     <div className="space-y-1">
-                      <CardTitle className="text-2xl font-black text-slate-900 dark:text-white">{t.nextMeeting}</CardTitle>
-                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">Priority Assembly</p>
+                      <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t.nextMeeting}</CardTitle>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Priority Assembly</p>
                     </div>
-                    <div className="p-3 bg-accent/10 rounded-xl text-accent">
-                      <Calendar size={24} />
+                    <div className="p-4 bg-accent/10 rounded-2xl text-accent">
+                      <Calendar size={28} />
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-4 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-500">
-                    <div className="flex flex-col items-center justify-center min-w-[70px] h-[70px] bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 group-hover:bg-accent group-hover:text-white transition-all">
-                      <span className="font-black text-2xl leading-none">24</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-60">Oct</span>
+                  <div className="flex items-center gap-6 p-8 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-500">
+                    <div className="flex flex-col items-center justify-center min-w-[80px] h-[80px] bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 group-hover:bg-accent group-hover:text-white transition-all">
+                      <span className="font-black text-3xl leading-none">24</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest mt-1 opacity-60">Oct</span>
                     </div>
                     <div className="min-w-0">
-                      <h4 className="font-black text-slate-900 dark:text-white text-lg leading-tight truncate">General Assembly</h4>
+                      <h4 className="font-black text-slate-900 dark:text-white text-xl leading-tight truncate">General Assembly</h4>
                       <p className="text-sm text-slate-500 dark:text-slate-400 font-bold">Room 402 • 14:30</p>
                     </div>
                   </div>
                 </CardHeader>
                 
-                <CardContent className="px-8 pb-8 flex flex-col">
-                  <Separator className="bg-slate-100 dark:bg-slate-800 my-8" />
-                  <div className="space-y-6">
-                    <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Agenda</h5>
-                    <div className="space-y-4">
+                <CardContent className="px-10 pb-10 flex flex-col">
+                  <Separator className="bg-slate-100 dark:bg-slate-800 my-10" />
+                  <div className="space-y-8">
+                    <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Agenda</h5>
+                    <div className="space-y-6">
                       {['Budget Allocation Q4', 'Annual Sports Week', 'Cafeteria Update'].map((item, i) => (
-                        <div key={i} className="flex items-center gap-4 group cursor-pointer">
-                          <div className="w-2 h-2 rounded-full bg-primary shadow-lg shadow-primary/40 group-hover:scale-150 transition-all" />
-                          <span className="text-sm text-slate-700 dark:text-slate-200 font-bold group-hover:text-primary transition-all">{item}</span>
+                        <div key={i} className="flex items-center gap-5 group cursor-pointer">
+                          <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-lg shadow-primary/40 group-hover:scale-150 transition-all" />
+                          <span className="text-base text-slate-700 dark:text-slate-200 font-bold group-hover:text-primary transition-all">{item}</span>
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div className="pt-8">
-                    <Button variant="outline" className="w-full h-14 font-black border-slate-200 dark:border-slate-800 rounded-2xl hover:border-primary transition-all shadow-sm">
+                  <div className="pt-10">
+                    <Button variant="outline" className="w-full h-16 font-black border-slate-200 dark:border-slate-800 rounded-[2rem] hover:border-primary transition-all shadow-sm text-lg">
                       {t.addCalendar}
                     </Button>
                   </div>
