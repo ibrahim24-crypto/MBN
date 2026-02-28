@@ -70,7 +70,6 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-28 transition-all duration-500 ease-in-out">
           <div className="flex flex-col items-center py-8 gap-8 h-full overflow-y-auto no-scrollbar">
             
-            {/* Logo Button - Unified at top */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <NextLink href="/dashboard" className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-lg border-none group hover:scale-105 transition-all shrink-0 active:scale-95">
@@ -113,7 +112,6 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               })}
             </nav>
 
-            {/* Profile fused with logo at bottom */}
             <div className="px-4 pb-6 mt-auto">
               <Tooltip>
                 <TooltipTrigger asChild>
