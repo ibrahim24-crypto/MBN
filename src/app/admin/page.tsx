@@ -161,37 +161,37 @@ export default function AdminPage() {
 
   return (
     <AppLayout>
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
-        <div className="space-y-2">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 w-full">
+        <div className="space-y-1">
           <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Command Center</Badge>
-          <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tighter flex items-center gap-4 text-slate-900 dark:text-white leading-tight">
-            <UserCog className="text-primary hidden md:block" size={40} />
+          <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tighter flex items-center gap-3 text-slate-900 dark:text-white leading-tight">
+            <UserCog className="text-primary hidden md:block" size={32} />
             {t.adminPanel}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-bold text-lg tracking-tight">{t.manageUsers}</p>
+          <p className="text-slate-500 dark:text-slate-400 font-bold text-base tracking-tight">{t.manageUsers}</p>
         </div>
         
-        <div className="relative w-full md:w-[350px] group">
-          <Search size={20} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all" />
+        <div className="relative w-full md:w-[320px] group">
+          <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all" />
           <Input 
             placeholder={t.searchUsers} 
-            className="pl-14 h-14 w-full rounded-2xl bg-white dark:bg-slate-900 border-none shadow-lg focus:ring-8 focus:ring-primary/5 transition-all font-black text-lg placeholder:text-slate-200"
+            className="pl-12 h-12 w-full rounded-xl bg-white dark:bg-slate-900 border-none shadow-lg focus:ring-4 focus:ring-primary/5 transition-all font-bold text-base"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </header>
 
-      <div className="w-full bg-white dark:bg-slate-900 rounded-2xl border-none shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20 overflow-x-auto">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-2xl border-none shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20">
         <TooltipProvider>
-          <Table className="table-fixed min-w-[900px] lg:min-w-full">
+          <Table className="table-fixed w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="w-[30%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.name}</TableHead>
-                <TableHead className="w-[30%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.email}</TableHead>
-                <TableHead className="w-[12%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.xp}</TableHead>
-                <TableHead className="w-[18%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">{t.role}</TableHead>
-                <TableHead className="w-[10%] py-6 px-6 font-black text-slate-400 uppercase tracking-[0.2em] text-[10px] text-right">{t.actions}</TableHead>
+                <TableHead className="w-[25%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.name}</TableHead>
+                <TableHead className="w-[30%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.email}</TableHead>
+                <TableHead className="w-[12%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.xp}</TableHead>
+                <TableHead className="w-[18%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">{t.role}</TableHead>
+                <TableHead className="w-[15%] py-4 px-4 font-black text-slate-400 uppercase tracking-widest text-[9px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -216,37 +216,37 @@ export default function AdminPage() {
               ) : (
                 filteredUsers.map((u) => (
                   <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                    <TableCell className="py-4 px-6">
+                    <TableCell className="py-3 px-4">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
-                          className="h-10 w-full rounded-xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base px-4 shadow-inner"
+                          className="h-10 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-3 shadow-inner"
                         />
                       ) : (
-                        <div className="flex items-center gap-4 overflow-hidden">
-                          <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-lg group-hover/row:scale-105 transition-all duration-300">
+                        <div className="flex items-center gap-3 overflow-hidden">
+                          <div className="h-8 w-8 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
                             {u.displayName?.charAt(0)}
                           </div>
-                          <span className="text-base md:text-lg font-black text-slate-900 dark:text-white leading-tight tracking-tight truncate">{u.displayName}</span>
+                          <span className="text-sm font-bold text-slate-900 dark:text-white truncate">{u.displayName}</span>
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-slate-400 dark:text-slate-500 font-bold text-sm md:text-base truncate">
+                    <TableCell className="py-3 px-4 text-slate-400 dark:text-slate-500 font-medium text-xs truncate">
                       <div className="truncate w-full" title={u.email}>{u.email}</div>
                     </TableCell>
-                    <TableCell className="py-4 px-6">
+                    <TableCell className="py-3 px-4">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
                           value={editForm.xp} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, xp: parseInt(e.target.value) }))}
-                          className="h-10 w-20 rounded-xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base px-3 shadow-inner"
+                          className="h-10 w-full rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-2 shadow-inner"
                         />
                       ) : (
                         u.role === 'student' || u.role === 'council' ? (
                           <Badge className={cn(
-                            "h-9 px-3 rounded-xl font-black text-sm shadow-sm border-2",
+                            "h-7 px-2 rounded-lg font-black text-[10px] shadow-sm border",
                             u.xp < 0 
                               ? "bg-destructive/5 text-destructive border-destructive/10" 
                               : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20"
@@ -254,17 +254,17 @@ export default function AdminPage() {
                             {u.xp > 0 ? '+' : ''}{u.xp}
                           </Badge>
                         ) : (
-                          <span className="text-slate-200 dark:text-slate-800 font-black text-sm">—</span>
+                          <span className="text-slate-200 dark:text-slate-800 font-black text-xs">—</span>
                         )
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-6">
+                    <TableCell className="py-3 px-4">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
                         >
-                          <SelectTrigger className="w-full h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border-none font-black text-sm px-4 shadow-inner">
+                          <SelectTrigger className="w-full h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl border-none p-2">
@@ -275,41 +275,25 @@ export default function AdminPage() {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-none px-3 py-1.5 rounded-xl font-black text-[9px] tracking-widest">
+                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-none px-2 py-1 rounded-lg font-black text-[8px] tracking-widest">
                           {u.role}
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-right">
+                    <TableCell className="py-3 px-4 text-right">
                       {editingId === u.id ? (
-                        <div className="flex justify-end gap-2">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button size="icon" className="h-9 w-9 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-lg text-white" onClick={() => saveUserChanges(u.id)}>
-                                <Save size={18} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="font-black text-[10px] px-3 py-1.5 rounded-lg bg-emerald-500 text-white border-none shadow-lg">Save</TooltipContent>
-                          </Tooltip>
-
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button size="icon" variant="outline" className="h-9 w-9 rounded-xl border-slate-200 dark:border-slate-800 text-destructive hover:bg-destructive hover:text-white" onClick={cancelEditing}>
-                                <X size={18} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="font-black text-[10px] px-3 py-1.5 rounded-lg bg-destructive text-white border-none shadow-lg">Cancel</TooltipContent>
-                          </Tooltip>
+                        <div className="flex justify-end gap-1.5">
+                          <Button size="icon" className="h-8 w-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
+                            <Save size={14} />
+                          </Button>
+                          <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
+                            <X size={14} />
+                          </Button>
                         </div>
                       ) : (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-primary/10 transition-all group-hover/row:text-primary" onClick={() => startEditing(u)}>
-                              <Edit2 size={18} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="font-black text-[10px] px-3 py-1.5 rounded-lg bg-slate-900 text-white border-none shadow-lg">Edit</TooltipContent>
-                        </Tooltip>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
+                          <Edit2 size={14} />
+                        </Button>
                       )}
                     </TableCell>
                   </TableRow>
