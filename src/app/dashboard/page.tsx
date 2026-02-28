@@ -1,15 +1,13 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Trophy, Users, Megaphone, Calendar, ShieldAlert, ArrowRight, ExternalLink, Sparkles, Zap, Loader2 } from 'lucide-react';
+import { Trophy, Users, Megaphone, ShieldAlert, ArrowRight, ExternalLink, Sparkles, Zap, Loader2, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
@@ -26,191 +24,129 @@ export default function DashboardPage() {
   );
 
   const isStudent = profile?.role === 'student';
+  const isCouncil = profile?.role === 'council';
+  const isAdmin = profile?.role === 'administration' || isSuperAdmin;
   const xpProgress = Math.min(((profile?.xp || 0) / 200) * 100, 100);
 
   return (
     <AppLayout>
-      <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 w-full">
-        <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-8">
-          <div className="space-y-4 text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-3">
-              <Badge variant="outline" className="rounded-full bg-primary/10 text-primary border-primary/20 font-black px-4 py-1.5 text-[10px] uppercase tracking-[0.2em] shadow-sm w-fit">
-                <Sparkles size={12} className="mr-2 text-accent" />
-                Moussa Ibn Nousayr Hub
+      <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 w-full max-w-[1400px]">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="rounded-full bg-primary/10 text-primary border-primary/20 font-black px-3 py-1 text-[9px] uppercase tracking-[0.2em]">
+                <Sparkles size={10} className="mr-1.5 text-accent" />
+                MBN Hub
               </Badge>
             </div>
-            <h1 className="text-5xl md:text-8xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-[0.85] text-balance">
+            <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-none">
               {t.welcomeBack} <span className="text-primary">{profile?.displayName?.split(' ')[0]}</span>
             </h1>
-            <p className="text-xl text-slate-400 max-w-2xl font-medium leading-relaxed">
-              {t.description}
-            </p>
           </div>
-          <div className="flex flex-wrap gap-4 justify-center md:justify-end shrink-0">
-            <Button variant="outline" className="rounded-2xl h-14 px-8 border-slate-200 dark:border-slate-800 font-black text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 transition-all text-base shadow-sm" asChild>
+          <div className="flex gap-3">
+            <Button variant="outline" className="rounded-xl h-12 px-6 border-slate-200 dark:border-slate-800 font-black text-sm" asChild>
               <Link href="/profile">{t.profile}</Link>
-            </Button>
-            <Button className="rounded-2xl h-14 px-8 font-black gap-3 shadow-xl shadow-primary/30 hover:scale-[1.02] transition-all text-base" asChild>
-              <Link href="/announcements">
-                {t.announcements}
-                <ArrowRight size={20} />
-              </Link>
             </Button>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className={cn("space-y-8", isStudent ? "lg:col-span-12" : "lg:col-span-8")}>
-            <div className="flex flex-wrap gap-8">
-              {isStudent && (
-                <Card className="flex-1 min-w-[320px] border-none bg-gradient-to-br from-primary via-primary/90 to-accent text-white shadow-[0_32px_64px_-16px_rgba(var(--primary),0.4)] relative overflow-hidden group rounded-[4rem] p-1 transition-all hover:scale-[1.01]">
-                  <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-150 transition-transform duration-1000">
-                    <Trophy size={200} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* XP PROGRESS CARD (STUDENT ONLY) */}
+          {isStudent && (
+            <Card className="aspect-square border-none bg-gradient-to-br from-primary to-accent text-white shadow-xl relative overflow-hidden group rounded-2xl flex flex-col p-8 transition-all hover:scale-[1.02]">
+              <div className="absolute -top-10 -right-10 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                <Trophy size={180} />
+              </div>
+              <div className="flex-1 flex flex-col justify-between relative z-10">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-70">{t.progress}</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-7xl font-black tracking-tighter leading-none">{profile?.xp || 0}</span>
+                    <span className="text-lg font-black opacity-60 uppercase tracking-widest">{t.xp}</span>
                   </div>
-                  <CardContent className="relative p-10 md:p-14">
-                    <div className="flex flex-col gap-10">
-                      <div className="space-y-2">
-                        <span className="text-xs font-black tracking-[0.4em] uppercase opacity-70 block">{t.progress}</span>
-                        <div className="flex items-baseline gap-4">
-                          <span className="text-8xl md:text-[10rem] font-black tracking-tighter leading-none font-mono">{profile?.xp || 0}</span>
-                          <span className="text-3xl font-black opacity-60 uppercase tracking-widest">{t.xp}</span>
-                        </div>
-                      </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="h-3 bg-white/20 rounded-full overflow-hidden border border-white/10">
+                    <div className="h-full bg-white rounded-full transition-all duration-1000" style={{ width: `${xpProgress}%` }} />
+                  </div>
+                  <div className="flex items-center gap-3 bg-black/10 p-4 rounded-xl backdrop-blur-md">
+                     <Zap size={18} className="text-yellow-300 shrink-0" />
+                     <p className="text-[10px] font-black uppercase tracking-[0.05em] leading-tight opacity-90">{t.keepParticipating}</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
 
-                      <div className="space-y-8">
-                        <div className="space-y-4">
-                          <div className="flex justify-between items-end">
-                             <p className="text-sm font-bold text-white/80">{t.targetXP}</p>
-                             <span className="text-xs font-black bg-white/20 px-4 py-1.5 rounded-full backdrop-blur-md">{Math.round(xpProgress)}%</span>
-                          </div>
-                          <div className="h-6 bg-white/20 rounded-full p-1.5 border border-white/10 backdrop-blur-md overflow-hidden relative">
-                            <div 
-                              className="h-full bg-white rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(255,255,255,0.8)]" 
-                              style={{ width: `${xpProgress}%` }}
-                            />
-                            {xpProgress > 80 && (
-                              <div className="absolute inset-0 bg-white/30 animate-pulse blur-md" />
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-5 bg-black/10 p-6 rounded-[2.5rem] border border-white/5 backdrop-blur-md group-hover:bg-black/20 transition-all">
-                           <Zap size={24} className="text-yellow-300" />
-                           <p className="text-xs font-black uppercase tracking-[0.1em] leading-relaxed opacity-90">{t.keepParticipating}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+          {/* ADMIN PANEL CARD */}
+          {isAdmin && (
+            <Card className="aspect-square border-none bg-slate-900 text-white shadow-xl relative overflow-hidden group rounded-2xl flex flex-col p-8 transition-all hover:scale-[1.02]">
+              <div className="absolute -bottom-10 -right-10 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                <Users size={180} />
+              </div>
+              <div className="flex-1 flex flex-col justify-between relative z-10">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-50">{t.adminPanel}</span>
+                  <h3 className="text-3xl font-black tracking-tighter leading-tight">{t.manageUsers}</h3>
+                </div>
+                <Button variant="secondary" className="w-full h-14 font-black rounded-xl bg-white text-slate-900 hover:bg-slate-100 group text-sm" asChild>
+                  <Link href="/admin">
+                    {t.manageUsers}
+                    <ExternalLink size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+              </div>
+            </Card>
+          )}
 
-              {(profile?.role === 'administration' || isSuperAdmin) && (
-                <Card className="flex-1 min-w-[320px] border-none bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-[4rem] p-1 transition-all hover:scale-[1.01]">
-                  <div className="absolute -bottom-10 -right-10 p-12 opacity-10 group-hover:scale-125 transition-transform duration-1000">
-                    <Users size={200} />
+          {/* RECENT BULLETIN CARD */}
+          <Card className="aspect-square shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all rounded-2xl flex flex-col p-8">
+            <div className="flex-1 flex flex-col justify-between relative z-10">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="p-3 bg-primary/10 rounded-xl text-primary">
+                    <Megaphone size={24} />
                   </div>
-                  <CardHeader className="relative p-10 pb-0">
-                    <CardTitle className="text-xs font-black tracking-[0.3em] uppercase opacity-50 mb-1">{t.adminPanel}</CardTitle>
-                    <CardDescription className="text-slate-400 font-bold text-lg">{t.manageUsers}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="relative p-10">
-                    <Button variant="secondary" className="w-full h-16 font-black rounded-[2rem] bg-white text-slate-900 hover:bg-slate-100 shadow-xl group text-lg" asChild>
-                      <Link href="/admin">
-                        {t.manageUsers}
-                        <ExternalLink size={20} className="ml-3 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-
-              <Card className="flex-1 min-w-[320px] shadow-2xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-6px] transition-all duration-500 rounded-[4rem] overflow-hidden p-1">
-                <CardHeader className="p-10 md:p-14 pb-4">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="p-4 bg-primary/10 rounded-2xl text-primary">
-                      <Megaphone size={32} />
-                    </div>
-                    <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[9px] uppercase tracking-[0.3em] border-none px-5 py-2 rounded-full">Official Feed</Badge>
-                  </div>
-                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">{t.recentBulletin}</CardTitle>
-                </CardHeader>
-                <CardContent className="px-10 md:px-14 pb-14">
-                  <div className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 mb-8 group-hover:bg-white dark:group-hover:bg-slate-800 transition-all duration-500 shadow-inner">
-                    <h4 className="font-black text-slate-900 dark:text-white text-2xl mb-3">Campus Update</h4>
-                    <p className="text-base text-slate-500 dark:text-slate-400 font-medium leading-relaxed line-clamp-2 italic">"{t.viewBoard}"</p>
-                  </div>
-                  <Button variant="ghost" className="w-full h-16 font-black rounded-[2rem] hover:bg-primary hover:text-white transition-all duration-500 text-lg border-2 border-dashed border-slate-100 dark:border-slate-800" asChild>
-                    <Link href="/announcements">{t.viewBoard}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                  <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[8px] uppercase tracking-[0.2em] border-none px-3 py-1 rounded-full">Feed</Badge>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">Bulletin</span>
+                  <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">{t.recentBulletin}</h3>
+                </div>
+              </div>
+              <Button variant="ghost" className="w-full h-14 font-black rounded-xl border-2 border-dashed border-slate-100 dark:border-slate-800 hover:bg-primary hover:text-white transition-all text-sm" asChild>
+                <Link href="/announcements">{t.viewBoard}</Link>
+              </Button>
             </div>
+          </Card>
 
-            {profile?.role === 'council' && (
-              <div className="p-10 rounded-[4rem] bg-orange-50 dark:bg-orange-950/20 border-2 border-dashed border-orange-200 dark:border-orange-900/40 flex flex-col md:flex-row items-center gap-10 shadow-xl group transition-all hover:bg-orange-100/30">
-                <div className="p-8 bg-white dark:bg-slate-900 rounded-[2.5rem] text-orange-600 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                  <ShieldAlert size={56} />
+          {/* COUNCIL WORKSPACE CARD */}
+          {isCouncil && (
+            <Card className="aspect-square border-none bg-orange-50 dark:bg-orange-950/20 shadow-xl relative overflow-hidden group rounded-2xl flex flex-col p-8 border-2 border-dashed border-orange-200 dark:border-orange-900/40">
+              <div className="flex-1 flex flex-col justify-between relative z-10">
+                <div className="space-y-6">
+                  <div className="p-3 bg-white dark:bg-slate-900 rounded-xl text-orange-600 shadow-sm w-fit">
+                    <ShieldAlert size={24} />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black tracking-[0.3em] uppercase text-orange-600/60">{t.actionRequired}</span>
+                    <h3 className="text-3xl font-black text-orange-950 dark:text-orange-100 tracking-tighter leading-tight">{t.reviewProposals}</h3>
+                  </div>
                 </div>
-                <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-4xl font-black text-orange-950 dark:text-orange-100 mb-2 leading-none tracking-tighter">{t.actionRequired}</h3>
-                  <p className="text-orange-800/60 dark:text-orange-400 font-bold text-xl">{t.proposalsReview}</p>
-                </div>
-                <Button className="bg-orange-600 hover:bg-orange-700 text-white font-black rounded-[2.5rem] h-20 px-14 shadow-2xl shrink-0 text-xl" asChild>
+                <Button className="bg-orange-600 hover:bg-orange-700 text-white font-black rounded-xl h-14 w-full shadow-lg text-sm" asChild>
                   <Link href="/council">{t.reviewProposals}</Link>
                 </Button>
               </div>
-            )}
-          </div>
-
-          {!isStudent && (
-            <div className="lg:col-span-4 h-full">
-              <Card className="shadow-2xl border-none bg-white dark:bg-slate-900 rounded-[4rem] overflow-hidden p-1 h-full">
-                <CardHeader className="p-10 md:p-14 pb-4">
-                  <div className="flex items-center justify-between mb-10">
-                    <div className="space-y-1">
-                      <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{t.nextMeeting}</CardTitle>
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">Priority Assembly</p>
-                    </div>
-                    <div className="p-4 bg-accent/10 rounded-2xl text-accent">
-                      <Calendar size={32} />
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-6 p-8 bg-slate-50 dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-500 shadow-sm">
-                    <div className="flex flex-col items-center justify-center min-w-[90px] h-[90px] bg-white dark:bg-slate-900 rounded-3xl shadow-md border border-slate-100 dark:border-slate-800 group-hover:bg-accent group-hover:text-white transition-all">
-                      <span className="font-black text-4xl leading-none">24</span>
-                      <span className="text-[12px] font-black uppercase tracking-widest mt-1 opacity-60">Oct</span>
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="font-black text-slate-900 dark:text-white text-2xl leading-tight truncate">General Assembly</h4>
-                      <p className="text-base text-slate-500 dark:text-slate-400 font-bold">Room 402 • 14:30</p>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="px-10 md:px-14 pb-14 flex flex-col h-full justify-between">
-                  <div>
-                    <Separator className="bg-slate-100 dark:bg-slate-800 my-10" />
-                    <div className="space-y-8">
-                      <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em]">Agenda Items</h5>
-                      <div className="space-y-6">
-                        {['Budget Allocation Q4', 'Annual Sports Week', 'Cafeteria Update'].map((item, i) => (
-                          <div key={i} className="flex items-center gap-6 group cursor-pointer">
-                            <div className="w-3 h-3 rounded-full bg-primary shadow-[0_0_12px_rgba(var(--primary),0.5)] group-hover:scale-150 transition-all" />
-                            <span className="text-lg text-slate-700 dark:text-slate-200 font-bold group-hover:text-primary transition-all">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="pt-14 mt-auto">
-                    <Button variant="outline" className="w-full h-20 font-black border-2 border-slate-100 dark:border-slate-800 rounded-[2.5rem] hover:border-primary transition-all shadow-sm text-xl">
-                      {t.addCalendar}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            </Card>
           )}
+
+          {/* GENERIC DASHBOARD CARD (PLACEHOLDER FOR BALANCE) */}
+          <Card className="aspect-square shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all rounded-2xl flex flex-col p-8 opacity-40">
+            <div className="flex-1 flex flex-col justify-center items-center gap-4 text-center">
+               <LayoutDashboard size={48} className="text-slate-200 dark:text-slate-800" />
+               <p className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-300">More Tools Soon</p>
+            </div>
+          </Card>
         </div>
       </div>
     </AppLayout>
