@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect } from 'react';
@@ -70,15 +69,23 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       <TooltipProvider delayDuration={0}>
         <aside className="hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 w-[112px] transition-all duration-500 ease-in-out">
           <div className="flex flex-col items-center py-10 gap-10 h-full overflow-y-auto no-scrollbar">
-            <div className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-2xl border-none group hover:rotate-6 transition-transform shrink-0">
-              <Image 
-                src={logoSrc} 
-                fill 
-                alt="MBN Logo" 
-                className="object-cover" 
-                unoptimized
-              />
-            </div>
+            {/* Logo Button - Top of Menu */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <NextLink href="/dashboard" className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-2xl border-none group hover:rotate-6 transition-all shrink-0 active:scale-95">
+                  <Image 
+                    src={logoSrc} 
+                    fill 
+                    alt="MBN Logo" 
+                    className="object-cover" 
+                    unoptimized
+                  />
+                </NextLink>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="font-black text-xs px-5 py-3 rounded-xl border-none shadow-2xl bg-slate-900 text-white translate-x-4">
+                MBN Hub
+              </TooltipContent>
+            </Tooltip>
             
             <nav className="flex-1 px-4 space-y-6 flex flex-col items-center">
               {filteredNav.map((item) => {
@@ -133,8 +140,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-10 scroll-smooth no-scrollbar">
-          <div className="max-w-[1600px] mx-auto flex flex-col items-center">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth no-scrollbar">
+          <div className="max-w-[1600px] mx-auto w-full flex flex-col items-center">
             {children}
           </div>
         </div>
