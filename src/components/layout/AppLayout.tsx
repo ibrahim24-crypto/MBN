@@ -11,7 +11,8 @@ import {
   UserCircle,
   Trophy,
   Languages,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -46,91 +47,95 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f8fafc]">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] selection:bg-primary/20">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-72 flex-col border-r bg-white shadow-sm">
-        <div className="p-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary p-2.5 rounded-xl text-white shadow-lg shadow-primary/20">
-              <GraduationCap size={28} />
+      <aside className="hidden md:flex w-80 flex-col border-r border-slate-100 bg-white shadow-2xl shadow-slate-200/50 relative z-50">
+        <div className="p-10 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary p-3 rounded-[1.25rem] text-white shadow-2xl shadow-primary/40">
+              <GraduationCap size={32} />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold font-headline text-slate-900 leading-tight">MBN School</span>
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Council Hub</span>
+              <span className="text-2xl font-black font-headline text-slate-900 tracking-tighter leading-none">MBN</span>
+              <span className="text-[9px] uppercase tracking-[0.3em] text-slate-400 font-black mt-1">Council Hub</span>
             </div>
           </div>
         </div>
         
-        <nav className="flex-1 px-4 space-y-1.5 mt-4">
+        <nav className="flex-1 px-6 space-y-2 mt-6">
           {filteredNav.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link key={item.href} href={item.href}>
                 <span className={cn(
-                  "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all group",
+                  "flex items-center justify-between px-5 py-4 rounded-[1.25rem] text-sm font-black transition-all group relative overflow-hidden",
                   isActive 
-                    ? "bg-primary text-white shadow-md shadow-primary/20 scale-[1.02]" 
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-slate-900 text-white shadow-2xl shadow-slate-900/20 scale-[1.02]" 
+                    : "text-slate-400 hover:text-slate-900 hover:bg-slate-50"
                 )}>
-                  <div className="flex items-center gap-3">
-                    <item.icon size={20} className={cn(isActive ? "text-white" : "text-slate-400 group-hover:text-primary")} />
+                  <div className="flex items-center gap-4 relative z-10">
+                    <item.icon size={20} className={cn(isActive ? "text-primary" : "text-slate-300 group-hover:text-primary transition-colors")} />
                     {item.name}
                   </div>
-                  {isActive && <ChevronRight size={14} className="opacity-50" />}
+                  {isActive && (
+                    <div className="relative z-10">
+                      <ChevronRight size={16} className="text-primary" />
+                    </div>
+                  )}
                 </span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-6 mt-auto">
+        <div className="p-8 mt-auto space-y-6">
           {profile?.role === 'student' && (
-            <div className="mb-6 p-4 bg-accent/5 rounded-2xl border border-accent/10 flex items-center justify-between group cursor-pointer hover:bg-accent/10 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="bg-accent p-2 rounded-lg text-white">
-                  <Trophy size={18} />
+            <div className="p-6 bg-primary/5 rounded-[1.5rem] border border-primary/10 group cursor-pointer hover:bg-primary/10 transition-all duration-500">
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-primary p-2 rounded-xl text-white">
+                  <Trophy size={16} />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-accent uppercase tracking-tighter">Your Progress</span>
-                  <span className="text-sm font-bold text-slate-900">{profile.xp} XP</span>
-                </div>
+                <Sparkles size={14} className="text-primary animate-pulse" />
               </div>
-              <ChevronRight size={16} className="text-accent opacity-50 group-hover:translate-x-1 transition-transform" />
+              <div className="space-y-1">
+                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Global Rank</span>
+                <p className="text-xl font-black text-slate-900">{profile.xp} <span className="text-xs text-slate-400 uppercase">XP</span></p>
+              </div>
             </div>
           )}
 
-          <div className="flex items-center gap-4 p-2 mb-4">
-            <Avatar className="h-11 w-11 border-2 border-slate-100 shadow-sm">
+          <div className="flex items-center gap-4 p-2">
+            <Avatar className="h-12 w-12 border-2 border-white shadow-xl group cursor-pointer hover:scale-110 transition-transform duration-500">
               <AvatarImage src={profile?.photoURL} />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-black text-lg">
                 {profile?.displayName?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0">
-              <p className="text-sm font-bold text-slate-900 truncate">{profile?.displayName}</p>
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{profile?.role}</p>
+              <p className="text-sm font-black text-slate-900 truncate tracking-tight">{profile?.displayName}</p>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{profile?.role}</p>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between font-semibold border-slate-200">
-                  <div className="flex items-center gap-2">
-                    <Languages size={16} className="text-slate-400" />
+                <Button variant="outline" className="w-full justify-between font-black border-slate-200 rounded-2xl h-12 shadow-sm hover:bg-slate-50 transition-all">
+                  <div className="flex items-center gap-3">
+                    <Languages size={18} className="text-slate-400" />
                     <span>{language === 'ar' ? 'العربية' : 'Français'}</span>
                   </div>
                   <ChevronRight size={14} className="rotate-90 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-[240px]">
-                <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("py-2", language === 'ar' && "bg-primary/5 text-primary font-bold")}>
+              <DropdownMenuContent align="center" className="w-[260px] rounded-2xl p-2 shadow-2xl border-none">
+                <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn("rounded-xl py-3 px-4 font-black cursor-pointer", language === 'ar' && "bg-primary/5 text-primary")}>
                   العربية (Arabic)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("py-2", language === 'fr' && "bg-primary/5 text-primary font-bold")}>
+                <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn("rounded-xl py-3 px-4 font-black cursor-pointer", language === 'fr' && "bg-primary/5 text-primary")}>
                   Français (French)
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -138,10 +143,10 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
 
             <Button 
               variant="ghost" 
-              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/5 font-bold"
+              className="w-full justify-start text-destructive hover:text-white hover:bg-destructive rounded-2xl font-black h-12 transition-all group"
               onClick={() => logout()}
             >
-              <LogOut size={18} className="mr-3 rtl:ml-3 rtl:mr-0" />
+              <LogOut size={18} className="mr-3 rtl:ml-3 rtl:mr-0 group-hover:translate-x-1 transition-transform" />
               {t.signOut}
             </Button>
           </div>
@@ -150,27 +155,28 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 blur-[120px] rounded-full -z-10 translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-accent/5 blur-[100px] rounded-full -z-10 -translate-x-1/4 translate-y-1/4"></div>
+        {/* Modern Background Accents */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -z-10 translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 blur-[100px] rounded-full -z-10 -translate-x-1/4 translate-y-1/4"></div>
 
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b bg-white shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary p-2 rounded-lg text-white">
-              <GraduationCap size={20} />
+        <header className="md:hidden flex items-center justify-between p-6 border-b bg-white shadow-md z-50">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary p-2 rounded-xl text-white">
+              <GraduationCap size={24} />
             </div>
-            <span className="text-xl font-bold font-headline text-slate-900">MBN</span>
+            <span className="text-xl font-black font-headline text-slate-900 tracking-tighter">MBN</span>
           </div>
           <div className="flex items-center gap-3">
-             <Avatar className="h-9 w-9 border-2 border-slate-100" onClick={() => logout()}>
+             <Avatar className="h-10 w-10 border-2 border-slate-100" onClick={() => logout()}>
               <AvatarImage src={profile?.photoURL} />
-              <AvatarFallback>{profile?.displayName?.charAt(0)}</AvatarFallback>
+              <AvatarFallback className="font-bold">U</AvatarFallback>
             </Avatar>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 md:p-12">
-          <div className="max-w-6xl mx-auto">
+        <div className="flex-1 overflow-y-auto p-8 md:p-16 scroll-smooth">
+          <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </div>
