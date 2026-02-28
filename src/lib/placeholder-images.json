@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "mbn-logo",
+      "description": "Moussa Ibn Nousayr School Logo",
+      "imageUrl": "https://images.unsplash.com/photo-1762330918617-e135c98d40fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzY2hvb2wlMjBsb2dvfGVufDB8fHx8MTc3MjI1MjQwMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "school logo"
+    }
+  ]
 }

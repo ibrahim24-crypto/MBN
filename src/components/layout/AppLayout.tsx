@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -14,7 +15,8 @@ import {
   History,
   Menu,
   MoreVertical,
-  PanelLeftClose
+  PanelLeftClose,
+  X
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -30,12 +32,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ThemeToggle';
 import NextLink from 'next/link';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { profile, logout, isSuperAdmin } = useAuth();
   const { t, setLanguage, language } = useLanguage();
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const logo = PlaceHolderImages.find(img => img.id === 'mbn-logo');
 
   const navItems = [
     { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
@@ -59,19 +65,26 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         isCollapsed ? "w-[80px]" : "w-[320px]"
       )}>
         <div className={cn("p-6 flex flex-col items-center gap-6", !isCollapsed && "items-start px-8 pt-10")}>
-          <div className="flex items-center gap-4 group w-full">
+          <div className="flex items-center gap-4 w-full">
             <Button 
               variant="ghost" 
               size="icon"
-              className="hover:bg-slate-100 dark:hover:bg-slate-800 p-2 h-10 w-10 rounded-xl text-slate-500 dark:text-slate-400 transition-all duration-500 shrink-0"
+              className="hover:bg-slate-100 dark:hover:bg-slate-800 p-2 h-10 w-10 rounded-xl text-slate-500 dark:text-slate-400 transition-all duration-300 shrink-0"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >
-              {isCollapsed ? <Menu size={24} /> : <PanelLeftClose size={24} />}
+              <Menu size={24} />
             </Button>
             {!isCollapsed && (
-              <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500 overflow-hidden">
-                <span className="text-lg font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate">MBN Council</span>
-                <span className="text-[9px] uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 font-black mt-1.5">Executive Hub</span>
+              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-4 duration-500 overflow-hidden">
+                {logo && (
+                  <div className="w-8 h-8 relative rounded-lg overflow-hidden shadow-sm">
+                    <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
+                  </div>
+                )}
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate">MBN COUNCIL</span>
+                  <span className="text-[9px] uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 font-black mt-1">Moussa Ibn Nousayr</span>
+                </div>
               </div>
             )}
           </div>
@@ -188,9 +201,11 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-6 border-b dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md z-50">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="text-primary h-10 w-10">
-              <Menu size={24} />
-            </Button>
+             {logo && (
+              <div className="w-8 h-8 relative rounded-lg overflow-hidden">
+                <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
+              </div>
+            )}
             <div className="flex flex-col">
               <span className="text-lg font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none">MBN Council</span>
               <div className="flex items-center gap-1.5 mt-1">

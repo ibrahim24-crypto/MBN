@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -37,7 +38,7 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Profile Identity Card */}
-        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden sticky top-8 adaptive-card">
+        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden sticky top-8 w-fit max-w-full mx-auto">
           <div className="h-40 bg-gradient-to-br from-primary via-primary/80 to-accent w-full relative">
             <div className="absolute inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-[1px]"></div>
           </div>
@@ -75,33 +76,33 @@ export default function ProfilePage() {
         {/* Main Profile Sections */}
         <div className="lg:col-span-8 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           
-          {/* Restyled Performance Statistics Card */}
-          <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10 transition-all duration-500 hover:shadow-primary/10">
+          {/* Performance Statistics Card */}
+          <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10 transition-all duration-500 hover:shadow-primary/10 w-fit max-w-full">
             <div className="absolute top-0 right-0 p-12 opacity-[0.05] dark:opacity-[0.1] group-hover:scale-125 group-hover:-rotate-6 transition-all duration-1000">
               <Zap size={300} className="text-primary" />
             </div>
             
             <div className="relative z-10">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-12 mb-12">
                 <div className="space-y-2">
                   <Badge className="bg-primary text-white border-none font-black px-4 py-1.5 rounded-full flex items-center gap-2 w-fit shadow-lg shadow-primary/20">
                     <Trophy size={14} className="fill-white" />
-                    Performance Statistics
+                    Statistics
                   </Badge>
-                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Academic Engagement</CardTitle>
+                  <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Performance</CardTitle>
                 </div>
                 <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-4 pr-10 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm transition-transform hover:scale-105">
                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-black text-3xl shadow-xl">
                       {currentLevel}
                    </div>
                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Current Tier</span>
-                      <span className="text-lg font-bold text-slate-900 dark:text-white">MBN Level {currentLevel}</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Level</span>
+                      <span className="text-lg font-bold text-slate-900 dark:text-white">Tier {currentLevel}</span>
                    </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="grid grid-cols-1 gap-12 items-center">
                 <div className="space-y-6">
                   <div className="relative">
                     <div className="flex items-baseline gap-4 mb-2">
@@ -114,26 +115,14 @@ export default function ProfilePage() {
                     {profile.xp < 0 ? (
                       <div className="flex items-center gap-2 text-destructive font-bold text-sm bg-destructive/5 border border-destructive/10 w-fit px-4 py-2 rounded-xl">
                         <ShieldAlert size={16} />
-                        Disciplinary Penalty Logged
+                        Disciplinary Penalty Active
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 text-primary font-bold text-sm bg-primary/5 border border-primary/10 w-fit px-4 py-2 rounded-xl">
                         <TrendingUp size={16} />
-                        Positive Contribution Active
+                        Positive Status
                       </div>
                     )}
-                  </div>
-                </div>
-                
-                <div className="space-y-6">
-                  <div className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-6 group/item hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl transition-all duration-500">
-                    <div className="p-5 bg-white dark:bg-slate-900 rounded-3xl text-yellow-500 shadow-xl group-hover/item:scale-110 group-hover/item:rotate-12 transition-all">
-                      <Star className="fill-yellow-500" size={32} />
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Achievement</span>
-                      <p className="text-xl font-black text-slate-900 dark:text-white">Active Founder</p>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -146,8 +135,8 @@ export default function ProfilePage() {
                        <Zap size={24} className="fill-primary/20" />
                     </div>
                     <div>
-                       <h4 className="font-black text-slate-900 dark:text-white text-lg">MBN Influence Score</h4>
-                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Calculated based on school participation and council involvement.</p>
+                       <h4 className="font-black text-slate-900 dark:text-white text-lg">MBN Influence</h4>
+                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Based on school council involvement.</p>
                     </div>
                  </div>
               </div>
@@ -156,47 +145,39 @@ export default function ProfilePage() {
 
           {/* Activity & Settings Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12">
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden adaptive-card">
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <ShieldCheck size={24} className="text-primary" />
-                  Account Security
+                  Security
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Protection & verification status</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Verification status</CardDescription>
               </CardHeader>
               <CardContent className="p-10 pt-8 space-y-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800 gap-8">
                     <div className="flex items-center gap-4">
                       <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google Verified</span>
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Google</span>
                     </div>
                     <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[10px]">VERIFIED</Badge>
-                  </div>
-                  <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-4">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
-                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Session Guard</span>
-                    </div>
-                    <Badge className="bg-primary/5 dark:bg-primary/10 text-primary border-none font-black text-[10px]">ENFORCED</Badge>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden adaptive-card">
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden w-fit max-w-full">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <Award size={24} className="text-primary" />
                   Milestones
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Recognitions achieved this year</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Achievements</CardDescription>
               </CardHeader>
               <CardContent className="p-10 pt-8">
                  <div className="space-y-8">
                    {[
-                     { name: 'Pioneer', desc: 'School launch member', date: 'OCT 24', color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10' },
-                     { name: 'Contributor', desc: 'Active platform user', date: 'NOV 24', color: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10' }
+                     { name: 'Pioneer', desc: 'Launch member', color: 'bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10' },
                    ].map((badge, i) => (
                      <div key={i} className="flex items-center gap-5 group">
                        <div className={cn("p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 shadow-sm", badge.color)}>
@@ -206,7 +187,6 @@ export default function ProfilePage() {
                          <h4 className="font-black text-slate-900 dark:text-white text-base">{badge.name}</h4>
                          <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{badge.desc}</p>
                        </div>
-                       <span className="text-[10px] font-black text-slate-300 dark:text-slate-700">{badge.date}</span>
                      </div>
                    ))}
                  </div>

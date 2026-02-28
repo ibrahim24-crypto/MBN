@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -14,11 +15,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
   const { user, loading, signInWithGoogle } = useAuth();
   const { t, setLanguage } = useLanguage();
   const router = useRouter();
+
+  const logo = PlaceHolderImages.find(img => img.id === 'mbn-logo');
 
   useEffect(() => {
     if (!loading && user) {
@@ -47,9 +52,15 @@ export default function LandingPage() {
 
       <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-3">
-          <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/30 group hover:rotate-6 transition-transform">
-            <GraduationCap size={28} />
-          </div>
+          {logo ? (
+            <div className="w-12 h-12 relative rounded-2xl overflow-hidden shadow-xl shadow-primary/20 group hover:rotate-6 transition-transform">
+              <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
+            </div>
+          ) : (
+            <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/30 group hover:rotate-6 transition-transform">
+              <GraduationCap size={28} />
+            </div>
+          )}
           <span className="text-2xl font-black font-headline tracking-tighter text-slate-900">MBN COUNCIL</span>
         </div>
         <DropdownMenu>
@@ -71,7 +82,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <Badge variant="secondary" className="mb-8 rounded-full px-6 py-2 bg-primary/10 text-primary border-primary/20 font-black tracking-[0.2em] uppercase text-[11px] shadow-sm">
             <Sparkles size={14} className="mr-2 inline-block text-accent" />
-            Leading with Purpose
+            Moussa Ibn Nousayr School
           </Badge>
           <h1 className="text-6xl md:text-9xl font-black font-headline text-slate-900 mb-10 tracking-tight leading-[0.85] text-balance">
             {t.title} <span className="text-primary">.</span>
@@ -131,12 +142,18 @@ export default function LandingPage() {
       <footer className="py-24 px-8 text-center bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="flex items-center gap-3">
-            <div className="bg-primary p-2 rounded-xl text-white">
-              <GraduationCap size={24} />
-            </div>
+             {logo ? (
+              <div className="w-8 h-8 relative rounded-lg overflow-hidden">
+                <Image src={logo.imageUrl} fill alt="MBN Logo" className="object-cover" data-ai-hint={logo.imageHint} />
+              </div>
+            ) : (
+              <div className="bg-primary p-2 rounded-xl text-white">
+                <GraduationCap size={24} />
+              </div>
+            )}
             <span className="font-black text-2xl text-slate-900 tracking-tighter">MBN SCHOOL</span>
           </div>
-          <p className="text-slate-400 font-bold text-lg">&copy; {new Date().getFullYear()} MBN School. Elevating every voice.</p>
+          <p className="text-slate-400 font-bold text-lg">&copy; {new Date().getFullYear()} Moussa Ibn Nousayr. Elevating every voice.</p>
           <div className="flex gap-10 text-sm font-black text-slate-500 uppercase tracking-widest">
             <a href="#" className="hover:text-primary transition-colors">Privacy</a>
             <a href="#" className="hover:text-primary transition-colors">Terms</a>
