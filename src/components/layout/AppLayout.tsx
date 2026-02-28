@@ -13,8 +13,8 @@ import {
   Zap,
   History,
   Menu,
-  PanelLeftClose,
-  MoreVertical
+  MoreVertical,
+  PanelLeftClose
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -29,7 +29,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { Separator } from '@/components/ui/separator';
 import NextLink from 'next/link';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -57,21 +56,21 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       {/* Sidebar */}
       <aside className={cn(
         "hidden md:flex flex-col border-r border-slate-200/50 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl relative z-50 transition-all duration-500 ease-in-out",
-        isCollapsed ? "w-20" : "w-80"
+        isCollapsed ? "w-[80px]" : "w-[320px]"
       )}>
         <div className={cn("p-6 flex flex-col items-center gap-6", !isCollapsed && "items-start px-8 pt-10")}>
           <div className="flex items-center gap-4 group w-full">
             <Button 
               variant="ghost" 
               size="icon"
-              className="bg-primary hover:bg-primary/90 p-3 h-12 w-12 rounded-2xl text-white shadow-xl shadow-primary/30 group-hover:rotate-6 transition-all duration-500 shrink-0"
+              className="hover:bg-slate-100 dark:hover:bg-slate-800 p-2 h-10 w-10 rounded-xl text-slate-500 dark:text-slate-400 transition-all duration-500 shrink-0"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >
               {isCollapsed ? <Menu size={24} /> : <PanelLeftClose size={24} />}
             </Button>
             {!isCollapsed && (
               <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500 overflow-hidden">
-                <span className="text-xl font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate">MBN Council</span>
+                <span className="text-lg font-black font-headline text-slate-900 dark:text-white tracking-tighter leading-none truncate">MBN Council</span>
                 <span className="text-[9px] uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 font-black mt-1.5">Executive Hub</span>
               </div>
             )}
@@ -86,17 +85,17 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 <span className={cn(
                   "flex items-center px-4 py-4 rounded-2xl text-sm font-black transition-all group relative overflow-hidden",
                   isActive 
-                    ? "bg-slate-900 dark:bg-primary text-white shadow-lg shadow-slate-900/20 dark:shadow-primary/20" 
+                    ? "bg-primary text-white shadow-lg shadow-primary/20" 
                     : "text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50",
                   isCollapsed ? "justify-center" : "justify-between"
                 )}>
                   <div className="flex items-center gap-4 relative z-10">
-                    <item.icon size={20} className={cn(isActive ? "text-primary dark:text-white" : "text-slate-300 dark:text-slate-700 group-hover:text-primary transition-colors")} />
+                    <item.icon size={20} className={cn(isActive ? "text-white" : "text-slate-300 dark:text-slate-700 group-hover:text-primary transition-colors")} />
                     {!isCollapsed && <span className="animate-in fade-in slide-in-from-left-2 duration-300 whitespace-nowrap">{item.name}</span>}
                   </div>
                   {!isCollapsed && isActive && (
                     <div className="relative z-10 animate-in fade-in slide-in-from-left-2 duration-500">
-                      <ChevronRight size={14} className="text-primary dark:text-white" />
+                      <ChevronRight size={14} className="text-white" />
                     </div>
                   )}
                 </span>
@@ -121,9 +120,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                   <div className="flex flex-col min-w-0 overflow-hidden">
                     <p className="text-sm font-black text-slate-900 dark:text-white truncate tracking-tight">{profile?.displayName}</p>
                     <div className="flex items-center gap-2">
-                      <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em] truncate">{profile?.role}</p>
                       <span className={cn(
-                        "text-[9px] font-black",
+                        "text-[9px] font-black uppercase tracking-widest",
                         (profile?.xp ?? 0) < 0 ? "text-destructive" : "text-primary"
                       )}>
                         {profile?.xp} XP

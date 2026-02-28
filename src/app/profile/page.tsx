@@ -10,8 +10,6 @@ import {
   Mail, 
   ShieldCheck, 
   Star, 
-  Megaphone, 
-  Bell, 
   UserCheck,
   Zap,
   ShieldAlert,
@@ -39,12 +37,12 @@ export default function ProfilePage() {
         <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tight text-slate-900 dark:text-white">
           Your Profile
         </h1>
-        <p className="text-lg text-slate-500 dark:text-slate-400 font-medium mt-2">Manage your identity and track your school contributions.</p>
+        <p className="text-lg text-slate-500 dark:text-slate-400 font-medium mt-2">Manage your identity and track your school contributions at Moussa Ibn Nousayr.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Profile Identity Card */}
-        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden sticky top-8">
+        <Card className="lg:col-span-4 border-none shadow-2xl shadow-slate-200/60 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden sticky top-8 adaptive-card">
           <div className="h-40 bg-gradient-to-br from-primary via-primary/80 to-accent w-full relative">
             <div className="absolute inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-[1px]"></div>
           </div>
@@ -84,26 +82,26 @@ export default function ProfilePage() {
           
           {/* Enhanced XP Dashboard */}
           <Card className="border-none shadow-[0_40px_100px_rgba(59,130,246,0.15)] bg-white dark:bg-slate-900 rounded-[3.5rem] overflow-hidden relative group p-10">
-            <div className="absolute top-0 right-0 p-12 opacity-[0.03] dark:opacity-[0.05] group-hover:scale-110 transition-transform duration-1000">
-              <Trophy size={350} />
+            <div className="absolute top-0 right-0 p-12 opacity-[0.05] dark:opacity-[0.1] group-hover:scale-125 group-hover:-rotate-12 transition-all duration-1000">
+              <Trophy size={350} className="text-primary" />
             </div>
             
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
                 <div className="space-y-2">
-                  <Badge className="bg-primary/10 text-primary border-none font-black px-4 py-1 rounded-full flex items-center gap-2 w-fit">
-                    <Zap size={14} className="fill-primary" />
-                    Engagement Metrics
+                  <Badge className="bg-primary text-white border-none font-black px-4 py-1.5 rounded-full flex items-center gap-2 w-fit shadow-lg shadow-primary/20">
+                    <Zap size={14} className="fill-white" />
+                    XP Dashboard
                   </Badge>
                   <CardTitle className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Performance Statistics</CardTitle>
                 </div>
-                <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-2 pr-6 rounded-full border border-slate-100 dark:border-slate-800">
-                   <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center font-black text-xl shadow-lg shadow-primary/20">
+                <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-3 pr-8 rounded-full border border-slate-100 dark:border-slate-800 shadow-sm">
+                   <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-black text-2xl shadow-xl">
                       {currentLevel}
                    </div>
                    <div className="flex flex-col">
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Level</span>
-                      <span className="text-sm font-bold text-slate-900 dark:text-white">Veteran Contributor</span>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">Active Contributor</span>
                    </div>
                 </div>
               </div>
@@ -184,7 +182,7 @@ export default function ProfilePage() {
 
           {/* Activity & Settings Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12">
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden">
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden adaptive-card">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <ShieldCheck size={24} className="text-primary" />
@@ -212,13 +210,13 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden">
+            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden adaptive-card">
               <CardHeader className="p-10 pb-0">
                 <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <Star size={24} className="text-primary" />
                   Milestones
                 </CardTitle>
-                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Recognition & history</CardDescription>
+                <CardDescription className="font-medium text-slate-500 dark:text-slate-400">Milestones achieved this year</CardDescription>
               </CardHeader>
               <CardContent className="p-10 pt-8">
                  <div className="space-y-8">

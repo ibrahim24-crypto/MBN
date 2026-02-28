@@ -70,6 +70,9 @@
   .card-shadow {
     @apply shadow-[0_8px_30px_rgb(0,0,0,0.04)];
   }
+  .adaptive-card {
+    @apply w-full md:w-fit min-w-[320px] max-w-full;
+  }
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
