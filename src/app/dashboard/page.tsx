@@ -2,14 +2,16 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Trophy, Users, Megaphone, Calendar, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function DashboardPage() {
   const { profile, loading, isSuperAdmin } = useAuth();
+  const { t } = useLanguage();
 
   if (loading) return null;
 
@@ -18,10 +20,10 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <header>
           <h1 className="text-3xl font-bold font-headline tracking-tight">
-            Welcome back, {profile?.displayName?.split(' ')[0]}!
+            {t.welcomeBack} {profile?.displayName?.split(' ')[0]}!
           </h1>
           <p className="text-muted-foreground">
-            Here's what's happening at MBN today.
+            {t.description}
           </p>
         </header>
 
@@ -30,13 +32,13 @@ export default function DashboardPage() {
           {profile?.role === 'student' && (
             <Card className="col-span-1 border-none bg-accent text-white shadow-xl shadow-accent/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Your Progress</CardTitle>
+                <CardTitle className="text-sm font-medium">{t.progress}</CardTitle>
                 <Trophy className="h-4 w-4" />
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold mb-2">{profile.xp} XP</div>
                 <Progress value={profile.xp % 100} className="h-2 bg-white/20 mb-1" />
-                <p className="text-xs text-white/70">Keep participating to earn more rewards!</p>
+                <p className="text-xs text-white/70">{t.keepParticipating}</p>
               </CardContent>
             </Card>
           )}
@@ -45,14 +47,14 @@ export default function DashboardPage() {
           {(profile?.role === 'administration' || isSuperAdmin) && (
             <Card className="col-span-1 border-none bg-primary text-white shadow-xl shadow-primary/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">User Base</CardTitle>
+                <CardTitle className="text-sm font-medium">{t.activeRoles}</CardTitle>
                 <Users className="h-4 w-4" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold mb-2">Active Roles</div>
-                <p className="text-xs text-white/70">Management console is ready.</p>
+                <div className="text-3xl font-bold mb-2">{t.adminPanel}</div>
+                <p className="text-xs text-white/70">{t.manageUsers}</p>
                 <Button variant="secondary" size="sm" className="mt-4 w-full" asChild>
-                  <Link href="/admin">Manage Users</Link>
+                  <Link href="/admin">{t.manageUsers}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -61,14 +63,14 @@ export default function DashboardPage() {
           {/* Announcements Widget */}
           <Card className="shadow-md border-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Recent Bulletin</CardTitle>
+              <CardTitle className="text-sm font-medium">{t.recentBulletin}</CardTitle>
               <Megaphone className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl font-bold">New Post</div>
-              <p className="text-xs text-muted-foreground mt-1">Check the latest council updates.</p>
+              <div className="text-xl font-bold">{t.newAnnouncement}</div>
+              <p className="text-xs text-muted-foreground mt-1">{t.checkLatest}</p>
               <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
-                <Link href="/announcements">View Board</Link>
+                <Link href="/announcements">{t.viewBoard}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -76,13 +78,13 @@ export default function DashboardPage() {
           {/* Schedule/Event (Mock) */}
           <Card className="shadow-md border-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Next Meeting</CardTitle>
+              <CardTitle className="text-sm font-medium">{t.nextMeeting}</CardTitle>
               <Calendar className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-xl font-bold">Thursday, 2 PM</div>
               <p className="text-xs text-muted-foreground mt-1">School Library, Room 204</p>
-              <Button variant="ghost" size="sm" className="mt-4 w-full">Add to Calendar</Button>
+              <Button variant="ghost" size="sm" className="mt-4 w-full">{t.addCalendar}</Button>
             </CardContent>
           </Card>
         </div>
@@ -94,11 +96,11 @@ export default function DashboardPage() {
               <ShieldAlert size={24} />
             </div>
             <div>
-              <h3 className="font-bold text-orange-800">Council Action Required</h3>
-              <p className="text-sm text-orange-600">3 new proposals need your review before the next meeting.</p>
+              <h3 className="font-bold text-orange-800">{t.actionRequired}</h3>
+              <p className="text-sm text-orange-600">{t.proposalsReview}</p>
             </div>
-            <Button className="ml-auto bg-orange-600 hover:bg-orange-700" asChild>
-              <Link href="/council">Review Proposals</Link>
+            <Button className="ml-auto bg-orange-600 hover:bg-orange-700 rtl:mr-auto rtl:ml-0" asChild>
+              <Link href="/council">{t.reviewProposals}</Link>
             </Button>
           </div>
         )}

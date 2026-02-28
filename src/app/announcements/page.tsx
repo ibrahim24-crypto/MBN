@@ -1,23 +1,15 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { 
-  collection, 
-  getDocs, 
-  addDoc, 
-  serverTimestamp, 
-  query, 
-  orderBy 
-} from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { 
   Card, 
   CardContent, 
   CardHeader, 
-  CardTitle, 
-  CardFooter 
+  CardTitle 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -34,6 +26,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Megaphone, Plus, Calendar, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Announcement {
   id: string;
@@ -42,12 +36,21 @@ interface Announcement {
   authorName: string;
   authorRole: string;
   createdAt: any;
+  status: string;
 }
 
 export default function AnnouncementsPage() {
-  const { profile, loading } = useAuth();
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [fetching, setFetching] = useState(true);
+  const { profile } = useAuth();
+  const db = useFirestore();
+  const { t } = useLanguage();
+  
+  const announcementsQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
+  }, [db]);
+
+  const { data: announcements, isLoading: fetching } = useCollection<Announcement>(announcementsQuery);
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
@@ -55,54 +58,27 @@ export default function AnnouncementsPage() {
 
   const canCreate = profile?.role === 'council' || profile?.role === 'administration';
 
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
+  const createAnnouncement = () => {
+    if (!newTitle || !newContent || !db) return;
 
-  const fetchAnnouncements = async () => {
-    try {
-      const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data() 
-      } as Announcement));
-      setAnnouncements(data);
-    } catch (error) {
-      console.error("Error fetching announcements", error);
-    } finally {
-      setFetching(false);
-    }
-  };
-
-  const createAnnouncement = async () => {
-    if (!newTitle || !newContent) return;
-
-    try {
-      await addDoc(collection(db, 'announcements'), {
-        title: newTitle,
-        content: newContent,
-        authorName: profile?.displayName,
-        authorRole: profile?.role,
-        createdAt: serverTimestamp(),
-      });
-      
-      setIsDialogOpen(false);
-      setNewTitle('');
-      setNewContent('');
-      fetchAnnouncements();
-      
-      toast({
-        title: "Announcement Published",
-        description: "Your message is now live on the board.",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to publish announcement.",
-      });
-    }
+    addDocumentNonBlocking(collection(db, 'announcements'), {
+      title: newTitle,
+      content: newContent,
+      authorName: profile?.displayName,
+      authorRole: profile?.role,
+      authorId: profile?.uid,
+      createdAt: new Date(),
+      status: 'Published'
+    });
+    
+    setIsDialogOpen(false);
+    setNewTitle('');
+    setNewContent('');
+    
+    toast({
+      title: "Announcement Published",
+      description: "Your message is now live on the board.",
+    });
   };
 
   return (
@@ -111,9 +87,9 @@ export default function AnnouncementsPage() {
         <div>
           <h1 className="text-3xl font-bold font-headline tracking-tight flex items-center gap-2">
             <Megaphone className="text-primary" />
-            Announcement Board
+            {t.announcements}
           </h1>
-          <p className="text-muted-foreground">Official school council updates and notices.</p>
+          <p className="text-muted-foreground">{t.checkLatest}</p>
         </div>
         
         {canCreate && (
@@ -121,24 +97,24 @@ export default function AnnouncementsPage() {
             <DialogTrigger asChild>
               <Button className="gap-2 shadow-lg hover:shadow-primary/20">
                 <Plus size={18} />
-                New Announcement
+                {t.newAnnouncement}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
-                <DialogTitle>Post to Board</DialogTitle>
+                <DialogTitle>{t.newAnnouncement}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
                   <Input 
-                    placeholder="Headline" 
+                    placeholder={t.headline} 
                     value={newTitle} 
                     onChange={(e) => setNewTitle(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Textarea 
-                    placeholder="Write your announcement details here..." 
+                    placeholder={t.details} 
                     className="min-h-[150px]"
                     value={newContent}
                     onChange={(e) => setNewContent(e.target.value)}
@@ -146,8 +122,8 @@ export default function AnnouncementsPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={createAnnouncement}>Publish</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t.cancel}</Button>
+                <Button onClick={createAnnouncement}>{t.publish}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -156,11 +132,11 @@ export default function AnnouncementsPage() {
 
       <div className="grid grid-cols-1 gap-6">
         {fetching ? (
-          <div className="text-center py-20 text-muted-foreground">Loading board...</div>
-        ) : announcements.length === 0 ? (
+          <div className="text-center py-20 text-muted-foreground">Loading...</div>
+        ) : !announcements || announcements.length === 0 ? (
           <div className="text-center py-20 bg-card rounded-2xl border border-dashed flex flex-col items-center gap-4">
             <Megaphone size={48} className="text-muted-foreground opacity-20" />
-            <div className="text-muted-foreground">No announcements yet.</div>
+            <div className="text-muted-foreground">{t.noAnnouncements}</div>
           </div>
         ) : (
           announcements.map((ann) => (
@@ -175,7 +151,7 @@ export default function AnnouncementsPage() {
                     </span>
                     <span className="flex items-center gap-1">
                       <Calendar size={12} />
-                      {ann.createdAt?.toDate ? format(ann.createdAt.toDate(), 'PPP') : 'Just now'}
+                      {ann.createdAt?.toDate ? format(ann.createdAt.toDate(), 'PPP') : '...'}
                     </span>
                   </div>
                 </div>

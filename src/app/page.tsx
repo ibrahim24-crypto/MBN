@@ -2,13 +2,21 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, GraduationCap, Users, Megaphone } from 'lucide-react';
+import { ShieldCheck, GraduationCap, Users, Megaphone, Languages } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function LandingPage() {
-  const { user, profile, loading, signInWithGoogle } = useAuth();
+  const { user, loading, signInWithGoogle } = useAuth();
+  const { t, setLanguage } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -29,17 +37,31 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <nav className="p-4 flex justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Languages size={16} />
+              Lang
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setLanguage('ar')}>العربية</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('fr')}>Français</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </nav>
+
       {/* Hero Section */}
-      <section className="flex-1 flex flex-col items-center justify-center px-4 py-20 text-center bg-gradient-to-b from-background to-secondary/30">
+      <section className="flex-1 flex flex-col items-center justify-center px-4 py-10 text-center bg-gradient-to-b from-background to-secondary/30">
         <div className="mb-8 p-4 bg-primary rounded-2xl text-white shadow-xl shadow-primary/20 animate-in fade-in zoom-in duration-700">
           <GraduationCap size={64} />
         </div>
         <h1 className="text-5xl md:text-7xl font-bold font-headline text-primary mb-6 tracking-tight">
-          MBN Council
+          {t.title}
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed">
-          The centralized digital platform for MBN School Council management, 
-          announcements, and student engagement.
+          {t.description}
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
@@ -49,7 +71,7 @@ export default function LandingPage() {
             onClick={signInWithGoogle}
           >
             <ShieldCheck size={20} />
-            Google Login
+            {t.loginWithGoogle}
           </Button>
           <Button 
             variant="outline" 
@@ -57,7 +79,7 @@ export default function LandingPage() {
             className="h-14 text-lg font-semibold"
             asChild
           >
-            <Link href="#features">Learn More</Link>
+            <Link href="#features">{t.learnMore}</Link>
           </Button>
         </div>
       </section>
@@ -69,25 +91,25 @@ export default function LandingPage() {
             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
               <Megaphone size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3 font-headline">Smart Board</h3>
-            <p className="text-muted-foreground">Stay updated with the latest news and decisions directly from the council board.</p>
+            <h3 className="text-xl font-bold mb-3 font-headline">{t.smartBoard}</h3>
+            <p className="text-muted-foreground">{t.checkLatest}</p>
           </div>
           
           <div className="p-8 rounded-2xl bg-secondary/20 border border-primary/5 hover:border-primary/20 transition-all group">
             <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center text-accent mb-6 group-hover:scale-110 transition-transform">
               <Users size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3 font-headline">Role Management</h3>
-            <p className="text-muted-foreground">Secure access for Students, Teachers, Council Members, and Administration.</p>
+            <h3 className="text-xl font-bold mb-3 font-headline">{t.roleManagement}</h3>
+            <p className="text-muted-foreground">{t.activeRoles}</p>
           </div>
           
           <div className="p-8 rounded-2xl bg-secondary/20 border border-primary/5 hover:border-primary/20 transition-all group">
             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
               <ShieldCheck size={24} />
             </div>
-            <h3 className="text-xl font-bold mb-3 font-headline">XP Rewards</h3>
-            <p className="text-semibold mb-3 font-headline">Student Gamification</p>
-            <p className="text-muted-foreground">Students earn 100 XP upon their first entry to incentivize council participation.</p>
+            <h3 className="text-xl font-bold mb-3 font-headline">{t.xpRewards}</h3>
+            <p className="text-semibold mb-3 font-headline">{t.studentGamification}</p>
+            <p className="text-muted-foreground">{t.xpIncentive}</p>
           </div>
         </div>
       </section>

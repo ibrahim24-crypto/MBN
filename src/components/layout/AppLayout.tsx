@@ -9,7 +9,8 @@ import {
   ShieldCheck, 
   LogOut,
   UserCircle,
-  Trophy
+  Trophy,
+  Languages
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -17,19 +18,26 @@ import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-
-const navItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
-  { name: 'Announcements', href: '/announcements', icon: Megaphone, roles: ['student', 'teacher', 'council', 'administration'] },
-  { name: 'Council Board', href: '/council', icon: ShieldCheck, roles: ['council', 'administration'] },
-  { name: 'Admin Panel', href: '/admin', icon: Users, roles: ['administration'] },
-  { name: 'Profile', href: '/profile', icon: UserCircle, roles: ['student', 'teacher', 'council', 'administration'] },
-];
+import { useLanguage } from '@/context/LanguageContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { profile, logout, isSuperAdmin } = useAuth();
+  const { t, setLanguage, language } = useLanguage();
+
+  const navItems = [
+    { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
+    { name: t.announcements, href: '/announcements', icon: Megaphone, roles: ['student', 'teacher', 'council', 'administration'] },
+    { name: t.councilBoard, href: '/council', icon: ShieldCheck, roles: ['council', 'administration'] },
+    { name: t.adminPanel, href: '/admin', icon: Users, roles: ['administration'] },
+    { name: t.profile, href: '/profile', icon: UserCircle, roles: ['student', 'teacher', 'council', 'administration'] },
+  ];
 
   const filteredNav = navItems.filter(item => {
     if (isSuperAdmin && item.href === '/admin') return true;
@@ -40,11 +48,29 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col border-r bg-card">
-        <div className="p-6 flex items-center gap-3">
-          <div className="bg-primary p-2 rounded-lg text-white">
-            <GraduationCap size={24} />
+        <div className="p-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary p-2 rounded-lg text-white">
+              <GraduationCap size={24} />
+            </div>
+            <span className="text-2xl font-bold font-headline text-primary tracking-tight">MBN</span>
           </div>
-          <span className="text-2xl font-bold font-headline text-primary tracking-tight">MBN</span>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Languages size={18} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setLanguage('ar')} className={cn(language === 'ar' && "bg-primary/10 text-primary font-bold")}>
+                العربية
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('fr')} className={cn(language === 'fr' && "bg-primary/10 text-primary font-bold")}>
+                Français
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <nav className="flex-1 px-4 space-y-1">
@@ -91,8 +117,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={() => logout()}
           >
-            <LogOut size={18} className="mr-3" />
-            Sign Out
+            <LogOut size={18} className="mr-3 rtl:ml-3 rtl:mr-0" />
+            {t.signOut}
           </Button>
         </div>
       </aside>
@@ -107,10 +133,23 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             </div>
             <span className="text-xl font-bold font-headline text-primary">MBN</span>
           </div>
-          <Avatar className="h-8 w-8" onClick={() => logout()}>
-            <AvatarImage src={profile?.photoURL} />
-            <AvatarFallback>{profile?.displayName?.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Languages size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setLanguage('ar')}>العربية</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('fr')}>Français</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Avatar className="h-8 w-8" onClick={() => logout()}>
+              <AvatarImage src={profile?.photoURL} />
+              <AvatarFallback>{profile?.displayName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
