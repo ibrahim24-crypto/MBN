@@ -75,24 +75,25 @@ export default function CouncilPage() {
   const [proposalForm, setProposalForm] = useState({ title: '', content: '', visibility: 'PUBLIC' as Proposal['visibility'] });
   const [minuteForm, setMinuteForm] = useState({ title: '', content: '', meetingDate: format(new Date(), 'yyyy-MM-dd') });
 
+  const isAdmin = isSuperAdmin || profile?.role === 'administration';
+  const isCouncil = profile?.role === 'council';
+  const canSeeMinutes = isAdmin || isCouncil;
+
   const proposalsQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(collection(db, 'proposals'), orderBy('createdAt', 'desc'));
   }, [db]);
 
   const minutesQuery = useMemoFirebase(() => {
-    if (!db) return null;
+    // Only fetch minutes if authorized
+    if (!db || !canSeeMinutes) return null;
     return query(collection(db, 'meetingMinutes'), orderBy('meetingDate', 'desc'));
-  }, [db]);
+  }, [db, canSeeMinutes]);
 
   const { data: proposals, isLoading: loadingProposals } = useCollection<Proposal>(proposalsQuery);
   const { data: minutes, isLoading: loadingMinutes } = useCollection<MeetingMinute>(minutesQuery);
 
   if (authLoading || !profile) return null;
-
-  const isAdmin = isSuperAdmin || profile.role === 'administration';
-  const isCouncil = profile.role === 'council';
-  const canSeeMinutes = isAdmin || isCouncil;
 
   const handleSaveProposal = () => {
     if (!db || !proposalForm.title) return;
@@ -179,7 +180,7 @@ export default function CouncilPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full pb-32 px-4">
         
-        {/* ANNONCES (formerly Proposals) */}
+        {/* ANNONCES */}
         <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden flex flex-col min-h-[600px]">
           <CardHeader className="p-8 border-b border-slate-50 dark:border-slate-800 flex flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
