@@ -23,11 +23,12 @@ import {
   getDocs, 
   doc, 
   query,
-  orderBy
+  orderBy,
+  limit
 } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, Search, Save, Edit2, X, Loader2, User, Users, Zap, Info, Plus, Trash2, Wand2 } from 'lucide-react';
+import { ShieldCheck, Search, Save, Edit2, X, Loader2, User, Users, Zap, Info, Plus, Trash2, Wand2, ArrowUpDown, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -91,7 +92,6 @@ export default function AdminPage() {
   // Template Management State
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [newTemplate, setNewTemplate] = useState({ label: '', reason: '', amount: 10 });
-  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -162,6 +162,16 @@ export default function AdminPage() {
     });
   };
 
+  const startEditing = (u: UserData) => {
+    setEditingId(u.id);
+    setEditForm({ ...u });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
   const saveUserChanges = (id: string) => {
     if (!db || !isAdmin) return;
     const userDocRef = doc(db, 'users', id);
@@ -205,22 +215,13 @@ export default function AdminPage() {
   const handleSaveTemplate = () => {
     if (!db || !newTemplate.label || !newTemplate.reason) return;
 
-    if (editingTemplateId) {
-      updateDocumentNonBlocking(doc(db, 'xp_templates', editingTemplateId), {
-        ...newTemplate,
-        updatedAt: new Date().toISOString()
-      });
-    } else {
-      addDocumentNonBlocking(collection(db, 'xp_templates'), {
-        ...newTemplate,
-        createdAt: new Date(),
-        updatedAt: new Date().toISOString()
-      });
-    }
+    addDocumentNonBlocking(collection(db, 'xp_templates'), {
+      ...newTemplate,
+      createdAt: new Date(),
+      updatedAt: new Date().toISOString()
+    });
 
-    setIsTemplateDialogOpen(false);
     setNewTemplate({ label: '', reason: '', amount: 10 });
-    setEditingTemplateId(null);
     toast({ title: t.xpUpdated });
   };
 
@@ -250,7 +251,7 @@ export default function AdminPage() {
       <div className="text-center">
         <ShieldCheck size={60} className="mx-auto text-destructive mb-4 opacity-20" />
         <h1 className="text-3xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">Access Denied</h1>
-        <p className="text-slate-500 mt-2 font-bold">Only administrators can access this command center.</p>
+        <p className="text-slate-500 mt-2 font-bold">Only authorized staff can access this registry.</p>
         <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return</Button>
       </div>
     </div>
@@ -272,39 +273,68 @@ export default function AdminPage() {
           <div className="flex flex-col md:flex-row items-center gap-4">
             <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2 h-14 rounded-2xl font-black px-6 shadow-lg hover:bg-slate-50 border-none bg-white">
+                <Button variant="outline" className="gap-3 h-14 rounded-2xl font-black px-6 shadow-xl hover:bg-slate-50 dark:hover:bg-slate-800 border-none bg-white dark:bg-slate-900 transition-all hover:scale-[1.02]">
                   <Wand2 size={20} className="text-accent" />
                   {t.manageTemplates}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px] rounded-2xl p-8">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-black tracking-tight">{t.xpTemplates}</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4 max-h-[400px] overflow-y-auto no-scrollbar">
-                  {templates?.map(tpl => (
-                    <div key={tpl.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between group">
-                      <div>
-                        <p className="font-black text-sm">{tpl.label}</p>
-                        <p className="text-xs text-slate-400">{tpl.reason} ({tpl.amount > 0 ? '+' : ''}{tpl.amount} XP)</p>
-                      </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-destructive" onClick={() => handleDeleteTemplate(tpl.id)}>
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
+              <DialogContent className="sm:max-w-[550px] rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                <div className="bg-slate-900 text-white p-8">
+                  <DialogHeader>
+                    <DialogTitle className="text-3xl font-black tracking-tight flex items-center gap-3">
+                      <Wand2 className="text-accent" />
+                      {t.xpTemplates}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <p className="text-slate-400 text-sm font-bold mt-2">Create standardized actions for rapid community management.</p>
+                </div>
+                <div className="p-8 space-y-8 bg-white dark:bg-slate-950">
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Library</h4>
+                    <div className="grid gap-3 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
+                      {loadingTemplates ? (
+                        <div className="flex justify-center py-8"><Loader2 className="animate-spin opacity-20" /></div>
+                      ) : !templates || templates.length === 0 ? (
+                        <div className="p-8 text-center bg-slate-50 dark:bg-slate-900 rounded-2xl border-2 border-dashed border-slate-100 dark:border-slate-800">
+                          <p className="text-xs font-black text-slate-300 uppercase tracking-widest">No Templates Yet</p>
+                        </div>
+                      ) : (
+                        templates.map(tpl => (
+                          <div key={tpl.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-between group border border-transparent hover:border-primary/20 transition-all">
+                            <div className="flex items-center gap-4">
+                              <div className={cn(
+                                "h-10 w-10 rounded-xl flex items-center justify-center font-black",
+                                tpl.amount > 0 ? "bg-emerald-100 text-emerald-600" : "bg-destructive/10 text-destructive"
+                              )}>
+                                {tpl.amount > 0 ? '+' : ''}{tpl.amount}
+                              </div>
+                              <div>
+                                <p className="font-black text-sm text-slate-900 dark:text-white">{tpl.label}</p>
+                                <p className="text-[10px] text-slate-400 font-bold truncate max-w-[200px]">{tpl.reason}</p>
+                              </div>
+                            </div>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-destructive hover:bg-destructive/5 opacity-0 group-hover:opacity-100 transition-all" onClick={() => handleDeleteTemplate(tpl.id)}>
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        ))
+                      )}
                     </div>
-                  ))}
-                  <DropdownMenuSeparator className="my-4" />
-                  <div className="space-y-4 pt-2">
-                    <Input placeholder={t.templateLabel} value={newTemplate.label} onChange={e => setNewTemplate(p => ({ ...p, label: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none font-bold" />
-                    <Input placeholder={t.reasonPlaceholder} value={newTemplate.reason} onChange={e => setNewTemplate(p => ({ ...p, reason: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none font-bold" />
-                    <Input type="number" value={newTemplate.amount} onChange={e => setNewTemplate(p => ({ ...p, amount: parseInt(e.target.value) }))} className="h-12 rounded-xl bg-slate-50 border-none font-black" />
+                  </div>
+
+                  <div className="space-y-4 pt-4 border-t dark:border-slate-800">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Create New</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input placeholder={t.templateLabel} value={newTemplate.label} onChange={e => setNewTemplate(p => ({ ...p, label: e.target.value }))} className="h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-bold" />
+                      <Input type="number" value={newTemplate.amount} onChange={e => setNewTemplate(p => ({ ...p, amount: parseInt(e.target.value) }))} className="h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-black text-center" />
+                    </div>
+                    <Input placeholder={t.reasonPlaceholder} value={newTemplate.reason} onChange={e => setNewTemplate(p => ({ ...p, reason: e.target.value }))} className="h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-bold" />
+                    <Button className="h-12 rounded-xl font-black w-full shadow-lg text-white" onClick={handleSaveTemplate}>
+                      <Plus className="mr-2" size={16} />
+                      {t.newTemplate}
+                    </Button>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button className="h-12 rounded-xl font-black w-full" onClick={handleSaveTemplate}>{t.publish}</Button>
-                </DialogFooter>
               </DialogContent>
             </Dialog>
 
@@ -321,111 +351,125 @@ export default function AdminPage() {
         </div>
 
         {/* Quick Action Bar */}
-        <Card className="p-6 bg-slate-900 text-white rounded-[2rem] border-none shadow-2xl flex flex-col lg:flex-row items-center gap-6 overflow-hidden relative group">
-          <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform duration-700">
-             <Zap size={200} />
+        <Card className="p-8 bg-slate-900 text-white rounded-[2.5rem] border-none shadow-2xl flex flex-col lg:flex-row items-center gap-8 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 p-16 opacity-[0.03] pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
+             <Zap size={250} />
           </div>
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="p-3 bg-primary/20 rounded-2xl text-primary">
-              <Zap size={24} />
+          <div className="flex items-center gap-5 shrink-0 z-10">
+            <div className={cn(
+              "p-4 rounded-2xl shadow-lg transition-all duration-500",
+              quickReason ? "bg-primary text-white scale-110 shadow-primary/20" : "bg-slate-800 text-slate-500"
+            )}>
+              <Zap size={28} />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary-foreground/50">{t.quickActions}</span>
-              <h3 className="text-lg font-black tracking-tight leading-none">Mass Application</h3>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">{t.quickActions}</span>
+              <h3 className="text-xl font-black tracking-tighter leading-none">Mass Application</h3>
             </div>
           </div>
-          <div className="flex-1 flex flex-col md:flex-row items-center gap-4 w-full">
-            <Input 
-              placeholder={t.reasonPlaceholder}
-              value={quickReason}
-              onChange={(e) => setQuickReason(e.target.value)}
-              className="h-12 bg-white/5 border-none rounded-xl text-white font-bold px-6 placeholder:text-white/20 focus:ring-4 focus:ring-primary/20 w-full"
-            />
-            <div className="flex items-center gap-2 w-full md:w-48 shrink-0">
-              <span className="text-xs font-black uppercase text-white/40 ml-2">XP</span>
+          <div className="flex-1 flex flex-col md:flex-row items-center gap-5 w-full z-10">
+            <div className="relative flex-1 w-full">
+              <Input 
+                placeholder={t.reasonPlaceholder}
+                value={quickReason}
+                onChange={(e) => setQuickReason(e.target.value)}
+                className="h-14 bg-white/5 border-none rounded-2xl text-white font-bold px-8 placeholder:text-white/20 focus:ring-8 focus:ring-primary/10 w-full text-lg"
+              />
+            </div>
+            <div className="flex items-center gap-4 w-full md:w-56 shrink-0 bg-white/5 rounded-2xl px-6 h-14 border border-white/5">
+              <span className="text-xs font-black uppercase text-white/30 tracking-widest">XP</span>
               <Input 
                 type="number"
                 value={quickAmount}
                 onChange={(e) => setQuickAmount(parseInt(e.target.value))}
-                className="h-12 bg-white/5 border-none rounded-xl text-white font-black px-4 text-center focus:ring-4 focus:ring-primary/20"
+                className="bg-transparent border-none text-white font-black text-center focus:ring-0 text-xl w-full"
               />
+              <div className="flex flex-col gap-1">
+                 <button onClick={() => setQuickAmount(p => p + 5)} className="text-white/20 hover:text-white transition-colors"><Plus size={12} /></button>
+                 <button onClick={() => setQuickAmount(p => p - 5)} className="text-white/20 hover:text-white transition-colors"><X size={12} /></button>
+              </div>
             </div>
           </div>
-          <div className="shrink-0 flex items-center gap-2 opacity-40 hover:opacity-100 transition-opacity">
-            <Info size={16} />
-            <span className="text-[10px] font-black uppercase tracking-tighter">Enter a reason to enable Zap buttons</span>
+          <div className="shrink-0 flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity z-10 px-4">
+            <div className={cn("w-3 h-3 rounded-full animate-pulse", quickReason ? "bg-emerald-500" : "bg-destructive")} />
+            <span className="text-[10px] font-black uppercase tracking-widest leading-none">
+              {quickReason ? "Zap Ready" : "Set Reason"}
+            </span>
           </div>
         </Card>
       </header>
 
-      <div className="w-full max-w-full bg-white dark:bg-slate-900 rounded-[2.5rem] border-none shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 mb-20">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-[3rem] border-none shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000 mb-20">
         <TooltipProvider>
           <Table className="table-auto w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="py-6 px-8 font-black text-slate-400 uppercase tracking-widest text-[10px]">{t.name}</TableHead>
-                <TableHead className="py-6 px-8 font-black text-slate-400 uppercase tracking-widest text-[10px] hidden lg:table-cell">{t.email}</TableHead>
-                <TableHead className="py-6 px-8 font-black text-slate-400 uppercase tracking-widest text-[10px] text-center">{t.xp}</TableHead>
-                <TableHead className="py-6 px-8 font-black text-slate-400 uppercase tracking-widest text-[10px]">{t.role}</TableHead>
-                <TableHead className="py-6 px-8 font-black text-slate-400 uppercase tracking-widest text-[10px] text-right">{t.actions}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px]">{t.name}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px] hidden lg:table-cell">{t.email}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px] text-center">{t.xp}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px]">{t.role}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px] text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {fetching ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20">
+                  <TableCell colSpan={5} className="text-center py-32">
                     <div className="flex flex-col items-center gap-4">
-                      <Loader2 size={32} className="animate-spin text-primary opacity-40" />
-                      <span className="text-slate-300 font-black uppercase tracking-[0.3em] animate-pulse text-sm">Syncing...</span>
+                      <Loader2 size={48} className="animate-spin text-primary opacity-30" />
+                      <span className="text-slate-300 font-black uppercase tracking-[0.4em] animate-pulse text-xs">Syncing Session...</span>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20">
-                    <div className="flex flex-col items-center gap-6 opacity-20 grayscale">
-                        <User size={60} />
-                        <p className="text-xl font-black uppercase tracking-[0.2em]">No Identities Found</p>
+                  <TableCell colSpan={5} className="text-center py-32">
+                    <div className="flex flex-col items-center gap-8 opacity-20 grayscale">
+                        <User size={80} />
+                        <p className="text-2xl font-black uppercase tracking-[0.3em]">No Identities Found</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredUsers.map((u) => (
-                  <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                    <TableCell className="py-4 px-8">
+                  <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/30 dark:hover:bg-slate-800/20 transition-all duration-500 group/row">
+                    <TableCell className="py-6 px-10">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
-                          className="h-10 w-full rounded-xl bg-slate-100 dark:bg-slate-800 border-none font-bold text-sm px-4 shadow-inner"
+                          className="h-12 w-full rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-bold text-base px-6 shadow-inner"
                         />
                       ) : (
-                        <div className="flex items-center gap-4">
-                          <Avatar className="h-12 w-12 rounded-2xl border-none shadow-md shrink-0 transition-transform group-hover/row:scale-110">
+                        <div className="flex items-center gap-5">
+                          <Avatar className="h-14 w-14 rounded-2xl border-none shadow-xl shrink-0 transition-transform group-hover/row:scale-110 duration-500">
                             <AvatarImage src={u.photoURL} className="object-cover" />
-                            <AvatarFallback className="bg-primary/10 text-primary font-black text-base">
+                            <AvatarFallback className="bg-primary/10 text-primary font-black text-lg">
                               {u.displayName?.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-base font-black text-slate-900 dark:text-white">{u.displayName}</span>
+                          <div className="flex flex-col">
+                            <span className="text-lg font-black text-slate-900 dark:text-white leading-tight">{u.displayName}</span>
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest lg:hidden">{u.role}</span>
+                          </div>
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-8 text-slate-400 dark:text-slate-500 font-medium text-xs hidden lg:table-cell">
+                    <TableCell className="py-6 px-10 text-slate-400 dark:text-slate-500 font-bold text-sm hidden lg:table-cell">
                       {u.email}
                     </TableCell>
-                    <TableCell className="py-4 px-8 text-center">
+                    <TableCell className="py-6 px-10 text-center">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
                           value={editForm.xp} 
                           onChange={(e) => setEditForm(prev => ({ ...prev, xp: parseInt(e.target.value) }))}
-                          className="h-10 w-24 mx-auto rounded-xl bg-slate-100 dark:bg-slate-800 border-none font-black text-sm px-2 shadow-inner text-center"
+                          className="h-12 w-28 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-lg px-2 shadow-inner text-center"
                         />
                       ) : (
                         u.role === 'student' || u.role === 'council' ? (
                           <Badge className={cn(
-                            "h-8 px-4 rounded-xl font-black text-sm shadow-none border-none",
+                            "h-10 px-6 rounded-2xl font-black text-base shadow-lg border-none transition-all group-hover/row:scale-105",
                             u.xp < 0 
                               ? "bg-destructive/10 text-destructive" 
                               : "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10"
@@ -437,7 +481,7 @@ export default function AdminPage() {
                         )
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-8">
+                    <TableCell className="py-6 px-10">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
@@ -445,12 +489,12 @@ export default function AdminPage() {
                           disabled={!canModifyRoles}
                         >
                           <SelectTrigger className={cn(
-                            "w-full h-10 rounded-xl border-none font-black text-xs px-4 shadow-inner",
+                            "w-full h-12 rounded-2xl border-none font-black text-sm px-6 shadow-inner",
                             canModifyRoles ? "bg-slate-100 dark:bg-slate-800" : "bg-slate-50 dark:bg-slate-900/50 opacity-50 cursor-not-allowed"
                           )}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="rounded-2xl shadow-2xl border-none p-2">
+                          <SelectContent className="rounded-2xl shadow-2xl border-none p-2 bg-white dark:bg-slate-900">
                             <SelectItem value="student" className="rounded-xl px-4 py-3 font-black text-sm">Student</SelectItem>
                             <SelectItem value="teacher" className="rounded-xl px-4 py-3 font-black text-sm">Teacher</SelectItem>
                             <SelectItem value="council" className="rounded-xl px-4 py-3 font-black text-sm">Council</SelectItem>
@@ -458,31 +502,42 @@ export default function AdminPage() {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-none px-4 py-1.5 rounded-lg font-black text-[10px] tracking-widest">
+                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-none px-5 py-2 rounded-xl font-black text-[11px] tracking-widest">
                           {u.role}
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-4 px-8 text-right">
-                      <div className="flex justify-end items-center gap-2">
+                    <TableCell className="py-6 px-10 text-right">
+                      <div className="flex justify-end items-center gap-3">
                         {/* Template and Quick XP Actions */}
                         {(u.role === 'student' || u.role === 'council') && !editingId && (
-                          <div className="flex gap-2">
+                          <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button size="icon" variant="outline" className="h-10 w-10 rounded-xl shadow-md border-none bg-slate-50 hover:bg-slate-100">
-                                  <Wand2 size={18} className="text-accent" />
+                                <Button size="icon" variant="outline" className="h-12 w-12 rounded-2xl shadow-lg border-none bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 hover:scale-105 transition-all">
+                                  <Wand2 size={20} className="text-accent" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="rounded-2xl shadow-2xl p-2 min-w-[200px]">
+                              <DropdownMenuContent align="end" className="rounded-[1.5rem] shadow-2xl p-3 min-w-[240px] border-none bg-white dark:bg-slate-950">
+                                <div className="px-4 py-3 mb-2">
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.applyTemplate}</span>
+                                </div>
                                 {templates?.length === 0 ? (
-                                  <div className="p-4 text-center text-xs text-slate-400 font-black uppercase">No Templates</div>
+                                  <div className="p-6 text-center text-xs text-slate-300 font-black uppercase border-2 border-dashed border-slate-50 dark:border-slate-900 rounded-xl">No Templates</div>
                                 ) : (
                                   templates?.map(tpl => (
-                                    <DropdownMenuItem key={tpl.id} className="rounded-xl px-4 py-3 cursor-pointer" onClick={() => applyXP(u, tpl.reason, tpl.amount)}>
-                                      <div className="flex flex-col">
-                                        <span className="font-black text-sm">{tpl.label}</span>
-                                        <span className="text-[10px] text-slate-400">{tpl.amount > 0 ? '+' : ''}{tpl.amount} XP</span>
+                                    <DropdownMenuItem key={tpl.id} className="rounded-xl px-4 py-4 cursor-pointer hover:bg-primary/5 group" onClick={() => applyXP(u, tpl.reason, tpl.amount)}>
+                                      <div className="flex items-center justify-between w-full">
+                                        <div className="flex flex-col">
+                                          <span className="font-black text-sm group-hover:text-primary transition-colors">{tpl.label}</span>
+                                          <span className="text-[10px] text-slate-400 font-bold">{tpl.reason}</span>
+                                        </div>
+                                        <Badge className={cn(
+                                          "ml-4 h-8 px-3 rounded-lg font-black text-xs border-none shadow-sm",
+                                          tpl.amount > 0 ? "bg-emerald-50 text-emerald-600" : "bg-destructive/10 text-destructive"
+                                        )}>
+                                          {tpl.amount > 0 ? '+' : ''}{tpl.amount}
+                                        </Badge>
                                       </div>
                                     </DropdownMenuItem>
                                   ))
@@ -495,36 +550,36 @@ export default function AdminPage() {
                                 <Button 
                                   size="icon" 
                                   className={cn(
-                                    "h-10 w-10 rounded-xl shadow-lg transition-all",
+                                    "h-12 w-12 rounded-2xl shadow-2xl transition-all duration-500",
                                     quickReason 
-                                      ? "bg-primary hover:bg-primary/90 text-white hover:scale-110 active:scale-90" 
-                                      : "bg-slate-100 dark:bg-slate-800 text-slate-300 cursor-not-allowed"
+                                      ? "bg-primary hover:bg-primary/90 text-white hover:scale-125 active:scale-95 shadow-primary/30" 
+                                      : "bg-slate-100 dark:bg-slate-800 text-slate-300 cursor-not-allowed opacity-40"
                                   )}
                                   onClick={() => applyXP(u, quickReason, quickAmount)}
                                   disabled={!quickReason}
                                 >
-                                  <Zap size={18} />
+                                  <Zap size={20} className={cn(quickReason && "animate-pulse")} />
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent side="top" className="bg-slate-900 text-white font-black text-[10px] border-none rounded-lg p-2">
-                                {quickReason ? `${t.apply} ${quickAmount > 0 ? '+' : ''}${quickAmount} XP` : "Define reason first"}
+                              <TooltipContent side="top" className="bg-slate-900 text-white font-black text-[11px] border-none rounded-xl p-3 shadow-2xl">
+                                {quickReason ? `${t.apply} ${quickAmount > 0 ? '+' : ''}${quickAmount} XP` : "Set Reason in Header First"}
                               </TooltipContent>
                             </Tooltip>
                           </div>
                         )}
 
                         {editingId === u.id ? (
-                          <div className="flex justify-end gap-2">
-                            <Button size="icon" className="h-10 w-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-lg text-white" onClick={() => saveUserChanges(u.id)}>
-                              <Save size={18} />
+                          <div className="flex justify-end gap-3">
+                            <Button size="icon" className="h-12 w-12 rounded-2xl bg-emerald-500 hover:bg-emerald-600 shadow-xl text-white hover:scale-105 transition-all" onClick={() => saveUserChanges(u.id)}>
+                              <Save size={20} />
                             </Button>
-                            <Button size="icon" variant="outline" className="h-10 w-10 rounded-xl border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
-                              <X size={18} />
+                            <Button size="icon" variant="outline" className="h-12 w-12 rounded-2xl border-slate-200 dark:border-slate-800 text-destructive hover:bg-destructive/5 transition-all" onClick={cancelEditing}>
+                              <X size={20} />
                             </Button>
                           </div>
                         ) : (
-                          <Button size="icon" variant="ghost" className="h-10 w-10 rounded-xl text-slate-300 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
-                            <Edit2 size={18} />
+                          <Button size="icon" variant="ghost" className="h-12 w-12 rounded-2xl text-slate-300 hover:text-primary hover:bg-primary/10 transition-all ml-2" onClick={() => startEditing(u)}>
+                            <Edit2 size={20} />
                           </Button>
                         )}
                       </div>
