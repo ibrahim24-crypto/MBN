@@ -102,22 +102,26 @@ export default function AdminPage() {
     if (!currentUser) return;
 
     const newXP = Number(editForm.xp);
-    const roleChanged = editForm.role !== currentUser.role;
+    // Only superadmin can actually effect a role change
+    const roleToSave = isSuperAdmin ? editForm.role : currentUser.role;
+    const roleChanged = isSuperAdmin && (editForm.role !== currentUser.role);
 
     updateDocumentNonBlocking(userDocRef, { 
       displayName: editForm.displayName, 
       xp: newXP,
-      role: editForm.role,
+      role: roleToSave,
       updatedAt: new Date().toISOString()
     });
 
     if (roleChanged) {
+      // Remove old role markers
       if (currentUser.role === 'administration') {
         deleteDocumentNonBlocking(doc(db, 'roles_admin', id));
       } else if (currentUser.role === 'council') {
         deleteDocumentNonBlocking(doc(db, 'roles_council', id));
       }
 
+      // Add new role markers
       if (editForm.role === 'administration') {
         setDocumentNonBlocking(doc(db, 'roles_admin', id), { userId: id, createdAt: new Date().toISOString() }, { merge: true });
       } else if (editForm.role === 'council') {
@@ -125,7 +129,7 @@ export default function AdminPage() {
       }
     }
 
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...editForm, xp: newXP } : u));
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...editForm, role: roleToSave, xp: newXP } : u));
     setEditingId(null);
     
     toast({
@@ -144,7 +148,7 @@ export default function AdminPage() {
     <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
        <div className="flex flex-col items-center gap-6">
           <Loader2 size={48} className="animate-spin text-primary" />
-          <p className="text-slate-400 font-black uppercase tracking-[0.2em] animate-pulse">Syncing Hub Registry...</p>
+          <p className="text-slate-400 font-black uppercase tracking-[0.2em] animate-pulse">Syncing Registry...</p>
        </div>
     </div>
   );
@@ -154,8 +158,8 @@ export default function AdminPage() {
       <div className="text-center">
         <ShieldCheck size={60} className="mx-auto text-destructive mb-4 opacity-20" />
         <h1 className="text-3xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">Access Denied</h1>
-        <p className="text-slate-500 mt-2 font-bold">Only the Hub Administration can access this area.</p>
-        <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return to Hub</Button>
+        <p className="text-slate-500 mt-2 font-bold">Only the Administration can access this area.</p>
+        <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return</Button>
       </div>
     </div>
   );
@@ -267,8 +271,12 @@ export default function AdminPage() {
                         <Select 
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
+                          disabled={!isSuperAdmin}
                         >
-                          <SelectTrigger className="w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner">
+                          <SelectTrigger className={cn(
+                            "w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner",
+                            !isSuperAdmin && "opacity-50 cursor-not-allowed"
+                          )}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl border-none p-2">
