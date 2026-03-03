@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -83,8 +84,8 @@ export default function AnnouncementsPage() {
     setNewContent('');
     
     toast({
-      title: "Announcement Published",
-      description: "Your message is now live on the board.",
+      title: "Annonce Publiée",
+      description: "Votre message est maintenant en ligne.",
     });
   };
 
@@ -92,7 +93,7 @@ export default function AnnouncementsPage() {
     <AppLayout>
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 animate-in fade-in slide-in-from-top-4 duration-700 w-full px-4">
         <div className="space-y-2">
-          <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Notice Board</Badge>
+          <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[9px]">Annonce Board</Badge>
           <h1 className="text-4xl md:text-5xl lg:text-5xl font-black font-headline tracking-tighter flex items-center gap-4 text-slate-900 dark:text-white leading-tight">
             <Megaphone className="text-primary hidden md:block" size={40} />
             {t.announcements}
@@ -125,7 +126,7 @@ export default function AnnouncementsPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">{t.details}</label>
-                    <span className="text-[8px] font-black text-destructive uppercase tracking-widest px-1">Required</span>
+                    <span className="text-[8px] font-black text-destructive uppercase tracking-widest px-1">Requis</span>
                   </div>
                   <Textarea 
                     placeholder={t.details} 
@@ -165,7 +166,7 @@ export default function AnnouncementsPage() {
         {fetching ? (
           <div className="col-span-full text-center py-20 flex flex-col items-center gap-6">
             <Loader2 size={48} className="animate-spin text-primary opacity-40" />
-            <p className="text-slate-300 font-black uppercase tracking-[0.3em] animate-pulse text-sm">Syncing Bulletin...</p>
+            <p className="text-slate-300 font-black uppercase tracking-[0.3em] animate-pulse text-sm">Syncing...</p>
           </div>
         ) : !filteredAnnouncements || filteredAnnouncements.length === 0 ? (
           <div className="col-span-full text-center py-32 bg-white dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-100 dark:border-slate-800/50 flex flex-col items-center gap-8 shadow-sm">
@@ -194,11 +195,11 @@ export default function AnnouncementsPage() {
                   <div className="mt-10 flex items-center gap-4 border-t dark:border-slate-800/50 pt-8">
                     <Avatar className="h-12 w-12 border-4 border-slate-50 dark:border-slate-800 shadow-lg rounded-xl">
                       <AvatarFallback className="bg-primary text-white font-black text-lg">
-                        {ann.authorRole?.charAt(0) || 'L'}
+                        {ann.authorRole?.charAt(0) || 'A'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-sm font-black text-slate-900 dark:text-white leading-none mb-1">Hub Admin</span>
+                      <span className="text-sm font-black text-slate-900 dark:text-white leading-none mb-1">Admin</span>
                       <span className="text-[10px] font-black text-slate-400 flex items-center gap-2 uppercase tracking-[0.2em]">
                         <Calendar size={12} className="text-primary" />
                         {ann.createdAt?.toDate ? format(ann.createdAt.toDate(), 'PPP') : 'Recently'}

@@ -49,7 +49,7 @@ export default function DashboardPage() {
               {t.language === 'ar' ? 'ثانوية موسى بن نصير' : 'LYCÉE MOUSSA IBN NOUSAYR'}
             </Badge>
           </div>
-          <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">
+          <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight text-center md:text-left">
             {t.welcomeBack} <span className="text-primary">{profile?.displayName?.split(' ')[0]}</span>
           </h1>
         </header>
@@ -83,8 +83,8 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {/* ADMIN PANEL CARD */}
-          {isAdmin && (
+          {/* ADMIN PANEL CARD - Strict restriction to SuperAdmin */}
+          {isSuperAdmin && (
             <Card className="w-full min-h-[200px] border-none bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-2xl flex flex-col p-8 transition-all hover:scale-[1.01]">
               <div className="absolute -bottom-10 -right-10 opacity-10 group-hover:scale-110 transition-transform duration-700">
                 <Users size={250} />

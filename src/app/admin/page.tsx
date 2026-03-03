@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -25,7 +26,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, User, Users } from 'lucide-react';
+import { ShieldCheck, Search, Save, Edit2, X, Loader2, User, Users } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -59,10 +60,9 @@ export default function AdminPage() {
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const { toast } = useToast();
 
-  const isNormalAdmin = profile?.role === 'administration';
-  const isCouncilMember = profile?.role === 'council';
-  const canAccessRegistry = isSuperAdmin || isNormalAdmin || isCouncilMember;
-  const canModifyData = isSuperAdmin || isNormalAdmin;
+  // Strict restriction: Only SuperAdmin can access or modify registry data
+  const canAccessRegistry = isSuperAdmin;
+  const canModifyData = isSuperAdmin;
 
   useEffect(() => {
     if (!authLoading && canAccessRegistry && db) {
@@ -99,15 +99,14 @@ export default function AdminPage() {
   };
 
   const saveUserChanges = (id: string) => {
-    if (!db || !profile || !canModifyData) return;
+    if (!db || !isSuperAdmin) return;
     const userDocRef = doc(db, 'users', id);
     const currentUser = users.find(u => u.id === id);
     if (!currentUser) return;
 
     const newXP = Number(editForm.xp);
-    // Only superadmin can actually effect a role change
-    const roleToSave = isSuperAdmin ? editForm.role : currentUser.role;
-    const roleChanged = isSuperAdmin && (editForm.role !== currentUser.role);
+    const roleToSave = editForm.role || currentUser.role;
+    const roleChanged = editForm.role !== currentUser.role;
 
     updateDocumentNonBlocking(userDocRef, { 
       displayName: editForm.displayName, 
@@ -125,9 +124,9 @@ export default function AdminPage() {
       }
 
       // Add new role markers
-      if (editForm.role === 'administration') {
+      if (roleToSave === 'administration') {
         setDocumentNonBlocking(doc(db, 'roles_admin', id), { userId: id, createdAt: new Date().toISOString() }, { merge: true });
-      } else if (editForm.role === 'council') {
+      } else if (roleToSave === 'council') {
         setDocumentNonBlocking(doc(db, 'roles_council', id), { userId: id, createdAt: new Date().toISOString() }, { merge: true });
       }
     }
@@ -161,7 +160,7 @@ export default function AdminPage() {
       <div className="text-center">
         <ShieldCheck size={60} className="mx-auto text-destructive mb-4 opacity-20" />
         <h1 className="text-3xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">Access Denied</h1>
-        <p className="text-slate-500 mt-2 font-bold">Only authorized staff can access this area.</p>
+        <p className="text-slate-500 mt-2 font-bold">Only the Super Admin can access this command center.</p>
         <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return</Button>
       </div>
     </div>
@@ -195,17 +194,17 @@ export default function AdminPage() {
           <Table className="table-fixed w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="w-[30%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm">{t.name}</TableHead>
-                <TableHead className="w-[30%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm">{t.email}</TableHead>
-                <TableHead className="w-[10%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm text-center">{t.xp}</TableHead>
-                <TableHead className="w-[15%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm">{t.role}</TableHead>
-                {canModifyData && <TableHead className="w-[15%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm text-right">{t.actions}</TableHead>}
+                <TableHead className="w-[30%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-xs">{t.name}</TableHead>
+                <TableHead className="w-[30%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-xs">{t.email}</TableHead>
+                <TableHead className="w-[10%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-xs text-center">{t.xp}</TableHead>
+                <TableHead className="w-[15%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-xs">{t.role}</TableHead>
+                <TableHead className="w-[15%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-xs text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {fetching ? (
                 <TableRow>
-                  <TableCell colSpan={canModifyData ? 5 : 4} className="text-center py-20">
+                  <TableCell colSpan={5} className="text-center py-20">
                     <div className="flex flex-col items-center gap-4">
                       <Loader2 size={32} className="animate-spin text-primary opacity-40" />
                       <span className="text-slate-300 font-black uppercase tracking-[0.3em] animate-pulse text-sm">Syncing...</span>
@@ -214,7 +213,7 @@ export default function AdminPage() {
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={canModifyData ? 5 : 4} className="text-center py-20">
+                  <TableCell colSpan={5} className="text-center py-20">
                     <div className="flex flex-col items-center gap-6 opacity-20 grayscale">
                         <User size={60} />
                         <p className="text-xl font-black uppercase tracking-[0.2em]">No Identities Found</p>
@@ -224,7 +223,7 @@ export default function AdminPage() {
               ) : (
                 filteredUsers.map((u) => (
                   <TableRow key={u.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-300 group/row">
-                    <TableCell className="py-1.5 px-6">
+                    <TableCell className="py-2 px-6">
                       {editingId === u.id ? (
                         <Input 
                           value={editForm.displayName} 
@@ -233,20 +232,20 @@ export default function AdminPage() {
                         />
                       ) : (
                         <div className="flex items-center gap-3 overflow-hidden">
-                          <Avatar className="h-9 w-9 rounded-lg border-none shadow-sm shrink-0">
+                          <Avatar className="h-8 w-8 rounded-lg border-none shadow-sm shrink-0">
                             <AvatarImage src={u.photoURL} className="object-cover" />
-                            <AvatarFallback className="bg-primary/10 text-primary font-black text-xs">
+                            <AvatarFallback className="bg-primary/10 text-primary font-black text-[10px]">
                               {u.displayName?.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-base font-bold text-slate-900 dark:text-white truncate">{u.displayName}</span>
+                          <span className="text-sm font-bold text-slate-900 dark:text-white truncate">{u.displayName}</span>
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-1.5 px-6 text-slate-400 dark:text-slate-500 font-medium text-xs truncate">
+                    <TableCell className="py-2 px-6 text-slate-400 dark:text-slate-500 font-medium text-xs truncate">
                       <div className="truncate w-full" title={u.email}>{u.email}</div>
                     </TableCell>
-                    <TableCell className="py-1.5 px-6 text-center">
+                    <TableCell className="py-2 px-6 text-center">
                       {editingId === u.id ? (
                         <Input 
                           type="number"
@@ -257,7 +256,7 @@ export default function AdminPage() {
                       ) : (
                         u.role === 'student' || u.role === 'council' ? (
                           <Badge className={cn(
-                            "h-7 px-3 rounded-md font-black text-sm shadow-none border-none",
+                            "h-6 px-2.5 rounded-md font-black text-[10px] shadow-none border-none",
                             u.xp < 0 
                               ? "bg-destructive/10 text-destructive" 
                               : "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10"
@@ -265,21 +264,17 @@ export default function AdminPage() {
                             {u.xp > 0 ? '+' : ''}{u.xp}
                           </Badge>
                         ) : (
-                          <span className="text-slate-200 dark:text-slate-800 font-black text-sm px-2">—</span>
+                          <span className="text-slate-200 dark:text-slate-800 font-black text-xs px-2">—</span>
                         )
                       )}
                     </TableCell>
-                    <TableCell className="py-1.5 px-6">
+                    <TableCell className="py-2 px-6">
                       {editingId === u.id ? (
                         <Select 
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
-                          disabled={!isSuperAdmin}
                         >
-                          <SelectTrigger className={cn(
-                            "w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner",
-                            !isSuperAdmin && "opacity-50 cursor-not-allowed"
-                          )}>
+                          <SelectTrigger className="w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl border-none p-2">
@@ -290,29 +285,27 @@ export default function AdminPage() {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-none px-3 py-1 rounded-md font-black text-[10px] tracking-widest">
+                        <Badge className="capitalize bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-none px-3 py-1 rounded-md font-black text-[9px] tracking-widest">
                           {u.role}
                         </Badge>
                       )}
                     </TableCell>
-                    {canModifyData && (
-                      <TableCell className="py-1.5 px-6 text-right">
-                        {editingId === u.id ? (
-                          <div className="flex justify-end gap-1.5">
-                            <Button size="icon" className="h-8 w-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
-                              <Save size={14} />
-                            </Button>
-                            <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
-                              <X size={14} />
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-slate-300 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
-                            <Edit2 size={14} />
+                    <TableCell className="py-2 px-6 text-right">
+                      {editingId === u.id ? (
+                        <div className="flex justify-end gap-1.5">
+                          <Button size="icon" className="h-8 w-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
+                            <Save size={14} />
                           </Button>
-                        )}
-                      </TableCell>
-                    )}
+                          <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
+                            <X size={14} />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-slate-300 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
+                          <Edit2 size={14} />
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
               )}

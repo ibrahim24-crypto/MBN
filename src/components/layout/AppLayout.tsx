@@ -44,11 +44,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     { name: t.announcements, href: '/announcements', icon: Megaphone, roles: ['student', 'teacher', 'council', 'administration'] },
     { name: t.xpHistory, href: '/xp-log', icon: History, roles: ['student', 'council'] },
     { name: t.councilBoard, href: '/council', icon: ShieldCheck, roles: ['student', 'teacher', 'council', 'administration'] },
-    { name: t.adminPanel, href: '/admin', icon: Users, roles: ['administration'] },
+    { name: t.adminPanel, href: '/admin', icon: Users, roles: [] }, // Strict SuperAdmin restriction
   ];
 
   const filteredNav = navItems.filter(item => {
-    if (isSuperAdmin && item.href === '/admin') return true;
+    // Only SuperAdmin can see the Admin Panel
+    if (item.href === '/admin') return isSuperAdmin;
     return profile && item.roles.includes(profile.role);
   });
 
