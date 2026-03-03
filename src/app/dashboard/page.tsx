@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -115,7 +114,7 @@ export default function DashboardPage() {
                   <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[9px] uppercase tracking-[0.2em] border-none px-4 py-1.5 rounded-full shadow-sm">Archive</Badge>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">Assembleé</span>
+                  <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">{t.councilBoard}</span>
                   <h3 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
                     {latestMinute?.[0] ? latestMinute[0].title : t.noLogs}
                   </h3>
@@ -132,7 +131,7 @@ export default function DashboardPage() {
             </div>
           </Card>
 
-          {/* RECENT BULLETIN CARD */}
+          {/* RECENT ANNOUNCEMENT CARD */}
           <Card className="w-full min-h-[200px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all rounded-2xl flex flex-col p-8 border border-slate-50 dark:border-slate-800">
             <div className="flex-1 flex flex-col justify-between relative z-10 h-full">
               <div className="space-y-4">
@@ -143,7 +142,7 @@ export default function DashboardPage() {
                   <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[9px] uppercase tracking-[0.2em] border-none px-4 py-1.5 rounded-full shadow-sm">Feed</Badge>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">Bulletin</span>
+                  <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">{t.announcements}</span>
                   <h3 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">{t.recentBulletin}</h3>
                 </div>
               </div>
