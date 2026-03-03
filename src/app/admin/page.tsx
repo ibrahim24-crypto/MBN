@@ -221,7 +221,14 @@ export default function AdminPage() {
   };
 
   const handleSaveTemplate = () => {
-    if (!db || !newTemplate.label || !newTemplate.reason) return;
+    if (!db || !newTemplate.label || !newTemplate.reason) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Label and Reason are required for templates.",
+      });
+      return;
+    }
 
     if (editingTemplateId) {
       const tplRef = doc(db, 'xp_templates', editingTemplateId);
@@ -232,13 +239,13 @@ export default function AdminPage() {
     }
 
     setNewTemplate({ label: '', reason: '', amount: 10 });
-    toast({ title: t.xpUpdated });
+    toast({ title: editingTemplateId ? "Template Updated" : "Template Created" });
   };
 
   const handleDeleteTemplate = (id: string) => {
     if (!db) return;
     deleteDocumentNonBlocking(doc(db, 'xp_templates', id));
-    toast({ variant: 'destructive', title: t.deleteConfirm });
+    toast({ variant: 'destructive', title: "Template Deleted" });
     if (editingTemplateId === id) cancelEditingTemplate();
   };
 
@@ -248,10 +255,12 @@ export default function AdminPage() {
     
     if (!matchesSearch) return false;
 
+    // Super Admin sees everyone except themselves
     if (isSuperAdmin) {
       return u.email !== SUPER_ADMIN_EMAIL;
     }
 
+    // Sample admins see students, teachers, and council members
     return (u.role === 'student' || u.role === 'teacher' || u.role === 'council');
   });
 
@@ -308,7 +317,7 @@ export default function AdminPage() {
                 <div className="p-6 space-y-6 bg-white dark:bg-slate-950">
                   <div className="space-y-3">
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Library</h4>
-                    <div className="grid gap-2 max-h-[250px] overflow-y-auto pr-1 no-scrollbar">
+                    <div className="grid gap-2 max-h-[200px] overflow-y-auto pr-1 no-scrollbar">
                       {loadingTemplates ? (
                         <div className="flex justify-center py-4"><Loader2 className="animate-spin opacity-20" /></div>
                       ) : templates?.map(tpl => (
@@ -341,12 +350,33 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div className="space-y-3 pt-3 border-t dark:border-slate-800">
-                    <Input placeholder={t.templateLabel} value={newTemplate.label} onChange={e => setNewTemplate(p => ({ ...p, label: e.target.value }))} className="h-11 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-bold" />
-                    <div className="grid grid-cols-2 gap-3">
-                      <Input type="number" value={newTemplate.amount} onChange={e => setNewTemplate(p => ({ ...p, amount: parseInt(e.target.value) }))} className="h-11 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-black text-center" />
-                      <Button className="h-11 rounded-xl font-black bg-primary text-white" onClick={handleSaveTemplate}>
-                        {editingTemplateId ? t.save : t.newTemplate}
-                      </Button>
+                    <div className="grid gap-3">
+                      <Input 
+                        placeholder={t.templateLabel} 
+                        value={newTemplate.label} 
+                        onChange={e => setNewTemplate(p => ({ ...p, label: e.target.value }))} 
+                        className="h-11 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-bold" 
+                      />
+                      <Input 
+                        placeholder={t.reasonPlaceholder} 
+                        value={newTemplate.reason} 
+                        onChange={e => setNewTemplate(p => ({ ...p, reason: e.target.value }))} 
+                        className="h-11 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-bold" 
+                      />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 rounded-xl px-4">
+                          <span className="text-[10px] font-black uppercase text-slate-400">XP</span>
+                          <Input 
+                            type="number" 
+                            value={newTemplate.amount} 
+                            onChange={e => setNewTemplate(p => ({ ...p, amount: parseInt(e.target.value) || 0 }))} 
+                            className="h-11 border-none bg-transparent font-black text-center focus:ring-0" 
+                          />
+                        </div>
+                        <Button className="h-11 rounded-xl font-black bg-primary text-white" onClick={handleSaveTemplate}>
+                          {editingTemplateId ? t.save : t.newTemplate}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -387,7 +417,7 @@ export default function AdminPage() {
               <Input 
                 type="number"
                 value={quickAmount}
-                onChange={(e) => setQuickAmount(parseInt(e.target.value))}
+                onChange={(e) => setQuickAmount(parseInt(e.target.value) || 0)}
                 className="bg-transparent border-none text-white font-black text-center focus:ring-0 text-lg w-full"
               />
             </div>
@@ -445,7 +475,7 @@ export default function AdminPage() {
                   </TableCell>
                   <TableCell className="py-4 px-4 text-center">
                     {editingId === u.id ? (
-                      <Input type="number" value={editForm.xp} onChange={e => setEditForm(p => ({ ...p, xp: parseInt(e.target.value) }))} className="h-10 w-20 mx-auto text-center font-black" />
+                      <Input type="number" value={editForm.xp} onChange={e => setEditForm(p => ({ ...p, xp: parseInt(e.target.value) || 0 }))} className="h-10 w-20 mx-auto text-center font-black" />
                     ) : (
                       <Badge className={cn("h-8 px-4 rounded-lg font-black text-xs border-none shadow-sm", u.xp < 0 ? "bg-destructive/10 text-destructive" : "bg-emerald-50 text-emerald-600")}>
                         {u.xp > 0 ? '+' : ''}{u.xp}
