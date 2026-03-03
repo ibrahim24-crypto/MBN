@@ -43,7 +43,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     { name: t.dashboard, href: '/dashboard', icon: LayoutDashboard, roles: ['student', 'teacher', 'council', 'administration'] },
     { name: t.announcements, href: '/announcements', icon: Megaphone, roles: ['student', 'teacher', 'council', 'administration'] },
     { name: t.xpHistory, href: '/xp-log', icon: History, roles: ['student', 'council'] },
-    { name: t.councilBoard, href: '/council', icon: ShieldCheck, roles: ['council', 'administration'] },
+    { name: t.councilBoard, href: '/council', icon: ShieldCheck, roles: ['student', 'teacher', 'council', 'administration'] },
     { name: t.adminPanel, href: '/admin', icon: Users, roles: ['administration'] },
   ];
 
