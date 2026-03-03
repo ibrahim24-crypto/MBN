@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -54,7 +55,7 @@ export default function ProfilePage() {
       <header className="mb-16 text-center animate-in fade-in slide-in-from-top-4 duration-1000">
         <Badge className="bg-primary/10 text-primary border-primary/20 font-black mb-4 px-6 py-2 rounded-full uppercase tracking-[0.3em] text-[10px] shadow-sm">
           <ShieldCheck size={14} className="mr-2 inline-block text-accent" />
-          Moussa Ibn Nousayr Hub
+          Lycée Moussa Ibn Nousayr
         </Badge>
         <h1 className="text-5xl md:text-7xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">
           {t.mbnIdentity}

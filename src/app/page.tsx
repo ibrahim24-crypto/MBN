@@ -60,9 +60,12 @@ export default function LandingPage() {
               unoptimized
             />
           </div>
-          <span className="text-xl md:text-2xl font-black font-headline tracking-tighter text-slate-900 dark:text-white uppercase">
-            {t.language === 'ar' ? 'ثانوية موسى بن نصير' : 'Lycée MBN'}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-xl md:text-2xl font-black font-headline tracking-tighter text-slate-900 dark:text-white uppercase leading-none">
+              {t.language === 'ar' ? 'ثانوية موسى بن نصير' : 'Lycée MBN'}
+            </span>
+            <Badge variant="outline" className="w-fit mt-1 py-0 px-2 text-[8px] font-black border-primary/20 text-primary uppercase">Beta</Badge>
+          </div>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -134,7 +137,7 @@ export default function LandingPage() {
             <div className="w-10 h-10 relative rounded-lg overflow-hidden shadow-sm">
               <Image src={logoSrc} fill alt="Logo" className="object-cover" unoptimized />
             </div>
-            <span className="font-black text-xl text-slate-900 dark:text-white tracking-tighter uppercase">MBN Hub</span>
+            <span className="font-black text-xl text-slate-900 dark:text-white tracking-tighter uppercase">Lycée Moussa Ibn Nousayr</span>
           </div>
           <p className="text-slate-400 dark:text-slate-500 font-bold text-base">&copy; {new Date().getFullYear()} Lycée Moussa Ibn Nousayr. Elevating every voice.</p>
         </div>

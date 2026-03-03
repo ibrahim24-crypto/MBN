@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -28,7 +29,7 @@ export default function DashboardPage() {
     <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
        <div className="flex flex-col items-center gap-6">
           <Loader2 size={64} className="animate-spin text-primary" />
-          <p className="text-slate-400 font-black uppercase tracking-[0.3em] animate-pulse">Initializing Hub...</p>
+          <p className="text-slate-400 font-black uppercase tracking-[0.3em] animate-pulse">Initializing...</p>
        </div>
     </div>
   );

@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import NextLink from 'next/link';
 import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
 
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -72,18 +73,21 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             
             <Tooltip>
               <TooltipTrigger asChild>
-                <NextLink href="/dashboard" className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-lg border-none group hover:scale-105 transition-all shrink-0 active:scale-95">
-                  <Image 
-                    src={logoSrc} 
-                    fill 
-                    alt="MBN Logo" 
-                    className="object-cover" 
-                    unoptimized
-                  />
-                </NextLink>
+                <div className="flex flex-col items-center gap-2">
+                  <NextLink href="/dashboard" className="w-16 h-16 relative rounded-2xl overflow-hidden shadow-lg border-none group hover:scale-105 transition-all shrink-0 active:scale-95">
+                    <Image 
+                      src={logoSrc} 
+                      fill 
+                      alt="Lycée MBN" 
+                      className="object-cover" 
+                      unoptimized
+                    />
+                  </NextLink>
+                  <Badge variant="outline" className="text-[8px] font-black uppercase tracking-tighter bg-primary/5 text-primary border-primary/20 scale-75">BETA</Badge>
+                </div>
               </TooltipTrigger>
               <TooltipContent side="right" className="font-black text-xs px-4 py-2 rounded-xl border-none shadow-2xl bg-slate-900 text-white translate-x-2">
-                MBN Hub
+                Lycée MBN
               </TooltipContent>
             </Tooltip>
             
@@ -138,8 +142,11 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
         <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full -z-10"></div>
         
         <header className="md:hidden flex items-center justify-between p-4 border-b dark:border-slate-800 bg-white dark:bg-slate-900 z-50">
-          <div className="w-12 h-12 relative rounded-xl overflow-hidden shadow-lg" onClick={() => router.push('/dashboard')}>
-            <Image src={logoSrc} fill alt="MBN Logo" className="object-cover" unoptimized />
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 relative rounded-xl overflow-hidden shadow-lg" onClick={() => router.push('/dashboard')}>
+              <Image src={logoSrc} fill alt="Lycée MBN" className="object-cover" unoptimized />
+            </div>
+            <Badge variant="outline" className="text-[8px] font-black bg-primary/5 text-primary border-primary/20">BETA</Badge>
           </div>
           <div className="flex items-center gap-4">
              <Avatar className="h-10 w-10 border-2 border-slate-100 shadow-sm rounded-xl" onClick={() => router.push('/profile')}>
