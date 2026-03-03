@@ -241,11 +241,20 @@ export default function AdminPage() {
     if (editingTemplateId === id) cancelEditingTemplate();
   };
 
-  const filteredUsers = users.filter(u => 
-    u.email !== SUPER_ADMIN_EMAIL &&
-    (u.displayName?.toLowerCase().includes(search.toLowerCase()) || 
-     u.email?.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredUsers = users.filter(u => {
+    const matchesSearch = (u.displayName?.toLowerCase().includes(search.toLowerCase()) || 
+                           u.email?.toLowerCase().includes(search.toLowerCase()));
+    
+    if (!matchesSearch) return false;
+
+    // Super Admin sees everyone except themselves
+    if (isSuperAdmin) {
+      return u.email !== SUPER_ADMIN_EMAIL;
+    }
+
+    // Normal Admins only see students and teachers
+    return (u.role === 'student' || u.role === 'teacher');
+  });
 
   if (authLoading) return (
     <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
