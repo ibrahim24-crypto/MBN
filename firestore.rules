@@ -16,7 +16,7 @@ service cloud.firestore {
      * - /roles_admin/{userId}: Presence of a document here grants administrative privileges.
      * - /roles_council/{userId}: Presence of a document here grants school council privileges.
      * - /proposals/{proposalId}: Shared announcements with field-based visibility control.
-     * - /meetingMinutes/{meetingMinuteId}: Confidential records restricted to Admin and Council.
+     * - /meetingMinutes/{meetingMinuteId}: Confidential records restricted to Admin and Council for writes, but readable by all for transparency.
      */
 
     // --- GLOBAL HELPER FUNCTIONS ---
@@ -94,7 +94,8 @@ service cloud.firestore {
     }
 
     match /meetingMinutes/{meetingMinuteId} {
-      allow get, list: if isStaff();
+      // Allow all authenticated users to read meeting minutes for transparency
+      allow get, list: if isSignedIn();
       
       allow create: if isStaff() 
                     && request.resource.data.authorId == request.auth.uid;
