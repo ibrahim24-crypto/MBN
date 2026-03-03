@@ -96,9 +96,11 @@ export default function AdminPage() {
   const canModifyRoles = isSuperAdmin;
 
   const templatesQuery = useMemoFirebase(() => {
-    if (!db) return null;
+    // CRITICAL: Only attempt to fetch templates if the user is authorized as an admin.
+    // This prevents "insufficient permissions" errors during initial auth state resolution.
+    if (!db || !isAdmin) return null;
     return query(collection(db, 'xp_templates'), orderBy('createdAt', 'desc'));
-  }, [db]);
+  }, [db, isAdmin]);
 
   const { data: templates, isLoading: loadingTemplates } = useCollection<XpTemplate>(templatesQuery);
 
