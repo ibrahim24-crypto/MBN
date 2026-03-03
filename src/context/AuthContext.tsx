@@ -47,7 +47,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const SUPER_ADMIN_EMAIL = 'ibrahimezzine09@gmail.com';
-const AUTH_TIMEOUT_MS = 10000; // 10 seconds safety timeout
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { auth, firestore } = useFirebase();
@@ -58,13 +57,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (!auth || !firestore) return;
-
-    // Safety timeout to prevent infinite loading state
-    const timer = setTimeout(() => {
-      if (loading) {
-        setLoading(false);
-      }
-    }, AUTH_TIMEOUT_MS);
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
@@ -119,12 +111,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile(null);
       }
       setLoading(false);
-      clearTimeout(timer);
     });
 
     return () => {
       unsubscribe();
-      clearTimeout(timer);
     };
   }, [auth, firestore]);
 
