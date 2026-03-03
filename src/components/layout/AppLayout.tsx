@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect } from 'react';
@@ -84,7 +83,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                       unoptimized
                     />
                   </NextLink>
-                  <Badge variant="outline" className="text-[8px] font-black uppercase tracking-tighter bg-primary/5 text-primary border-primary/20 scale-75">BETA</Badge>
+                  <Badge variant="outline" className="text-[8px] font-black uppercase tracking-tighter bg-primary/5 text-primary border-primary/20 scale-75">BETA V 2</Badge>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right" className="font-black text-xs px-4 py-2 rounded-xl border-none shadow-2xl bg-slate-900 text-white translate-x-2">
@@ -147,7 +146,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             <div className="w-12 h-12 relative rounded-xl overflow-hidden shadow-lg" onClick={() => router.push('/dashboard')}>
               <Image src={logoSrc} fill alt="Lycée MBN" className="object-cover" unoptimized />
             </div>
-            <Badge variant="outline" className="text-[8px] font-black bg-primary/5 text-primary border-primary/20">BETA</Badge>
+            <Badge variant="outline" className="text-[8px] font-black bg-primary/5 text-primary border-primary/20">BETA V 2</Badge>
           </div>
           <div className="flex items-center gap-4">
              <Avatar className="h-10 w-10 border-2 border-slate-100 shadow-sm rounded-xl" onClick={() => router.push('/profile')}>
