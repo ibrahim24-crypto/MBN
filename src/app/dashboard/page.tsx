@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -103,33 +104,35 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {/* LATEST MEETING CARD */}
-          <Card className="w-full min-h-[200px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all rounded-2xl flex flex-col p-8 border border-slate-50 dark:border-slate-800">
-            <div className="flex-1 flex flex-col justify-between relative z-10 h-full">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="p-3 bg-accent/10 rounded-xl text-accent shadow-sm">
-                    <Calendar size={28} />
+          {/* LATEST MEETING CARD - Only for Admin/Council */}
+          {(isAdmin || isCouncil) && (
+            <Card className="w-full min-h-[200px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all rounded-2xl flex flex-col p-8 border border-slate-50 dark:border-slate-800">
+              <div className="flex-1 flex flex-col justify-between relative z-10 h-full">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 bg-accent/10 rounded-xl text-accent shadow-sm">
+                      <Calendar size={28} />
+                    </div>
+                    <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[9px] uppercase tracking-[0.2em] border-none px-4 py-1.5 rounded-full shadow-sm">Archive</Badge>
                   </div>
-                  <Badge className="bg-slate-50 dark:bg-slate-800 text-slate-400 font-black text-[9px] uppercase tracking-[0.2em] border-none px-4 py-1.5 rounded-full shadow-sm">Archive</Badge>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">{t.councilBoard}</span>
+                    <h3 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
+                      {latestMinute?.[0] ? latestMinute[0].title : t.noLogs}
+                    </h3>
+                    {latestMinute?.[0] && (
+                      <p className="text-lg font-bold text-primary">
+                        {format(new Date(latestMinute[0].meetingDate), 'PPP')}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-400">{t.councilBoard}</span>
-                  <h3 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
-                    {latestMinute?.[0] ? latestMinute[0].title : t.noLogs}
-                  </h3>
-                  {latestMinute?.[0] && (
-                    <p className="text-lg font-bold text-primary">
-                      {format(new Date(latestMinute[0].meetingDate), 'PPP')}
-                    </p>
-                  )}
-                </div>
+                <Button variant="ghost" className="w-full h-12 mt-6 font-black rounded-xl border-2 border-dashed border-slate-100 dark:border-slate-800 hover:bg-accent hover:text-white hover:border-accent transition-all text-base" asChild>
+                  <Link href="/council">{t.manageMinutes}</Link>
+                </Button>
               </div>
-              <Button variant="ghost" className="w-full h-12 mt-6 font-black rounded-xl border-2 border-dashed border-slate-100 dark:border-slate-800 hover:bg-accent hover:text-white hover:border-accent transition-all text-base" asChild>
-                <Link href="/council">{t.manageMinutes}</Link>
-              </Button>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           {/* RECENT ANNOUNCEMENT CARD */}
           <Card className="w-full min-h-[200px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all rounded-2xl flex flex-col p-8 border border-slate-50 dark:border-slate-800">

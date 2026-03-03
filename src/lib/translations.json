@@ -1,3 +1,4 @@
+
 {
   "ar": {
     "dashboard": "لوحة القيادة",
@@ -16,8 +17,8 @@
     "viewBoard": "عرض اللوحة",
     "nextMeeting": "الاجتماع القادم",
     "actionRequired": "إجراء مطلوب",
-    "proposalsReview": "هناك مقترحات جديدة تحتاج إلى مراجعة.",
-    "reviewProposals": "مراجعة المقترحات",
+    "proposalsReview": "هناك إعلانات جديدة تحتاج إلى مراجعة.",
+    "reviewProposals": "مراجعة الإعلانات",
     "addCalendar": "إضافة إلى التقويم",
     "mbnIdentity": "هوية ثانوية موسى بن نصير",
     "activeMember": "عضو نشط",
@@ -65,9 +66,9 @@
     "totalImpact": "الأثر الكلي",
     "totalImpactDesc": "الاستمرارية هي مفتاح الارتقاء في الرتب.",
     "councilWorkspace": "مساحة عمل المجلس",
-    "manageProposals": "المقترحات",
+    "manageProposals": "الإعلانات",
     "manageMinutes": "المحاضر",
-    "newProposal": "مقترح جديد",
+    "newProposal": "إعلان جديد",
     "newMinute": "محضر جديد",
     "visibility": "الظهور",
     "visibilityPublic": "عام",
@@ -75,7 +76,8 @@
     "visibilityTeachers": "للمعلمين",
     "visibilityCouncil": "للمجلس فقط",
     "deleteConfirm": "هل أنت متأكد؟",
-    "meetingDate": "تاريخ الاجتماع"
+    "meetingDate": "تاريخ الاجتماع",
+    "initiatives": "إعلان"
   },
   "fr": {
     "dashboard": "Tableau de Bord",
@@ -94,8 +96,8 @@
     "viewBoard": "Voir le tableau",
     "nextMeeting": "Prochaine réunion",
     "actionRequired": "Action requise",
-    "proposalsReview": "De nouvelles propositions nécessitent votre examen.",
-    "reviewProposals": "Examiner les propositions",
+    "proposalsReview": "De nouvelles annonces nécessitent votre examen.",
+    "reviewProposals": "Examiner les annonces",
     "addCalendar": "Ajouter au calendrier",
     "mbnIdentity": "Identité Lycée Moussa Ibn Nousayr",
     "activeMember": "Membre Actif",
@@ -143,9 +145,9 @@
     "totalImpact": "Impact Total",
     "totalImpactDesc": "La régularité est la clé pour grimper dans les rangs.",
     "councilWorkspace": "Archives du Conseil",
-    "manageProposals": "Propositions",
+    "manageProposals": "Annonces",
     "manageMinutes": "Procès-verbaux",
-    "newProposal": "Nouvelle Proposition",
+    "newProposal": "Nouvelle Annonce",
     "newMinute": "Nouveau Procès-verbal",
     "visibility": "Visibilité",
     "visibilityPublic": "Public",
@@ -153,6 +155,7 @@
     "visibilityTeachers": "Enseignants",
     "visibilityCouncil": "Conseil Uniquement",
     "deleteConfirm": "Êtes-vous sûr ?",
-    "meetingDate": "Date de réunion"
+    "meetingDate": "Date de réunion",
+    "initiatives": "Annonce"
   }
 }

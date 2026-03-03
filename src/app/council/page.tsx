@@ -91,6 +91,8 @@ export default function CouncilPage() {
   if (authLoading || !profile) return null;
 
   const isAdmin = isSuperAdmin || profile.role === 'administration';
+  const isCouncil = profile.role === 'council';
+  const canSeeMinutes = isAdmin || isCouncil;
 
   const handleSaveProposal = () => {
     if (!db || !proposalForm.title) return;
@@ -103,10 +105,10 @@ export default function CouncilPage() {
 
     if (editingId) {
       updateDocumentNonBlocking(doc(db, 'proposals', editingId), data);
-      toast({ title: "Proposal Updated" });
+      toast({ title: t.xpUpdated });
     } else {
       addDocumentNonBlocking(collection(db, 'proposals'), { ...data, createdAt: new Date() });
-      toast({ title: "Proposal Created" });
+      toast({ title: t.xpUpdated });
     }
 
     setProposalDialog(false);
@@ -124,10 +126,10 @@ export default function CouncilPage() {
 
     if (editingId) {
       updateDocumentNonBlocking(doc(db, 'meetingMinutes', editingId), data);
-      toast({ title: "Minute Updated" });
+      toast({ title: t.xpUpdated });
     } else {
       addDocumentNonBlocking(collection(db, 'meetingMinutes'), { ...data, createdAt: new Date() });
-      toast({ title: "Minute Saved" });
+      toast({ title: t.xpUpdated });
     }
 
     setMinuteDialog(false);
@@ -147,7 +149,7 @@ export default function CouncilPage() {
   const handleDelete = (col: string, id: string) => {
     if (!db) return;
     deleteDocumentNonBlocking(doc(db, col, id));
-    toast({ variant: "destructive", title: "Item Removed" });
+    toast({ variant: "destructive", title: t.deleteConfirm });
   };
 
   const openEditProposal = (p: Proposal) => {
@@ -177,7 +179,7 @@ export default function CouncilPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full pb-32 px-4">
         
-        {/* PROPOSALS */}
+        {/* ANNONCES (formerly Proposals) */}
         <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden flex flex-col min-h-[600px]">
           <CardHeader className="p-8 border-b border-slate-50 dark:border-slate-800 flex flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -186,7 +188,7 @@ export default function CouncilPage() {
                 <CardTitle className="text-2xl font-black tracking-tighter">
                   {t.manageProposals}
                 </CardTitle>
-                <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400">Initiatives</CardDescription>
+                <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.initiatives}</CardDescription>
               </div>
             </div>
             {isAdmin && (
@@ -284,109 +286,111 @@ export default function CouncilPage() {
           </CardContent>
         </Card>
 
-        {/* MEETING MINUTES */}
-        <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden flex flex-col min-h-[600px]">
-          <CardHeader className="p-8 border-b border-slate-50 dark:border-slate-800 flex flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <FileText className="text-accent shrink-0" size={44} />
-              <div className="space-y-0.5">
-                <CardTitle className="text-2xl font-black tracking-tighter">
-                  {t.manageMinutes}
-                </CardTitle>
-                <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400">Archives</CardDescription>
+        {/* MEETING MINUTES - Only for Council/Admin */}
+        {canSeeMinutes && (
+          <Card className="border-none shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden flex flex-col min-h-[600px]">
+            <CardHeader className="p-8 border-b border-slate-50 dark:border-slate-800 flex flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <FileText className="text-accent shrink-0" size={44} />
+                <div className="space-y-0.5">
+                  <CardTitle className="text-2xl font-black tracking-tighter">
+                    {t.manageMinutes}
+                  </CardTitle>
+                  <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400">Archives</CardDescription>
+                </div>
               </div>
-            </div>
-            {isAdmin && (
-              <Dialog open={minuteDialog} onOpenChange={(open) => { setMinuteDialog(open); if (!open) resetMinuteForm(); }}>
-                <DialogTrigger asChild>
-                  <Button className="rounded-full font-black shadow-lg shadow-accent/20 bg-accent hover:bg-accent/90 h-10 w-10 p-0 hover:scale-[1.1] transition-all text-sm shrink-0 text-white">
-                    <Plus size={20} />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[650px] rounded-2xl p-8 bg-white dark:bg-slate-950 border-none shadow-2xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingId ? t.edit : t.newMinute}</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-6 py-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t.headline}</label>
-                      <Input 
-                        placeholder={t.headline} 
-                        className="h-14 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-black text-lg px-5 focus:ring-4 focus:ring-accent/5 transition-all"
-                        value={minuteForm.title}
-                        onChange={(e) => setMinuteForm(m => ({ ...m, title: e.target.value }))}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t.meetingDate}</label>
-                      <Input 
-                        type="date"
-                        className="h-14 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-black text-lg px-5"
-                        value={minuteForm.meetingDate}
-                        onChange={(e) => setMinuteForm(m => ({ ...m, meetingDate: e.target.value }))}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t.details}</label>
-                      <Textarea 
-                        placeholder={t.details} 
-                        className="min-h-[200px] rounded-2xl bg-slate-50 dark:bg-slate-900 border-none p-6 font-medium text-lg leading-relaxed focus:ring-4 focus:ring-accent/5 transition-all"
-                        value={minuteForm.content}
-                        onChange={(e) => setMinuteForm(m => ({ ...m, content: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter className="gap-3">
-                    <Button variant="outline" className="h-12 rounded-xl font-black px-6 text-sm border-slate-200 dark:border-slate-800" onClick={() => setMinuteDialog(false)}>{t.cancel}</Button>
-                    <Button className="h-12 rounded-xl font-black px-10 shadow-lg shadow-accent/20 bg-accent hover:bg-accent/90 text-sm gap-2 text-white" onClick={handleSaveMinute}>
-                      <Send size={16} />
-                      {t.publish}
+              {isAdmin && (
+                <Dialog open={minuteDialog} onOpenChange={(open) => { setMinuteDialog(open); if (!open) resetMinuteForm(); }}>
+                  <DialogTrigger asChild>
+                    <Button className="rounded-full font-black shadow-lg shadow-accent/20 bg-accent hover:bg-accent/90 h-10 w-10 p-0 hover:scale-[1.1] transition-all text-sm shrink-0 text-white">
+                      <Plus size={20} />
                     </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
-          </CardHeader>
-          <CardContent className="p-6 space-y-6 flex-1 overflow-y-auto max-h-[700px]">
-            {loadingMinutes ? (
-               <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-30">
-                  <Loader2 className="animate-spin text-accent" size={32} />
-                  <span className="font-black uppercase tracking-[0.2em] text-xs">Syncing...</span>
-               </div>
-            ) : !minutes || minutes.length === 0 ? (
-               <div className="flex flex-col items-center justify-center py-20 gap-6 opacity-20 grayscale">
-                  <FileText size={64} />
-                  <p className="text-xl font-black uppercase tracking-[0.2em]">{t.noLogs}</p>
-               </div>
-            ) : (
-              <TooltipProvider>
-                {minutes.map(m => (
-                  <div key={m.id} className="group/item flex items-center justify-between p-5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-accent/20 transition-all duration-300 shadow-sm">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 bg-accent/10 rounded-xl flex flex-col items-center justify-center text-accent group-hover/item:bg-accent group-hover/item:text-white transition-all">
-                         <Calendar size={20} />
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[650px] rounded-2xl p-8 bg-white dark:bg-slate-950 border-none shadow-2xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl font-black tracking-tighter">{editingId ? t.edit : t.newMinute}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-6 py-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t.headline}</label>
+                        <Input 
+                          placeholder={t.headline} 
+                          className="h-14 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-black text-lg px-5 focus:ring-4 focus:ring-accent/5 transition-all"
+                          value={minuteForm.title}
+                          onChange={(e) => setMinuteForm(m => ({ ...m, title: e.target.value }))}
+                        />
                       </div>
-                      <div className="space-y-0.5">
-                        <h4 className="text-lg font-black text-slate-900 dark:text-white leading-tight">{m.title}</h4>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.meetingDate}</p>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t.meetingDate}</label>
+                        <Input 
+                          type="date"
+                          className="h-14 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-black text-lg px-5"
+                          value={minuteForm.meetingDate}
+                          onChange={(e) => setMinuteForm(m => ({ ...m, meetingDate: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t.details}</label>
+                        <Textarea 
+                          placeholder={t.details} 
+                          className="min-h-[200px] rounded-2xl bg-slate-50 dark:bg-slate-900 border-none p-6 font-medium text-lg leading-relaxed focus:ring-4 focus:ring-accent/5 transition-all"
+                          value={minuteForm.content}
+                          onChange={(e) => setMinuteForm(m => ({ ...m, content: e.target.value }))}
+                        />
                       </div>
                     </div>
-                    {isAdmin && (
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-accent hover:bg-accent/5" onClick={() => openEditMinute(m)}>
-                          <Edit2 size={14} />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-destructive hover:bg-destructive/5" onClick={() => handleDelete('meetingMinutes', m.id)}>
-                          <Trash2 size={14} />
-                        </Button>
+                    <DialogFooter className="gap-3">
+                      <Button variant="outline" className="h-12 rounded-xl font-black px-6 text-sm border-slate-200 dark:border-slate-800" onClick={() => setMinuteDialog(false)}>{t.cancel}</Button>
+                      <Button className="h-12 rounded-xl font-black px-10 shadow-lg shadow-accent/20 bg-accent hover:bg-accent/90 text-sm gap-2 text-white" onClick={handleSaveMinute}>
+                        <Send size={16} />
+                        {t.publish}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </CardHeader>
+            <CardContent className="p-6 space-y-6 flex-1 overflow-y-auto max-h-[700px]">
+              {loadingMinutes ? (
+                 <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-30">
+                    <Loader2 className="animate-spin text-accent" size={32} />
+                    <span className="font-black uppercase tracking-[0.2em] text-xs">Syncing...</span>
+                 </div>
+              ) : !minutes || minutes.length === 0 ? (
+                 <div className="flex flex-col items-center justify-center py-20 gap-6 opacity-20 grayscale">
+                    <FileText size={64} />
+                    <p className="text-xl font-black uppercase tracking-[0.2em]">{t.noLogs}</p>
+                 </div>
+              ) : (
+                <TooltipProvider>
+                  {minutes.map(m => (
+                    <div key={m.id} className="group/item flex items-center justify-between p-5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-accent/20 transition-all duration-300 shadow-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 bg-accent/10 rounded-xl flex flex-col items-center justify-center text-accent group-hover/item:bg-accent group-hover/item:text-white transition-all">
+                           <Calendar size={20} />
+                        </div>
+                        <div className="space-y-0.5">
+                          <h4 className="text-lg font-black text-slate-900 dark:text-white leading-tight">{m.title}</h4>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.meetingDate}</p>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                ))}
-              </TooltipProvider>
-            )}
-          </CardContent>
-        </Card>
+                      {isAdmin && (
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-accent hover:bg-accent/5" onClick={() => openEditMinute(m)}>
+                            <Edit2 size={14} />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-destructive hover:bg-destructive/5" onClick={() => handleDelete('meetingMinutes', m.id)}>
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </TooltipProvider>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
       </div>
     </AppLayout>
