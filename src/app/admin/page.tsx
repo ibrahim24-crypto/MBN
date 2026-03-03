@@ -91,6 +91,7 @@ export default function AdminPage() {
   
   // Template Management State
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
   const [newTemplate, setNewTemplate] = useState({ label: '', reason: '', amount: 10 });
 
   const { toast } = useToast();
@@ -212,14 +213,37 @@ export default function AdminPage() {
     });
   };
 
+  const startEditingTemplate = (tpl: XpTemplate) => {
+    setEditingTemplateId(tpl.id);
+    setNewTemplate({
+      label: tpl.label,
+      reason: tpl.reason,
+      amount: tpl.amount
+    });
+  };
+
+  const cancelEditingTemplate = () => {
+    setEditingTemplateId(null);
+    setNewTemplate({ label: '', reason: '', amount: 10 });
+  };
+
   const handleSaveTemplate = () => {
     if (!db || !newTemplate.label || !newTemplate.reason) return;
 
-    addDocumentNonBlocking(collection(db, 'xp_templates'), {
-      ...newTemplate,
-      createdAt: new Date(),
-      updatedAt: new Date().toISOString()
-    });
+    if (editingTemplateId) {
+      const tplRef = doc(db, 'xp_templates', editingTemplateId);
+      updateDocumentNonBlocking(tplRef, {
+        ...newTemplate,
+        updatedAt: new Date().toISOString()
+      });
+      setEditingTemplateId(null);
+    } else {
+      addDocumentNonBlocking(collection(db, 'xp_templates'), {
+        ...newTemplate,
+        createdAt: new Date(),
+        updatedAt: new Date().toISOString()
+      });
+    }
 
     setNewTemplate({ label: '', reason: '', amount: 10 });
     toast({ title: t.xpUpdated });
@@ -229,6 +253,7 @@ export default function AdminPage() {
     if (!db) return;
     deleteDocumentNonBlocking(doc(db, 'xp_templates', id));
     toast({ variant: 'destructive', title: t.deleteConfirm });
+    if (editingTemplateId === id) cancelEditingTemplate();
   };
 
   const filteredUsers = users.filter(u => 
@@ -263,15 +288,15 @@ export default function AdminPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1">
             <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[10px]">Command Center</Badge>
-            <h1 className="text-4xl font-black font-headline tracking-tighter flex items-center gap-3 text-slate-900 dark:text-white leading-tight">
+            <h1 className="text-4xl font-black font-headline tracking-tighter flex items-center gap-3 text-slate-900 dark:text-white leading-tight text-center md:text-left">
               <Users className="text-primary hidden md:block" size={36} />
               {t.adminPanel}
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 font-bold text-base tracking-tight">{t.manageUsers}</p>
+            <p className="text-slate-500 dark:text-slate-400 font-bold text-base tracking-tight text-center md:text-left">{t.manageUsers}</p>
           </div>
           
           <div className="flex flex-col md:flex-row items-center gap-4">
-            <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
+            <Dialog open={isTemplateDialogOpen} onOpenChange={(open) => { setIsTemplateDialogOpen(open); if (!open) cancelEditingTemplate(); }}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="gap-3 h-14 rounded-2xl font-black px-6 shadow-xl hover:bg-slate-50 dark:hover:bg-slate-800 border-none bg-white dark:bg-slate-900 transition-all hover:scale-[1.02]">
                   <Wand2 size={20} className="text-accent" />
@@ -286,7 +311,7 @@ export default function AdminPage() {
                       {t.xpTemplates}
                     </DialogTitle>
                   </DialogHeader>
-                  <p className="text-slate-400 text-sm font-bold mt-2">Create standardized actions for rapid community management.</p>
+                  <p className="text-slate-400 text-sm font-bold mt-2">Manage standardized actions for the community.</p>
                 </div>
                 <div className="p-8 space-y-8 bg-white dark:bg-slate-950">
                   <div className="space-y-4">
@@ -300,7 +325,10 @@ export default function AdminPage() {
                         </div>
                       ) : (
                         templates.map(tpl => (
-                          <div key={tpl.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-between group border border-transparent hover:border-primary/20 transition-all">
+                          <div key={tpl.id} className={cn(
+                            "p-4 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-between group border transition-all",
+                            editingTemplateId === tpl.id ? "border-primary bg-primary/5" : "border-transparent hover:border-primary/20"
+                          )}>
                             <div className="flex items-center gap-4">
                               <div className={cn(
                                 "h-10 w-10 rounded-xl flex items-center justify-center font-black",
@@ -310,12 +338,17 @@ export default function AdminPage() {
                               </div>
                               <div>
                                 <p className="font-black text-sm text-slate-900 dark:text-white">{tpl.label}</p>
-                                <p className="text-[10px] text-slate-400 font-bold truncate max-w-[200px]">{tpl.reason}</p>
+                                <p className="text-[10px] text-slate-400 font-bold truncate max-w-[150px]">{tpl.reason}</p>
                               </div>
                             </div>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-destructive hover:bg-destructive/5 opacity-0 group-hover:opacity-100 transition-all" onClick={() => handleDeleteTemplate(tpl.id)}>
-                              <Trash2 size={14} />
-                            </Button>
+                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-primary" onClick={() => startEditingTemplate(tpl)}>
+                                <Edit2 size={14} />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-destructive" onClick={() => handleDeleteTemplate(tpl.id)}>
+                                <Trash2 size={14} />
+                              </Button>
+                            </div>
                           </div>
                         ))
                       )}
@@ -323,15 +356,30 @@ export default function AdminPage() {
                   </div>
 
                   <div className="space-y-4 pt-4 border-t dark:border-slate-800">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Create New</h4>
+                    <div className="flex items-center justify-between px-1">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        {editingTemplateId ? "Update Template" : "Create New"}
+                      </h4>
+                      {editingTemplateId && (
+                        <button onClick={cancelEditingTemplate} className="text-[10px] font-black text-destructive uppercase tracking-widest hover:underline flex items-center gap-1">
+                           <X size={10} /> {t.cancel}
+                        </button>
+                      )}
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <Input placeholder={t.templateLabel} value={newTemplate.label} onChange={e => setNewTemplate(p => ({ ...p, label: e.target.value }))} className="h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-bold" />
                       <Input type="number" value={newTemplate.amount} onChange={e => setNewTemplate(p => ({ ...p, amount: parseInt(e.target.value) }))} className="h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-black text-center" />
                     </div>
                     <Input placeholder={t.reasonPlaceholder} value={newTemplate.reason} onChange={e => setNewTemplate(p => ({ ...p, reason: e.target.value }))} className="h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border-none font-bold" />
-                    <Button className="h-12 rounded-xl font-black w-full shadow-lg text-white" onClick={handleSaveTemplate}>
-                      <Plus className="mr-2" size={16} />
-                      {t.newTemplate}
+                    <Button 
+                      className={cn(
+                        "h-12 rounded-xl font-black w-full shadow-lg text-white transition-all",
+                        editingTemplateId ? "bg-accent hover:bg-accent/90" : "bg-primary hover:bg-primary/90"
+                      )}
+                      onClick={handleSaveTemplate}
+                    >
+                      {editingTemplateId ? <Save className="mr-2" size={16} /> : <Plus className="mr-2" size={16} />}
+                      {editingTemplateId ? t.save : t.newTemplate}
                     </Button>
                   </div>
                 </div>
@@ -404,11 +452,11 @@ export default function AdminPage() {
           <Table className="table-auto w-full">
             <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
               <TableRow className="border-none">
-                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px]">{t.name}</TableHead>
-                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px] hidden lg:table-cell">{t.email}</TableHead>
-                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px] text-center">{t.xp}</TableHead>
-                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px]">{t.role}</TableHead>
-                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-[11px] text-right">{t.actions}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-xs">{t.name}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-xs hidden lg:table-cell">{t.email}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-xs text-center">{t.xp}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-xs">{t.role}</TableHead>
+                <TableHead className="py-8 px-10 font-black text-slate-400 uppercase tracking-widest text-xs text-right">{t.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -449,13 +497,13 @@ export default function AdminPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
-                            <span className="text-lg font-black text-slate-900 dark:text-white leading-tight">{u.displayName}</span>
+                            <span className="text-sm md:text-base font-black text-slate-900 dark:text-white leading-tight">{u.displayName}</span>
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest lg:hidden">{u.role}</span>
                           </div>
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="py-6 px-10 text-slate-400 dark:text-slate-500 font-bold text-sm hidden lg:table-cell">
+                    <TableCell className="py-6 px-10 text-slate-400 dark:text-slate-500 font-bold text-xs hidden lg:table-cell">
                       {u.email}
                     </TableCell>
                     <TableCell className="py-6 px-10 text-center">
@@ -469,7 +517,7 @@ export default function AdminPage() {
                       ) : (
                         u.role === 'student' || u.role === 'council' ? (
                           <Badge className={cn(
-                            "h-10 px-6 rounded-2xl font-black text-base shadow-lg border-none transition-all group-hover/row:scale-105",
+                            "h-10 px-6 rounded-2xl font-black text-sm shadow-lg border-none transition-all group-hover/row:scale-105",
                             u.xp < 0 
                               ? "bg-destructive/10 text-destructive" 
                               : "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10"
