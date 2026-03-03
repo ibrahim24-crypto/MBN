@@ -104,7 +104,7 @@ export default function XPLogPage() {
               <History size={32} />
            </div>
            <Badge className="bg-primary/10 text-primary font-black px-6 py-2 rounded-full uppercase tracking-[0.3em] text-[10px] shadow-sm border-none">
-             BETA V 2 Identity Feed
+             BETA V2 Identity Feed
            </Badge>
         </div>
         <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">

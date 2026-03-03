@@ -63,7 +63,7 @@ export default function LandingPage() {
             <span className="text-xl md:text-2xl font-black font-headline tracking-tighter text-slate-900 dark:text-white uppercase leading-none">
               {t.language === 'ar' ? 'ثانوية موسى بن نصير' : 'Lycée MBN'}
             </span>
-            <Badge variant="outline" className="w-fit mt-1 py-0 px-2 text-[8px] font-black border-primary/20 text-primary uppercase">BETA V 2</Badge>
+            <Badge variant="outline" className="w-fit mt-1 py-0 px-2 text-[8px] font-black border-primary/20 text-primary uppercase">BETA V2</Badge>
           </div>
         </div>
         <DropdownMenu>
