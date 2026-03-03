@@ -83,8 +83,8 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {/* ADMIN PANEL CARD - Strict restriction to SuperAdmin */}
-          {isSuperAdmin && (
+          {/* ADMIN PANEL CARD - Accessible to Admins and SuperAdmin */}
+          {isAdmin && (
             <Card className="w-full min-h-[200px] border-none bg-slate-900 text-white shadow-2xl relative overflow-hidden group rounded-2xl flex flex-col p-8 transition-all hover:scale-[1.01]">
               <div className="absolute -bottom-10 -right-10 opacity-10 group-hover:scale-110 transition-transform duration-700">
                 <Users size={250} />
@@ -134,7 +134,7 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {/* RECENT ANNOUNCEMENT CARD */}
+          {/* RECENT ANNONCE CARD */}
           <Card className="w-full min-h-[200px] shadow-xl border-none bg-white dark:bg-slate-900 group hover:translate-y-[-4px] transition-all rounded-2xl flex flex-col p-8 border border-slate-50 dark:border-slate-800">
             <div className="flex-1 flex flex-col justify-between relative z-10 h-full">
               <div className="space-y-4">

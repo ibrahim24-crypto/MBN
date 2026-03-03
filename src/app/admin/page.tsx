@@ -60,9 +60,12 @@ export default function AdminPage() {
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const { toast } = useToast();
 
-  // Strict restriction: Only SuperAdmin can access or modify registry data
-  const canAccessRegistry = isSuperAdmin;
-  const canModifyData = isSuperAdmin;
+  // Admins and SuperAdmin can access the registry
+  const isAdmin = profile?.role === 'administration' || isSuperAdmin;
+  const canAccessRegistry = isAdmin;
+  
+  // Only SuperAdmin can modify roles
+  const canModifyRoles = isSuperAdmin;
 
   useEffect(() => {
     if (!authLoading && canAccessRegistry && db) {
@@ -99,14 +102,15 @@ export default function AdminPage() {
   };
 
   const saveUserChanges = (id: string) => {
-    if (!db || !isSuperAdmin) return;
+    if (!db || !isAdmin) return;
     const userDocRef = doc(db, 'users', id);
     const currentUser = users.find(u => u.id === id);
     if (!currentUser) return;
 
     const newXP = Number(editForm.xp);
-    const roleToSave = editForm.role || currentUser.role;
-    const roleChanged = editForm.role !== currentUser.role;
+    // Only superadmin can actually change the role value
+    const roleToSave = canModifyRoles ? (editForm.role || currentUser.role) : currentUser.role;
+    const roleChanged = canModifyRoles && editForm.role !== currentUser.role;
 
     updateDocumentNonBlocking(userDocRef, { 
       displayName: editForm.displayName, 
@@ -115,7 +119,7 @@ export default function AdminPage() {
       updatedAt: new Date().toISOString()
     });
 
-    if (roleChanged) {
+    if (roleChanged && canModifyRoles) {
       // Remove old role markers
       if (currentUser.role === 'administration') {
         deleteDocumentNonBlocking(doc(db, 'roles_admin', id));
@@ -160,7 +164,7 @@ export default function AdminPage() {
       <div className="text-center">
         <ShieldCheck size={60} className="mx-auto text-destructive mb-4 opacity-20" />
         <h1 className="text-3xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">Access Denied</h1>
-        <p className="text-slate-500 mt-2 font-bold">Only the Super Admin can access this command center.</p>
+        <p className="text-slate-500 mt-2 font-bold">Only administrators can access this command center.</p>
         <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return</Button>
       </div>
     </div>
@@ -273,8 +277,12 @@ export default function AdminPage() {
                         <Select 
                           value={editForm.role} 
                           onValueChange={(val: UserRole) => setEditForm(prev => ({ ...prev, role: val }))}
+                          disabled={!canModifyRoles}
                         >
-                          <SelectTrigger className="w-full h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border-none font-bold text-xs px-2 shadow-inner">
+                          <SelectTrigger className={cn(
+                            "w-full h-9 rounded-lg border-none font-bold text-xs px-2 shadow-inner",
+                            canModifyRoles ? "bg-slate-100 dark:bg-slate-800" : "bg-slate-50 dark:bg-slate-900/50 opacity-50 cursor-not-allowed"
+                          )}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl border-none p-2">
