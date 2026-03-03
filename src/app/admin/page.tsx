@@ -25,7 +25,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, User } from 'lucide-react';
+import { ShieldCheck, UserCog, Search, Save, Edit2, X, Loader2, User, Users } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -59,13 +59,16 @@ export default function AdminPage() {
   const [editForm, setEditForm] = useState<Partial<UserData>>({});
   const { toast } = useToast();
 
-  const isAdmin = isSuperAdmin || profile?.role === 'administration';
+  const isNormalAdmin = profile?.role === 'administration';
+  const isCouncilMember = profile?.role === 'council';
+  const canAccessRegistry = isSuperAdmin || isNormalAdmin || isCouncilMember;
+  const canModifyData = isSuperAdmin || isNormalAdmin;
 
   useEffect(() => {
-    if (!authLoading && isAdmin && db) {
+    if (!authLoading && canAccessRegistry && db) {
       fetchUsers();
     }
-  }, [authLoading, isAdmin, db]);
+  }, [authLoading, canAccessRegistry, db]);
 
   const fetchUsers = async () => {
     if (!db) return;
@@ -96,7 +99,7 @@ export default function AdminPage() {
   };
 
   const saveUserChanges = (id: string) => {
-    if (!db || !profile) return;
+    if (!db || !profile || !canModifyData) return;
     const userDocRef = doc(db, 'users', id);
     const currentUser = users.find(u => u.id === id);
     if (!currentUser) return;
@@ -153,12 +156,12 @@ export default function AdminPage() {
     </div>
   );
 
-  if (!isAdmin) return (
+  if (!canAccessRegistry) return (
     <div className="h-screen flex items-center justify-center p-4">
       <div className="text-center">
         <ShieldCheck size={60} className="mx-auto text-destructive mb-4 opacity-20" />
         <h1 className="text-3xl font-black font-headline tracking-tighter text-slate-900 dark:text-white leading-tight">Access Denied</h1>
-        <p className="text-slate-500 mt-2 font-bold">Only the Administration can access this area.</p>
+        <p className="text-slate-500 mt-2 font-bold">Only authorized staff can access this area.</p>
         <Button variant="outline" className="mt-6 rounded-xl px-8 h-12 font-black" onClick={() => window.location.href = '/dashboard'}>Return</Button>
       </div>
     </div>
@@ -170,7 +173,7 @@ export default function AdminPage() {
         <div className="space-y-1">
           <Badge className="bg-primary/10 text-primary font-black mb-1 rounded-full px-4 py-1.5 border-none shadow-sm uppercase tracking-[0.2em] text-[10px]">Command Center</Badge>
           <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tighter flex items-center gap-3 text-slate-900 dark:text-white leading-tight">
-            <UserCog className="text-primary hidden md:block" size={32} />
+            <Users className="text-primary hidden md:block" size={32} />
             {t.adminPanel}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-bold text-base tracking-tight">{t.manageUsers}</p>
@@ -196,13 +199,13 @@ export default function AdminPage() {
                 <TableHead className="w-[30%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm">{t.email}</TableHead>
                 <TableHead className="w-[10%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm text-center">{t.xp}</TableHead>
                 <TableHead className="w-[15%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm">{t.role}</TableHead>
-                <TableHead className="w-[15%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm text-right">{t.actions}</TableHead>
+                {canModifyData && <TableHead className="w-[15%] py-3 px-6 font-black text-slate-400 uppercase tracking-widest text-sm text-right">{t.actions}</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {fetching ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20">
+                  <TableCell colSpan={canModifyData ? 5 : 4} className="text-center py-20">
                     <div className="flex flex-col items-center gap-4">
                       <Loader2 size={32} className="animate-spin text-primary opacity-40" />
                       <span className="text-slate-300 font-black uppercase tracking-[0.3em] animate-pulse text-sm">Syncing...</span>
@@ -211,7 +214,7 @@ export default function AdminPage() {
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20">
+                  <TableCell colSpan={canModifyData ? 5 : 4} className="text-center py-20">
                     <div className="flex flex-col items-center gap-6 opacity-20 grayscale">
                         <User size={60} />
                         <p className="text-xl font-black uppercase tracking-[0.2em]">No Identities Found</p>
@@ -292,22 +295,24 @@ export default function AdminPage() {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="py-1.5 px-6 text-right">
-                      {editingId === u.id ? (
-                        <div className="flex justify-end gap-1.5">
-                          <Button size="icon" className="h-8 w-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
-                            <Save size={14} />
+                    {canModifyData && (
+                      <TableCell className="py-1.5 px-6 text-right">
+                        {editingId === u.id ? (
+                          <div className="flex justify-end gap-1.5">
+                            <Button size="icon" className="h-8 w-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 shadow-md text-white" onClick={() => saveUserChanges(u.id)}>
+                              <Save size={14} />
+                            </Button>
+                            <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
+                              <X size={14} />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-slate-300 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
+                            <Edit2 size={14} />
                           </Button>
-                          <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg border-slate-200 dark:border-slate-800 text-destructive" onClick={cancelEditing}>
-                            <X size={14} />
-                          </Button>
-                        </div>
-                      ) : (
-                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-slate-300 hover:text-primary hover:bg-primary/10" onClick={() => startEditing(u)}>
-                          <Edit2 size={14} />
-                        </Button>
-                      )}
-                    </TableCell>
+                        )}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
               )}
