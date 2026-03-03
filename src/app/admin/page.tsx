@@ -252,8 +252,8 @@ export default function AdminPage() {
       return u.email !== SUPER_ADMIN_EMAIL;
     }
 
-    // Normal Admins only see students and teachers
-    return (u.role === 'student' || u.role === 'teacher');
+    // Normal Admins see students, teachers, and council members
+    return (u.role === 'student' || u.role === 'teacher' || u.role === 'council');
   });
 
   if (authLoading) return (
