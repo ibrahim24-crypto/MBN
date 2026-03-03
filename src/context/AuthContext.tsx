@@ -123,7 +123,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        // Handle popup closure gracefully by staying/returning to home
+        router.push('/');
+        return;
+      }
       console.error("Error signing in with Google", error);
     }
   };
