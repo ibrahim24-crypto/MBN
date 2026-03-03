@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -96,8 +97,6 @@ export default function AdminPage() {
   const canModifyRoles = isSuperAdmin;
 
   const templatesQuery = useMemoFirebase(() => {
-    // CRITICAL: Only attempt to fetch templates if the user is authorized as an admin.
-    // This prevents "insufficient permissions" errors during initial auth state resolution.
     if (!db || !isAdmin) return null;
     return query(collection(db, 'xp_templates'), orderBy('createdAt', 'desc'));
   }, [db, isAdmin]);
@@ -249,12 +248,10 @@ export default function AdminPage() {
     
     if (!matchesSearch) return false;
 
-    // Super Admin sees everyone except themselves
     if (isSuperAdmin) {
       return u.email !== SUPER_ADMIN_EMAIL;
     }
 
-    // Normal Admins see students, teachers, and council members
     return (u.role === 'student' || u.role === 'teacher' || u.role === 'council');
   });
 
