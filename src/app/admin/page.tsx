@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -23,10 +22,12 @@ import {
   collection, 
   getDocs, 
   doc, 
+  query,
+  orderBy
 } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, Search, Save, Edit2, X, Loader2, User, Users, Zap, Info } from 'lucide-react';
+import { ShieldCheck, Search, Save, Edit2, X, Loader2, User, Users, Zap, Info, Plus, Trash2, Wand2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -38,6 +39,21 @@ import { updateDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlo
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu';
 
 interface UserData {
   id: string;
@@ -46,6 +62,14 @@ interface UserData {
   role: UserRole;
   xp: number;
   photoURL?: string;
+}
+
+interface XpTemplate {
+  id: string;
+  label: string;
+  reason: string;
+  amount: number;
+  createdAt: any;
 }
 
 const SUPER_ADMIN_EMAIL = 'ibrahimezzine09@gmail.com';
@@ -64,10 +88,22 @@ export default function AdminPage() {
   const [quickReason, setQuickReason] = useState('');
   const [quickAmount, setQuickAmount] = useState<number>(10);
   
+  // Template Management State
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [newTemplate, setNewTemplate] = useState({ label: '', reason: '', amount: 10 });
+  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
+
   const { toast } = useToast();
 
   const isAdmin = profile?.role === 'administration' || isSuperAdmin;
   const canModifyRoles = isSuperAdmin;
+
+  const templatesQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return query(collection(db, 'xp_templates'), orderBy('createdAt', 'desc'));
+  }, [db]);
+
+  const { data: templates, isLoading: loadingTemplates } = useCollection<XpTemplate>(templatesQuery);
 
   useEffect(() => {
     if (!authLoading && isAdmin && db) {
@@ -93,8 +129,8 @@ export default function AdminPage() {
     }
   };
 
-  const applyQuickXP = (user: UserData) => {
-    if (!db || !isAdmin || !quickReason) {
+  const applyXP = (user: UserData, reason: string, amount: number) => {
+    if (!db || !isAdmin || !reason) {
       toast({
         variant: "destructive",
         title: "Validation Error",
@@ -103,40 +139,27 @@ export default function AdminPage() {
       return;
     }
 
-    const newXP = user.xp + quickAmount;
+    const newXP = user.xp + amount;
     const userDocRef = doc(db, 'users', user.id);
     const logColRef = collection(db, 'users', user.id, 'xp_logs');
 
-    // 1. Update User XP
     updateDocumentNonBlocking(userDocRef, { 
       xp: newXP,
       updatedAt: new Date().toISOString()
     });
 
-    // 2. Add to History
     addDocumentNonBlocking(logColRef, {
-      amount: quickAmount,
-      reason: quickReason,
+      amount: amount,
+      reason: reason,
       timestamp: new Date().toISOString()
     });
 
-    // 3. Update local state
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, xp: newXP } : u));
 
     toast({
       title: "Success",
-      description: `${quickAmount > 0 ? '+' : ''}${quickAmount} XP applied to ${user.displayName}`,
+      description: `${amount > 0 ? '+' : ''}${amount} XP applied to ${user.displayName}`,
     });
-  };
-
-  const startEditing = (user: UserData) => {
-    setEditingId(user.id);
-    setEditForm({ displayName: user.displayName, xp: user.xp, role: user.role });
-  };
-
-  const cancelEditing = () => {
-    setEditingId(null);
-    setEditForm({});
   };
 
   const saveUserChanges = (id: string) => {
@@ -179,6 +202,34 @@ export default function AdminPage() {
     });
   };
 
+  const handleSaveTemplate = () => {
+    if (!db || !newTemplate.label || !newTemplate.reason) return;
+
+    if (editingTemplateId) {
+      updateDocumentNonBlocking(doc(db, 'xp_templates', editingTemplateId), {
+        ...newTemplate,
+        updatedAt: new Date().toISOString()
+      });
+    } else {
+      addDocumentNonBlocking(collection(db, 'xp_templates'), {
+        ...newTemplate,
+        createdAt: new Date(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    setIsTemplateDialogOpen(false);
+    setNewTemplate({ label: '', reason: '', amount: 10 });
+    setEditingTemplateId(null);
+    toast({ title: t.xpUpdated });
+  };
+
+  const handleDeleteTemplate = (id: string) => {
+    if (!db) return;
+    deleteDocumentNonBlocking(doc(db, 'xp_templates', id));
+    toast({ variant: 'destructive', title: t.deleteConfirm });
+  };
+
   const filteredUsers = users.filter(u => 
     u.email !== SUPER_ADMIN_EMAIL &&
     (u.displayName?.toLowerCase().includes(search.toLowerCase()) || 
@@ -218,14 +269,54 @@ export default function AdminPage() {
             <p className="text-slate-500 dark:text-slate-400 font-bold text-base tracking-tight">{t.manageUsers}</p>
           </div>
           
-          <div className="relative w-full md:w-[320px] group">
-            <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all" />
-            <Input 
-              placeholder={t.searchUsers} 
-              className="pl-12 h-14 w-full rounded-2xl bg-white dark:bg-slate-900 border-none shadow-lg focus:ring-4 focus:ring-primary/5 transition-all font-bold text-base"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2 h-14 rounded-2xl font-black px-6 shadow-lg hover:bg-slate-50 border-none bg-white">
+                  <Wand2 size={20} className="text-accent" />
+                  {t.manageTemplates}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px] rounded-2xl p-8">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black tracking-tight">{t.xpTemplates}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4 max-h-[400px] overflow-y-auto no-scrollbar">
+                  {templates?.map(tpl => (
+                    <div key={tpl.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between group">
+                      <div>
+                        <p className="font-black text-sm">{tpl.label}</p>
+                        <p className="text-xs text-slate-400">{tpl.reason} ({tpl.amount > 0 ? '+' : ''}{tpl.amount} XP)</p>
+                      </div>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-destructive" onClick={() => handleDeleteTemplate(tpl.id)}>
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  <DropdownMenuSeparator className="my-4" />
+                  <div className="space-y-4 pt-2">
+                    <Input placeholder={t.templateLabel} value={newTemplate.label} onChange={e => setNewTemplate(p => ({ ...p, label: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none font-bold" />
+                    <Input placeholder={t.reasonPlaceholder} value={newTemplate.reason} onChange={e => setNewTemplate(p => ({ ...p, reason: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none font-bold" />
+                    <Input type="number" value={newTemplate.amount} onChange={e => setNewTemplate(p => ({ ...p, amount: parseInt(e.target.value) }))} className="h-12 rounded-xl bg-slate-50 border-none font-black" />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button className="h-12 rounded-xl font-black w-full" onClick={handleSaveTemplate}>{t.publish}</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <div className="relative w-full md:w-[320px] group">
+              <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-all" />
+              <Input 
+                placeholder={t.searchUsers} 
+                className="pl-12 h-14 w-full rounded-2xl bg-white dark:bg-slate-900 border-none shadow-lg focus:ring-4 focus:ring-primary/5 transition-all font-bold text-base"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
@@ -374,28 +465,52 @@ export default function AdminPage() {
                     </TableCell>
                     <TableCell className="py-4 px-8 text-right">
                       <div className="flex justify-end items-center gap-2">
-                        {/* Quick XP Apply Button */}
+                        {/* Template and Quick XP Actions */}
                         {(u.role === 'student' || u.role === 'council') && !editingId && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button 
-                                size="icon" 
-                                className={cn(
-                                  "h-10 w-10 rounded-xl shadow-lg transition-all",
-                                  quickReason 
-                                    ? "bg-primary hover:bg-primary/90 text-white hover:scale-110 active:scale-90" 
-                                    : "bg-slate-100 dark:bg-slate-800 text-slate-300 cursor-not-allowed"
+                          <div className="flex gap-2">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="icon" variant="outline" className="h-10 w-10 rounded-xl shadow-md border-none bg-slate-50 hover:bg-slate-100">
+                                  <Wand2 size={18} className="text-accent" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="rounded-2xl shadow-2xl p-2 min-w-[200px]">
+                                {templates?.length === 0 ? (
+                                  <div className="p-4 text-center text-xs text-slate-400 font-black uppercase">No Templates</div>
+                                ) : (
+                                  templates?.map(tpl => (
+                                    <DropdownMenuItem key={tpl.id} className="rounded-xl px-4 py-3 cursor-pointer" onClick={() => applyXP(u, tpl.reason, tpl.amount)}>
+                                      <div className="flex flex-col">
+                                        <span className="font-black text-sm">{tpl.label}</span>
+                                        <span className="text-[10px] text-slate-400">{tpl.amount > 0 ? '+' : ''}{tpl.amount} XP</span>
+                                      </div>
+                                    </DropdownMenuItem>
+                                  ))
                                 )}
-                                onClick={() => applyQuickXP(u)}
-                                disabled={!quickReason}
-                              >
-                                <Zap size={18} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="bg-slate-900 text-white font-black text-[10px] border-none rounded-lg p-2">
-                              {quickReason ? `${t.apply} ${quickAmount > 0 ? '+' : ''}${quickAmount} XP` : "Define reason first"}
-                            </TooltipContent>
-                          </Tooltip>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  size="icon" 
+                                  className={cn(
+                                    "h-10 w-10 rounded-xl shadow-lg transition-all",
+                                    quickReason 
+                                      ? "bg-primary hover:bg-primary/90 text-white hover:scale-110 active:scale-90" 
+                                      : "bg-slate-100 dark:bg-slate-800 text-slate-300 cursor-not-allowed"
+                                  )}
+                                  onClick={() => applyXP(u, quickReason, quickAmount)}
+                                  disabled={!quickReason}
+                                >
+                                  <Zap size={18} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-slate-900 text-white font-black text-[10px] border-none rounded-lg p-2">
+                                {quickReason ? `${t.apply} ${quickAmount > 0 ? '+' : ''}${quickAmount} XP` : "Define reason first"}
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
                         )}
 
                         {editingId === u.id ? (

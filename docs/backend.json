@@ -6,151 +6,66 @@
       "type": "object",
       "description": "Represents a user of the MBN school council application, including their profile information, role, and experience points.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the User entity."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address, used for authentication and identification. This is a unique identifier provided by the external authentication system (Firebase Google Sign-in).",
-          "format": "email"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The user's display name, typically obtained from the authentication provider."
-        },
-        "role": {
-          "type": "string",
-          "description": "The role assigned to the user within the application, determining their access rights.",
-          "format": "enum"
-        },
-        "xp": {
-          "type": "number",
-          "description": "Experience points earned by the user, initially 100 for new student sign-ins."
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the user account was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the user account was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "format": "enum" },
+        "xp": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "email",
-        "displayName",
-        "role",
-        "xp",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "email", "displayName", "role", "xp", "createdAt", "updatedAt"]
     },
     "Proposal": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Proposal",
       "type": "object",
-      "description": "Represents an open proposal or announcement managed by administrators or council members, with adjustable visibility settings.",
+      "description": "Represents an open announcement.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Proposal entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title or subject of the proposal."
-        },
-        "content": {
-          "type": "string",
-          "description": "The detailed content or description of the proposal."
-        },
-        "authorId": {
-          "type": "string",
-          "description": "Reference to the User who created this proposal. (Relationship: User 1:N Proposal)"
-        },
-        "visibility": {
-          "type": "string",
-          "description": "Defines which user roles can view this proposal.",
-          "format": "enum"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the proposal was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the proposal was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "authorId": { "type": "string" },
+        "visibility": { "type": "string", "format": "enum" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "title",
-        "content",
-        "authorId",
-        "visibility",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "title", "content", "authorId", "visibility", "createdAt", "updatedAt"]
     },
     "MeetingMinute": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "MeetingMinute",
       "type": "object",
-      "description": "Represents the official minutes of a meeting, accessible to administrators and council members.",
+      "description": "Represents the official minutes of a meeting.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the MeetingMinute entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title or subject of the meeting minutes."
-        },
-        "content": {
-          "type": "string",
-          "description": "The detailed content of the meeting minutes, including discussions and decisions."
-        },
-        "meetingDate": {
-          "type": "string",
-          "description": "The date when the meeting took place.",
-          "format": "date"
-        },
-        "authorId": {
-          "type": "string",
-          "description": "Reference to the User (Administrator or Council member) who recorded or published these meeting minutes. (Relationship: User 1:N MeetingMinute)"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the meeting minutes record was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the meeting minutes record was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "meetingDate": { "type": "string", "format": "date" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "title",
-        "content",
-        "meetingDate",
-        "authorId",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "title", "content", "meetingDate", "authorId", "createdAt", "updatedAt"]
+    },
+    "XpTemplate": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "XpTemplate",
+      "type": "object",
+      "description": "Predefined XP actions that can be applied to students.",
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string", "description": "The name of the template (e.g., 'Attendance')" },
+        "reason": { "type": "string", "description": "The reason recorded in the log." },
+        "amount": { "type": "number", "description": "The XP value to add or subtract." },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "label", "reason", "amount", "createdAt", "updatedAt"]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "anonymous"]
   },
   "firestore": {
     "structure": [
@@ -158,83 +73,44 @@
         "path": "/users/{userId}",
         "definition": {
           "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores individual user profiles. The `userId` matches `request.auth.uid`. Includes the user's `role` (e.g., 'Student', 'Teacher') and `xp` points. Read/write access is typically for the user themselves, with Admin/Council having broader management rights.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching Firebase Authentication UID."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/User" }
         }
       },
       {
         "path": "/roles_admin/{userId}",
         "definition": {
           "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "A dedicated collection for 'Admin' roles. The existence of a document at this path signifies that the `userId` has 'Admin' privileges. This enables highly efficient and atomic authorization checks (`exists(...)`) in security rules. Includes denormalized 'userId' for authorization independence.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user who holds the 'Admin' role."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/User" }
         }
       },
       {
         "path": "/roles_council/{userId}",
         "definition": {
           "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "A dedicated collection for 'Council' roles. The existence of a document at this path signifies that the `userId` has 'Council' privileges. This enables highly efficient and atomic authorization checks (`exists(...)`) in security rules. Includes denormalized 'userId' for authorization independence.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user who holds the 'Council' role."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/User" }
         }
       },
       {
         "path": "/proposals/{proposalId}",
         "definition": {
           "entityName": "Proposal",
-          "schema": {
-            "$ref": "#/backend/entities/Proposal"
-          },
-          "description": "Stores open proposals or announcements. Access to individual proposals is controlled by the `visibility` field within the document (e.g., 'STUDENT', 'TEACHER', 'COUNCIL', 'ADMIN_ONLY'), ensuring Authorization Independence. Only Admin and Council members can create, edit, or remove proposals.",
-          "params": [
-            {
-              "name": "proposalId",
-              "description": "The unique identifier for a specific proposal."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Proposal" }
         }
       },
       {
         "path": "/meetingMinutes/{meetingMinuteId}",
         "definition": {
           "entityName": "MeetingMinute",
-          "schema": {
-            "$ref": "#/backend/entities/MeetingMinute"
-          },
-          "description": "Stores official meeting minutes. Access is strictly limited to users with 'Admin' or 'Council' roles, enforced by security rules checking `roles_admin` and `roles_council` collections. This ensures a homogeneous security posture for the entire collection.",
-          "params": [
-            {
-              "name": "meetingMinuteId",
-              "description": "The unique identifier for a specific meeting minutes record."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/MeetingMinute" }
+        }
+      },
+      {
+        "path": "/xp_templates/{templateId}",
+        "definition": {
+          "entityName": "XpTemplate",
+          "schema": { "$ref": "#/backend/entities/XpTemplate" }
         }
       }
-    ],
-    "reasoning": "The recommended Firestore structure prioritizes secure, scalable, and debuggable authorization by adhering to the core design principles of Authorization Independence and Structural Segregation.\n\n**Authorization Independence:**\n1.  **Role Denormalization:** For critical roles like 'Admin' and 'Council', separate top-level collections (`/roles_admin/{userId}` and `/roles_council/{userId}`) are used. This denormalization means that security rules can check `exists(/roles_admin/$(request.auth.uid))` instead of `get(/users/$(request.auth.uid)).data.role == 'Admin'`. This completely eliminates `get()` calls for these primary authorization checks, which is crucial for performance, atomic operations, and rule debuggability. This pattern makes authorization explicit and independent of other document fields or hierarchical data.\n2.  **Self-Contained Proposal Visibility:** For `Proposal` documents, the `visibility` field is stored directly within each `proposal` document. This allows security rules to evaluate access rights (e.g., `resource.data.visibility == 'STUDENT'`) without needing to perform `get()` operations on parent documents or other collections. This ensures that the access decision for a proposal is atomic and contained within the document itself.\n3.  **User Profile Roles:** For 'Teacher' and 'Student' roles, the `role` field within `/users/{userId}` is used. While this requires a `get(/users/$(request.auth.uid))` call, it is a lookup on the requesting user's own profile, which is generally acceptable for user-specific attributes and avoids complex cross-document dependencies.\n\n**Querying and Authorization Posture (QAPs):**\n1.  **Proposals:** The `/proposals` collection has a homogeneous security posture in terms of document type, but access to individual documents is governed by their `visibility` field. This enables secure `list` operations. Clients can query `/proposals` and filter by specific visibility states, and security rules will enforce that only documents matching the user's role and the `visibility` setting are returned (e.g., a student can only see proposals with `visibility: 'STUDENT'` or `visibility: 'ALL'`). This adheres to QAP as rules will prevent unauthorized reads of proposals with higher visibility, acting as an enforcement mechanism, not a filter.\n2.  **Meeting Minutes:** The `/meetingMinutes` collection is segregated to contain only meeting minutes, which have a very strict, homogeneous security posture: only 'Admin' and 'Council' members can read, create, update, or delete them. This allows for simple and robust security rules based solely on the `isAdmin()` or `isCouncil()` checks, ensuring that `list` operations on this collection are inherently secure without requiring complex document-level filtering.\n3.  **User Profiles:** The `/users` collection also maintains a homogeneous security posture where users can manage their own profiles, and 'Admin' and 'Council' roles have broader read/write access. `list` operations for users can be restricted to 'Admin' or 'Council' based on their respective role checks.\n\n**Overall Strategy Adherence:**\n*   **Structural Segregation:** Each collection (`/users`, `/roles_admin`, `/roles_council`, `/proposals`, `/meetingMinutes`) serves a distinct purpose and has a consistent security posture, simplifying rule definitions.\n*   **Access Modeling:** Path-based ownership is used for user profiles (`/users/{userId}`). Global roles are implemented using existence checks in dedicated collections (`/roles_admin`, `/roles_council`). Collaborative-style access for proposals is managed via an explicit `visibility` field.\n*   **Data Clarity:** Fields like `visibility` explicitly define access states, and consistent naming conventions are used throughout (e.g., `userId`, `proposalId`, `authorId`)."
+    ]
   }
 }

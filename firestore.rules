@@ -2,30 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * MBN SCHOOL COUNCIL - SECURITY RULES CONFIGURATION
-     * 
-     * CORE PHILOSOPHY:
-     * This ruleset implements a strict Role-Based Access Control (RBAC) model optimized for performance 
-     * and security. High-privilege roles (Admin, Council) are verified using "Structural Segregation" 
-     * (dedicated collections for role markers), while general user roles (Student, Teacher) are 
-     * stored within the user profile.
-     * 
-     * DATA STRUCTURE:
-     * - /users/{userId}: Primary user profiles containing basic info and general roles.
-     * - /roles_admin/{userId}: Presence of a document here grants administrative privileges.
-     * - /roles_council/{userId}: Presence of a document here grants school council privileges.
-     * - /proposals/{proposalId}: Shared announcements with field-based visibility control.
-     * - /meetingMinutes/{meetingMinuteId}: Confidential records restricted to Admin and Council for writes, but readable by all for transparency.
-     */
-
-    // --- GLOBAL HELPER FUNCTIONS ---
-
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Checks if the user is in the Admin role collection or is the Super Admin
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid)) ||
@@ -33,12 +13,10 @@ service cloud.firestore {
       );
     }
 
-    // Checks if the user is in the Council role collection
     function isCouncil() {
       return isSignedIn() && exists(/databases/$(database)/documents/roles_council/$(request.auth.uid));
     }
 
-    // Combined helper for staff/privileged members
     function isStaff() {
       return isAdmin() || isCouncil();
     }
@@ -47,12 +25,9 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Fetches the role string from the user's document
     function getUserRole() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
-
-    // --- COLLECTION RULES ---
 
     match /users/{userId} {
       allow get: if isOwner(userId) || isStaff();
@@ -79,35 +54,25 @@ service cloud.firestore {
                  || resource.data.visibility == 'PUBLIC'
                  || (resource.data.visibility == 'STUDENT' && getUserRole() == 'student')
                  || (resource.data.visibility == 'TEACHER' && getUserRole() == 'teacher');
-      
       allow list: if isStaff()
                   || (isSignedIn() && (getUserRole() == 'student' || getUserRole() == 'teacher'));
-      
-      allow create: if isStaff() 
-                    && request.resource.data.authorId == request.auth.uid;
-                    
-      allow update: if isStaff() 
-                    && resource != null
-                    && request.resource.data.authorId == resource.data.authorId;
-                    
+      allow create: if isStaff() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isStaff() && resource != null && request.resource.data.authorId == resource.data.authorId;
       allow delete: if isStaff() && resource != null;
     }
 
     match /meetingMinutes/{meetingMinuteId} {
-      // Allow all authenticated users to read meeting minutes for transparency
-      allow get, list: if isSignedIn();
-      
-      allow create: if isStaff() 
-                    && request.resource.data.authorId == request.auth.uid;
-                    
-      allow update: if isStaff() 
-                    && resource != null 
-                    && request.resource.data.authorId == resource.data.authorId;
-                    
+      allow get, list: if isStaff();
+      allow create: if isStaff() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isStaff() && resource != null && request.resource.data.authorId == resource.data.authorId;
       allow delete: if isStaff() && resource != null;
     }
 
-    // Log collection for XP changes
+    match /xp_templates/{templateId} {
+      allow read: if isStaff();
+      allow create, update, delete: if isAdmin();
+    }
+
     match /users/{userId}/xp_logs/{logId} {
       allow read: if isOwner(userId) || isStaff();
       allow create: if isStaff();

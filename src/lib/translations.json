@@ -1,4 +1,3 @@
-
 {
   "ar": {
     "dashboard": "لوحة القيادة",
@@ -80,7 +79,12 @@
     "initiatives": "خبر",
     "quickActions": "إجراءات سريعة",
     "apply": "تطبيق",
-    "reasonPlaceholder": "السبب (مثلاً: المشاركة...)"
+    "reasonPlaceholder": "السبب (مثلاً: المشاركة...)",
+    "xpTemplates": "قوالب XP",
+    "manageTemplates": "إدارة القوالب",
+    "newTemplate": "قالب جديد",
+    "templateLabel": "اسم القالب",
+    "applyTemplate": "تطبيق قالب"
   },
   "fr": {
     "dashboard": "Tableau de Bord",
@@ -162,6 +166,11 @@
     "initiatives": "Annonce",
     "quickActions": "Actions Rapides",
     "apply": "Appliquer",
-    "reasonPlaceholder": "Raison (ex: Participation...)"
+    "reasonPlaceholder": "Raison (ex: Participation...)",
+    "xpTemplates": "Modèles XP",
+    "manageTemplates": "Gérer les modèles",
+    "newTemplate": "Nouveau modèle",
+    "templateLabel": "Nom du modèle",
+    "applyTemplate": "Appliquer modèle"
   }
 }
