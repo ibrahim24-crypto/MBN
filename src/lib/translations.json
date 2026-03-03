@@ -77,7 +77,10 @@
     "visibilityCouncil": "للمجلس فقط",
     "deleteConfirm": "هل أنت متأكد؟",
     "meetingDate": "تاريخ الاجتماع",
-    "initiatives": "خبر"
+    "initiatives": "خبر",
+    "quickActions": "إجراءات سريعة",
+    "apply": "تطبيق",
+    "reasonPlaceholder": "السبب (مثلاً: المشاركة...)"
   },
   "fr": {
     "dashboard": "Tableau de Bord",
@@ -156,6 +159,9 @@
     "visibilityCouncil": "Conseil Uniquement",
     "deleteConfirm": "Êtes-vous sûr ?",
     "meetingDate": "Date de réunion",
-    "initiatives": "Annonce"
+    "initiatives": "Annonce",
+    "quickActions": "Actions Rapides",
+    "apply": "Appliquer",
+    "reasonPlaceholder": "Raison (ex: Participation...)"
   }
 }
